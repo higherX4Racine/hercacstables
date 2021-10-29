@@ -18,7 +18,7 @@ tibble
 Break an ACS "Variable" value into its three components.
 }
 \examples{
-parse_acs_table_variable(tibble(Variable = "ABC123_456E"))
+parse_acs_table_variable(dplyr::tibble(Variable = "ABC123_456E"))
 #> # A tibble: 1 x 3
 #>   Table    Row `Statistic Type`
 #>   <chr>  <int> <chr>

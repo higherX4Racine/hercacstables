@@ -1,6 +1,3 @@
-library(magrittr)
-
-
 TABLE_NAME <- "A12345"
 ROW        <- 678
 STAT_TYPE  <- "E"
@@ -56,7 +53,9 @@ thirty_test <- function(x) {
     N <- nrow(TEN_LINER)
     eval(bquote(expect_equal(.(x)$Table, rep(TABLE_NAME, N))))
     eval(bquote(expect_equal(.(x)$Row, 1:N)))
-    eval(bquote(expect_equal(.(x)$`Statistic Type`, rep(STAT_TYPE, N))))
+    eval(bquote(expect_equal(
+        .(x)$`Statistic Type`, rep(STAT_TYPE, N)
+    )))
 }
 
 

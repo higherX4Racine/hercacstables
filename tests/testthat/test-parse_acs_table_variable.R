@@ -9,8 +9,34 @@ VARIABLE <- stringr::str_c(TABLE_NAME, "_", ROW, STAT_TYPE)
 ONE_LINER <- dplyr::tibble(Variable = VARIABLE,
                            Foo = VARIABLE)
 
+
+triple_test <- function(x, .list) {
+    eval(bquote(expect_equal(.(x)$Table, TABLE_NAME)))
+    eval(bquote(expect_equal(.(x)$Row, ROW)))
+    eval(bquote(expect_equal(.(x)$`Statistic Type`, STAT_TYPE)))
+}
+
+
+test_that("a 1x1 data frame parses into a 1x3 data frame", {
+    triple_test(parse_acs_table_variable(ONE_LINER))
+})
+
+
+test_that("The second argument can be the 'Variable' column's name", {
+    triple_test(parse_acs_table_variable(ONE_LINER, "Foo"))
+    triple_test(parse_acs_table_variable(ONE_LINER, "Variable"))
+})
+
+
+test_that("The second argument works with magrittr's pipe operator", {
+    ONE_LINER %>% parse_acs_table_variable() %>% triple_test()
+    ONE_LINER %>% parse_acs_table_variable(Foo) %>% triple_test()
+    ONE_LINER %>% parse_acs_table_variable(Variable) %>% triple_test()
+})
+
+
 TEN_LINER <- dplyr::tibble(Index = 1:10) %>%
-    mutate(
+    dplyr::mutate(
         Variable = stringr::str_c(
             TABLE_NAME,
             "_",
@@ -26,87 +52,26 @@ TEN_LINER <- dplyr::tibble(Index = 1:10) %>%
     )
 
 
-test_that("a 1x1 data frame parses into a 1x3 data frame", {
-    bar <- parse_acs_table_variable(ONE_LINER)
-
-    expect_equal(bar$Table, TABLE_NAME)
-    expect_equal(bar$Row, ROW)
-    expect_equal(bar$`Statistic Type`, STAT_TYPE)
-})
-
-
-test_that("The second argument can be the 'Variable' column's name", {
-    bar <- parse_acs_table_variable(ONE_LINER, "Foo")
-
-    expect_equal(bar$Table, TABLE_NAME)
-    expect_equal(bar$Row, ROW)
-    expect_equal(bar$`Statistic Type`, STAT_TYPE)
-})
-
-
-test_that("The second argument works with magrittr's pipe operator", {
-    bar <- ONE_LINER %>% parse_acs_table_variable()
-
-    expect_equal(bar$Table, TABLE_NAME)
-    expect_equal(bar$Row, ROW)
-    expect_equal(bar$`Statistic Type`, STAT_TYPE)
-
-    baz <- ONE_LINER %>%
-        parse_acs_table_variable(Foo)
-
-    expect_equal(baz$Table, TABLE_NAME)
-    expect_equal(baz$Row, ROW)
-    expect_equal(baz$`Statistic Type`, STAT_TYPE)
-})
+thirty_test <- function(x) {
+    N <- nrow(TEN_LINER)
+    eval(bquote(expect_equal(.(x)$Table, rep(TABLE_NAME, N))))
+    eval(bquote(expect_equal(.(x)$Row, 1:N)))
+    eval(bquote(expect_equal(.(x)$`Statistic Type`, rep(STAT_TYPE, N))))
+}
 
 
 test_that("Multi-line tables work with defaults", {
-    bar <- TEN_LINER %>% parse_acs_table_variable()
-    expect_equal(bar$Table,
-                 rep(TABLE_NAME,
-                     nrow(TEN_LINER)))
-    expect_equal(bar$Row,
-                 1:nrow(TEN_LINER))
-    expect_equal(bar$`Statistic Type`,
-                 rep(STAT_TYPE,
-                     nrow(TEN_LINER)))
+    TEN_LINER %>% parse_acs_table_variable() %>% thirty_test()
 })
 
 
 test_that("Multi-line tables work with named columns", {
-    for (name in c("Variable", "Foo")) {
-        bar <- TEN_LINER %>% parse_acs_table_variable(name)
-        expect_equal(bar$Table,
-                     rep(TABLE_NAME,
-                         nrow(TEN_LINER)))
-        expect_equal(bar$Row,
-                     1:nrow(TEN_LINER))
-        expect_equal(bar$`Statistic Type`,
-                     rep(STAT_TYPE,
-                         nrow(TEN_LINER)))
-    }
-
+    TEN_LINER %>% parse_acs_table_variable("Foo") %>% thirty_test()
+    TEN_LINER %>% parse_acs_table_variable("Variable") %>% thirty_test()
 })
 
 
-test_that("Multi-line tables work with named columns", {
-    bar <- TEN_LINER %>% parse_acs_table_variable(Variable)
-    expect_equal(bar$Table,
-                 rep(TABLE_NAME,
-                     nrow(TEN_LINER)))
-    expect_equal(bar$Row,
-                 1:nrow(TEN_LINER))
-    expect_equal(bar$`Statistic Type`,
-                 rep(STAT_TYPE,
-                     nrow(TEN_LINER)))
-
-    bar <- TEN_LINER %>% parse_acs_table_variable(Foo)
-    expect_equal(bar$Table,
-                 rep(TABLE_NAME,
-                     nrow(TEN_LINER)))
-    expect_equal(bar$Row,
-                 1:nrow(TEN_LINER))
-    expect_equal(bar$`Statistic Type`,
-                 rep(STAT_TYPE,
-                     nrow(TEN_LINER)))
+test_that("Multi-line tables work with rlang columns", {
+    TEN_LINER %>% parse_acs_table_variable(Foo) %>% thirty_test()
+    TEN_LINER %>% parse_acs_table_variable(Variable) %>% thirty_test()
 })

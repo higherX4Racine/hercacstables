@@ -3,8 +3,7 @@ Title: Work with American Community Survey Tables through the US Census API
 Version: 0.0.0.9000
 Authors@R: 
     person("Ben", "Taft",
-           ,
-           "ben.taft@career2cradle.org",
+           email="ben.taft@career2cradle.org",
            role = c("aut", "cre"))
 Description: The American Community Survey (ACS) from the US Census's website
     returns data in a weirdly idiosyncratic way. There are many subtotals in
@@ -21,7 +20,7 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     dplyr,
-    tidyr,
+    magrittr,
     purrr,
     readr,
-    magrittr
+    tidyr

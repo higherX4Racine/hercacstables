@@ -7,20 +7,16 @@
 parse_acs_table_variable(.x, col = "Variable")
 }
 \arguments{
-\item{.x}{tibble}
+\item{.x}{data.frame}
 
 \item{col}{character}
 }
 \value{
-tibble
+data.frame
 }
 \description{
 Break an ACS "Variable" value into its three components.
 }
 \examples{
-parse_acs_table_variable(dplyr::tibble(Variable = "ABC123_456E"))
-#> # A tibble: 1 x 3
-#>   Table    Row `Statistic Type`
-#>   <chr>  <int> <chr>
-#> 1 ABC123   456 E
+parse_acs_table_variable(data.frame(Variable = "ABC123_456E"))
 }

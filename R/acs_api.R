@@ -1,5 +1,5 @@
 # Copyright (C) 2021 by Higher Expectations for Racine County
-#' URL Utilities for the American Community Survey from the U.S. Census
+# URL Utilities for the American Community Survey from the U.S. Census
 
 
 CENSUS_API_ROOT_URL <- "https://api.census.gov/data"
@@ -15,34 +15,35 @@ CENSUS_API_ROOT_URL <- "https://api.census.gov/data"
 #' @export
 #'
 #' @examples
-#' census_file_pattern("C23002A", 5)
+#' make_census_file_regex("C23002A", 5)
 
-make_census_file_regex <- function (code, years, is_metadata = FALSE) {
+make_census_file_regex <- function (code, acs_type, is_metadata = FALSE) {
     type_string = ifelse(is_metadata,
                          "_metadata_",
                          "_data_with_overlays_")
 
-    str_c("ACS",
-          code, years,
+    stringr::str_c("ACS",
+          code, acs_type,
           ".*",
           type_string,
           ".*\\.csv")
 }
 
 
+
 acs_url_for_year_and_type <- function(year, acs_type) {
-    str_c(year, "/acs/acs", acs_type, collapse = "")
+    stringr::str_c(year, "/acs/acs", acs_type, collapse = "")
 }
 
 
 acs_query_for_table <- function(table_name) {
-    str_c("get=group(",
+    stringr::str_c("get=group(",
           table_name,
           ")")
 }
 
 
 acs_query_all_counties_in_state <- function(state_fips) {
-    str_c("&for=county:*&in=state:",
+    stringr::str_c("&for=county:*&in=state:",
           state_fips)
 }

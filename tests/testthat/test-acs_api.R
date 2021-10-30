@@ -6,3 +6,12 @@ test_that("data and metadata file regexs are distinct", {
     expect_equal(make_census_file_regex("ABC", 123, TRUE),
                  "ACSABC123.*_metadata_.*\\.csv")
 })
+
+test_that("api path components are built as expected", {
+    expect_equal(acs_url_for_year_and_type(2020, 5),
+                 "2020/acs/acs5")
+    expect_equal(acs_query_for_table("C23002A"),
+                 "get=group(C23002A)")
+    expect_equal(acs_query_all_counties_in_state(55),
+                 "&for=county:*&in=state:55")
+})

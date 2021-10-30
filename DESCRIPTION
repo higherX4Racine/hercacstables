@@ -22,5 +22,6 @@ Imports:
     dplyr,
     magrittr,
     purrr,
+    stringr,
     readr,
     tidyr

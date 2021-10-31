@@ -1,6 +1,6 @@
 #' Organize a list output from a JSON parser to a tibble of ACS counts data.
 #'
-#' @param .list A list produced by parsing a rectangular ACS json array
+#' @param .list A list that comes from parsing a rectangular ACS json array
 #' @param table_name The name of the ACS table
 #'
 #' @return A tibble of pivoted, R-friendly data, with sub-totals removed.

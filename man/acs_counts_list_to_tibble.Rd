@@ -7,7 +7,7 @@
 acs_counts_list_to_tibble(.list, table_name)
 }
 \arguments{
-\item{.list}{A list produced by parsing a rectangular ACS json array}
+\item{.list}{A list that comes from parsing a rectangular ACS json array}
 
 \item{table_name}{The name of the ACS table}
 }

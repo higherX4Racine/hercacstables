@@ -22,6 +22,8 @@ Imports:
     dplyr,
     magrittr,
     purrr,
-    stringr,
     readr,
+    stringr,
     tidyr
+Depends: 
+    R (>= 2.10)

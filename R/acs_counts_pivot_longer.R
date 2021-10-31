@@ -1,6 +1,3 @@
-`Statistic Type` <- NULL
-Value <- NULL
-
 #' Split an ACS "Variable" value into three components
 #'
 #' @param .x A data frame with many variables that contain \code{table_name}
@@ -15,6 +12,6 @@ acs_counts_pivot_longer <- function(.x,
                             names_to = "Variable",
                             values_to = "Value") %>%
         parse_acs_table_variable() %>%
-        tidyr::pivot_wider(names_from = `Statistic Type`,
-                           values_from = Value)
+        tidyr::pivot_wider(names_from = .data$`Statistic Type`,
+                           values_from = .data$Value)
 }

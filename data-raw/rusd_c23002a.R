@@ -1,6 +1,6 @@
 .TABLE_NAME <- "C23002A"
 .YEAR       <- 2019
-.ACS_TYPE   <- 5
+.VINTAGE   <- 5
 .ROWS       <- c(5, 7, 8, 9, 12, 13, 14, 18, 20, 21, 22, 25, 26, 27)
 .VARS <- paste0(paste0(.TABLE_NAME, "_",
                        stringr::str_pad(.ROWS, 3, pad = "0")),
@@ -12,7 +12,7 @@
 .BASE_URL <- paste0("https://api.census.gov/data/",
                     .YEAR,
                     "/acs/acs",
-                    .ACS_TYPE)
+                    .VINTAGE)
 
 .QUERY_DISTRICT <- paste0("school%20district%20(unified):",
                           .DISTRICT)

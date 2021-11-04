@@ -8,7 +8,7 @@ CENSUS_API_ROOT_URL <- "https://api.census.gov/data"
 #' Use look up fields to build a glob to search for downloaded ACS data.
 #'
 #' @param code this is a string containing table and (maybe?) year info
-#' @param acs_type an integer, usually 1 or 5, but sometimes 3
+#' @param vintage an integer, usually 1 or 5, but sometimes 3
 #' @param is_metadata logical
 #'
 #' @return a file name as a string
@@ -17,13 +17,13 @@ CENSUS_API_ROOT_URL <- "https://api.census.gov/data"
 #' @examples
 #' make_census_file_regex("C23002A", 5)
 
-make_census_file_regex <- function (code, acs_type, is_metadata = FALSE) {
+make_census_file_regex <- function (code, vintage, is_metadata = FALSE) {
     type_string = ifelse(is_metadata,
                          "_metadata_",
                          "_data_with_overlays_")
 
     stringr::str_c("ACS",
-          code, acs_type,
+          code, vintage,
           ".*",
           type_string,
           ".*\\.csv")
@@ -31,8 +31,8 @@ make_census_file_regex <- function (code, acs_type, is_metadata = FALSE) {
 
 
 
-acs_url_for_year_and_type <- function(year, acs_type) {
-    stringr::str_c(year, "/acs/acs", acs_type, collapse = "")
+acs_url_for_year_and_type <- function(year, vintage) {
+    stringr::str_c(year, "/acs/acs", vintage, collapse = "")
 }
 
 

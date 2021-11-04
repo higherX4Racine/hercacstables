@@ -4,12 +4,12 @@
 \alias{make_census_file_regex}
 \title{Use look up fields to build a glob to search for downloaded ACS data.}
 \usage{
-make_census_file_regex(code, acs_type, is_metadata = FALSE)
+make_census_file_regex(code, vintage, is_metadata = FALSE)
 }
 \arguments{
 \item{code}{this is a string containing table and (maybe?) year info}
 
-\item{acs_type}{an integer, usually 1 or 5, but sometimes 3}
+\item{vintage}{an integer, usually 1 or 5, but sometimes 3}
 
 \item{is_metadata}{logical}
 }

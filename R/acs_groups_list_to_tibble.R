@@ -4,11 +4,11 @@
 #' @param detail_names The names of the table's grouping fields
 #'
 #' @return A tibble of pivoted, R-friendly metadata without annotation fields
-acs_groups_list_to_tibble <- function(.x, detail_names) {
+acs_groups_list_to_tibble <- function(.x, detail_names = NULL) {
     Description <- NULL
     Variable <- NULL
     . <- NULL
-    .x %>%
+    result <- .x %>%
         purrr::pluck(1) %>%
         dplyr::tibble() %>%
         dplyr::mutate(Variable = names(.)) %>%
@@ -27,17 +27,21 @@ acs_groups_list_to_tibble <- function(.x, detail_names) {
                         .data$Row,
                         .data$Description) %>%
         dplyr::arrange(.data$Table,
-                       .data$Row) %>%
-        tidyr::separate(
-            .data$Description,
-            into = detail_names,
-            sep = "!!",
-            extra = "merge",
-            fill = "right",
-            remove = FALSE
-        ) %>%
-        dplyr::mutate(dplyr::across(
-            dplyr::all_of(detail_names),
-            ~ stringr::str_remove_all(.x, ":")
-        ))
+                       .data$Row)
+    if (!is.null(detail_names)) {
+        result <- result %>%
+            tidyr::separate(
+                .data$Description,
+                into = detail_names,
+                sep = "!!",
+                extra = "merge",
+                fill = "right",
+                remove = FALSE
+            ) %>%
+            dplyr::mutate(dplyr::across(
+                dplyr::all_of(detail_names),
+                ~ stringr::str_remove_all(.x, ":")
+            ))
+    }
+    invisible(result)
 }

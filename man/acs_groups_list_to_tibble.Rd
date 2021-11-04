@@ -4,7 +4,7 @@
 \alias{acs_groups_list_to_tibble}
 \title{Organize a list output from a JSON parser to a tibble of ACS groups data.}
 \usage{
-acs_groups_list_to_tibble(.x, detail_names)
+acs_groups_list_to_tibble(.x, detail_names = NULL)
 }
 \arguments{
 \item{.x}{A list that comes from parsing a rectangular ACS json array}

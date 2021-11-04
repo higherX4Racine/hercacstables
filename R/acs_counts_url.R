@@ -7,7 +7,7 @@
 #' that captures the geographical part of the API query.
 #'
 #' @param year int, The reference year for the survey product
-#' @param acs_type int, Denotes the time-span the data are averaged over
+#' @param vintage int, Denotes the time-span the data are averaged over
 #' @param table_name char, The full name of the ACS table, e.g. "C23002A"
 #' @param state_fips int, The FIPS code for a state, e.g. 55 for Wisconsin.
 #' @returns string, The URL of a JSON file on the Census's website
@@ -16,14 +16,14 @@
 #' acs_counts_url(2020, 5, "C23002A", 55)
 
 acs_counts_url <- function(year,
-                           acs_type,
+                           vintage,
                            table_name,
                            state_fips) {
     stringr::str_c(
         CENSUS_API_ROOT_URL,
         "/",
         acs_url_for_year_and_type(year,
-                                  acs_type),
+                                  vintage),
         "?",
         acs_query_for_table(table_name),
         acs_query_all_counties_in_state(state_fips)

@@ -4,12 +4,12 @@
 \alias{acs_counts_url}
 \title{Build the URL for the JSON data file for an ACS summary table.}
 \usage{
-acs_counts_url(year, acs_type, table_name, state_fips)
+acs_counts_url(year, vintage, table_name, state_fips)
 }
 \arguments{
 \item{year}{int, The reference year for the survey product}
 
-\item{acs_type}{int, Denotes the time-span the data are averaged over}
+\item{vintage}{int, Denotes the time-span the data are averaged over}
 
 \item{table_name}{char, The full name of the ACS table, e.g. "C23002A"}
 

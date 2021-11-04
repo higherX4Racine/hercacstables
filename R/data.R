@@ -36,3 +36,12 @@
 #' @source
 #'   \url{https://www.census.gov/data/developers/guidance/api-user-guide.html}
 "c23002a_groups"
+
+#' Race and ethnicity codes and labels used by the U.S. Census Bureau
+#'
+#' @format A tibble with two columns:
+#'   \describe{
+#'     \item{code}{A capital letter designating a race or ethnicity}
+#'     \item{label}{A short description of a race or ethnicity}
+#'   }
+"race_or_ethnicity"

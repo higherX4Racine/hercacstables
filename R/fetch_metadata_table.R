@@ -15,11 +15,15 @@ fetch_metadata_table <- function(.info_type, .year, .year_span) {
     httr::GET() %>%
     httr::stop_for_status()
 
-  .x <- .response %>%
+  .j <- .response %>%
     httr::content("parse") %>%
-    purrr::pluck(1) %>%
-    purrr::map_dfr(tibble::as_tibble, .id = "id") %>%
-    dplyr::rename_with(~ stringr::str_to_title(stringr::str_trim(.)))
+    purrr::pluck(1)
+
+  .x <- .j %>%
+      ragged_list_to_tibble() %>%
+      dplyr::rename_with(
+          ~ stringr::str_to_title(stringr::str_trim(.))
+      )
 
   if (.info_type == "groups") {
     .wrangle_groups(.x)

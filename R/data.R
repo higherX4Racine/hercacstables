@@ -45,3 +45,13 @@
 #'     \item{label}{A short description of a race or ethnicity}
 #'   }
 "race_or_ethnicity"
+
+#' Group, Variable, and Geography information for the latest 5-Year ACS
+#'
+#' @format A list with three items
+#'   \describe{
+#'   \item{geography}{Available geographies and how to ask for them in the API.}
+#'   \item{groups}{Each group's ID, its Universe, and its Description.}
+#'   \item{variables}{Each variable's Group, its full code, and its Label.}
+#'   }
+"METADATA_ACS5"

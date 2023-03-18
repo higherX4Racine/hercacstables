@@ -8,10 +8,10 @@
 #'
 #' @examples
 #' TBD <- NULL
-
 join_counts_and_groups <- function(acs_counts,
                                    acs_groups) {
-    dplyr::left_join(acs_groups,
-                     acs_counts,
-                     by = c("Table", "Row"))
+  dplyr::left_join(acs_groups,
+    acs_counts,
+    by = c("Table", "Row")
+  )
 }

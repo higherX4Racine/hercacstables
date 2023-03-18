@@ -13,19 +13,20 @@
 #' @returns string, The URL of a JSON file on the Census's website
 #' @export
 #' @examples
-#' acs_counts_url(2020, 5, "C23002A", 55)
-
-acs_counts_url <- function(year,
-                           vintage,
-                           table_name,
-                           state_fips) {
-    stringr::str_c(
-        CENSUS_API_ROOT_URL,
-        "/",
-        acs_url_for_year_and_type(year,
-                                  vintage),
-        "?",
-        acs_query_for_table(table_name),
-        acs_query_all_counties_in_state(state_fips)
-    )
+#' counts_url(2020, 5, "C23002A", 55)
+counts_url <- function(year,
+                       vintage,
+                       table_name,
+                       state_fips) {
+  stringr::str_c(
+    CENSUS_API_ROOT_URL,
+    "/",
+    url_for_year_and_type(
+      year,
+      vintage
+    ),
+    "?",
+    query_for_table(table_name),
+    query_all_counties_in_state(state_fips)
+  )
 }

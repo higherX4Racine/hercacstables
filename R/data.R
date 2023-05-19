@@ -55,3 +55,17 @@
 #'   \item{variables}{Each variable's Group, its full code, and its Label.}
 #'   }
 "METADATA_ACS5"
+
+#' Variables in B21005: Age x Veteran x Employed for Civilians 18-64
+#'
+#' @format A tibble with seven columns
+#' \describe{
+#'   \item{Name}{The name of the variable, e.g. B21005_0001E}
+#'   \item{Age}{The Census's description of the age range described by this variable.}
+#'   \item{Veteran}{`TRUE` if the variable describes veterans, and `NA` for subtotals.}
+#'   \item{In Labor Force}{`TRUE`, `FALSE`, or `NA` for subtotals.}
+#'   \item{Employed}{`TRUE`, `FALSE`, or `NA` for subtotals.}
+#'   \item{Lower Age}{The lowest age that this variable describes.}
+#'   \item{Upper Age}{The highest age that this variable describes.}
+#' }
+"B21005_VARIABLES"

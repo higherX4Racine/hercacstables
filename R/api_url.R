@@ -42,6 +42,7 @@ api_query <- function(variables,
                  paste0(for_items,
                         collapse = ',')),
           .colonic(...),
+          paste0("key=", Sys.getenv("CENSUS_API_KEY")),
           sep = "&")
 }
 
@@ -89,14 +90,16 @@ api_url <- function(variables,
                        for_items,
                        ...)
 
-    paste(.BASE_URL,
-          as.character(year),
-          survey_type,
-          paste0(survey_or_table_code,
-                 "?get=",
-                 query),
-          sep = "/"
-    )
+    .BASE_URL |>
+        paste(
+            as.character(year),
+            survey_type,
+            paste0(survey_or_table_code,
+                   "?get=",
+                   query),
+            sep = "/"
+        ) |>
+        URLencode()
 
 }
 

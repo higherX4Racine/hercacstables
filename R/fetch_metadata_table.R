@@ -11,55 +11,77 @@
 #' @seealso `info_url`
 #' @export
 fetch_metadata_table <- function(.info_type, .year, .year_span) {
-  .response <- info_url(.info_type, .year, .year_span) %>%
-    httr::GET() %>%
-    httr::stop_for_status()
+    .pluck_map <- list(
+        geography = "fips",
+        groups = "groups",
+        variables = "variables"
+    )
 
-  .j <- .response %>%
-    httr::content("parse") %>%
-    purrr::pluck(1)
+    .table <- .info_type |>
+        info_url(
+            .year,
+            .year_span
+        ) |>
+        jsonlite::read_json() |>
+        purrr::pluck(
+            .pluck_map[[.info_type]]
+        ) |>
+        purrr::list_transpose(
+            simplify = NA
+        ) |>
+        tibble::as_tibble() |>
+        dplyr::rename_with(
+            stringr::str_squish
+        )
 
-  .x <- .j %>%
-      ragged_list_to_tibble() %>%
-      dplyr::rename_with(
-          ~ stringr::str_to_title(stringr::str_trim(.))
-      )
-
-  if (.info_type == "groups") {
-    .wrangle_groups(.x)
-  } else if (.info_type == "variables") {
-    .wrangle_variables(.x)
-  } else {
-    .x
-  }
-}
-
-.wrangle_groups <- function(.x) {
-  .x %>%
-    dplyr::select(tidyselect::any_of(c(
-      Group = "Name",
-      "Universe",
-      "Description"
-    ))) %>%
-    dplyr::arrange(
-      .data$Group
+    switch(
+        .info_type,
+        geography = .wrangle_geography(.table),
+        groups = .wrangle_groups(.table),
+        variables = .wrangle_variables(.table)
     )
 }
 
-.wrangle_variables <- function(.x) {
-  .x %>%
-    dplyr::select(tidyselect::any_of(c(
-      "Group",
-      Variable = "Id",
-      "Label"
-    ))) %>%
-    dplyr::filter(
-      stringr::str_detect(.data$Group,
-        ",|N/A",
-        negate = TRUE
-      )
-    ) %>%
-    dplyr::arrange(
-      .data$Variable
-    )
+.wrangle_geography <- function(.table) {
+    .table |>
+        dplyr::mutate(
+            referenceDate = lubridate::ymd(.data$referenceDate)
+        )
+}
+
+.wrangle_groups <- function(.table) {
+    .table <- .table |>
+        dplyr::arrange(
+            .data$name
+        )
+}
+
+.wrangle_variables <- function(.table) {
+    .table |>
+        dplyr::select(
+            "label",
+            "concept",
+            "group"
+        ) |>
+        dplyr::filter(
+            stringr::str_detect(.data$group,
+                                pattern = "N/A",
+                                negate = TRUE),
+            nchar(.data$group) < 8L
+        ) |>
+        dplyr::mutate(
+            variable = names(.data$concept),
+            concept = .data$concept |>
+                rlang::set_names(nm = NULL) |>
+                as.character()
+        ) |>
+        dplyr::relocate(
+            "concept",
+            "group",
+            "variable",
+            "label"
+        ) |>
+        dplyr::arrange(
+            .data$variable
+        )
 }

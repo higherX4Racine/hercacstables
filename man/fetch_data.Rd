@@ -4,14 +4,16 @@
 \alias{fetch_data}
 \title{Download a set of data from the US Census API}
 \usage{
-fetch_data(.variables, .for_geo, .for_items, .other_geos, ...)
+fetch_data(.variables, .year, .for_geo, .for_items, .other_geos, ...)
 }
 \arguments{
-\item{.variables}{a vector of variable names, like "B01001_001E"}
+\item{.variables}{a vector of variable names, like \code{"B01001_001E"}}
 
-\item{.for_geo}{the geographical level the data will describe, e.g. "tract"}
+\item{.year}{an integer year, e.g. \code{2021L}}
 
-\item{.for_items}{the specific instances of \code{.for_geo} desired, e.g. "*" or "000200"}
+\item{.for_geo}{the geographical level the data will describe, e.g. \code{"tract"}}
+
+\item{.for_items}{the specific instances of \code{.for_geo} desired, e.g. \code{"*"} or \code{"000200"}}
 
 \item{.other_geos}{a named list of other geos, e.g. \code{list(state = 55L, county = 101L)}}
 

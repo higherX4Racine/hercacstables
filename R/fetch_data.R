@@ -1,6 +1,7 @@
 #' Download a set of data from the US Census API
 #'
 #' @param .variables a vector of variable names, like `"B01001_001E"`
+#' @param .year an integer year, e.g. `2021L`
 #' @param .for_geo the geographical level the data will describe, e.g. `"tract"`
 #' @param .for_items the specific instances of `.for_geo` desired, e.g. `"*"` or `"000200"`
 #' @param .other_geos a named list of other geos, e.g. `list(state = 55L, county = 101L)`
@@ -9,6 +10,7 @@
 #' @return a tibble with "Variable", "Index", and "Value" fields, as well as one field for each geography.
 #' @export
 fetch_data <- function(.variables,
+                       .year,
                        .for_geo,
                        .for_items,
                        .other_geos,
@@ -18,6 +20,7 @@ fetch_data <- function(.variables,
             rlang::list2(variables = .variables,
                          for_geo = .for_geo,
                          for_items = .for_items,
+                         year = .year,
                          ...,
                          !!!.other_geos)
         ) |>
@@ -44,11 +47,12 @@ fetch_data <- function(.variables,
         tidyr::separate_wider_regex(
             "Variable",
             patterns = c(Group = "^[^_]+",
-                         "_",
-                         Index = "\\d+",
+                         "_?",
+                         Index = "\\d{3}",
                          ".*")
         ) |>
         dplyr::mutate(
+            Year = .year,
             Index = as.integer(.data$Index),
             Value = as.numeric(.data$Value)
         )

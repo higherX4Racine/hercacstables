@@ -4,23 +4,39 @@
 \alias{fetch_data}
 \title{Download a set of data from the US Census API}
 \usage{
-fetch_data(.variables, .year, .for_geo, .for_items, .other_geos, ...)
+fetch_data(
+  variables,
+  year,
+  for_geo,
+  for_items,
+  survey_type,
+  table_or_survey_code,
+  other_geos,
+  ...,
+  use_key = TRUE
+)
 }
 \arguments{
-\item{.variables}{a vector of variable names, like \code{"B01001_001E"}}
+\item{variables}{a vector of variable names, like \code{"B01001_001E"}}
 
-\item{.year}{an integer year, e.g. \code{2021L}}
+\item{year}{an integer year, e.g. \code{2021L}}
 
-\item{.for_geo}{the geographical level the data will describe, e.g. \code{"tract"}}
+\item{for_geo}{the geographical level the data will describe, e.g. \code{"tract"}}
 
-\item{.for_items}{the specific instances of \code{.for_geo} desired, e.g. \code{"*"} or \code{"000200"}}
+\item{for_items}{the specific instances of \code{for_geo} desired, e.g. \code{"*"} or \code{"000200"}}
 
-\item{.other_geos}{a named list of other geos, e.g. \code{list(state = 55L, county = 101L)}}
+\item{survey_type}{e.g. "acs" or "dec"}
 
-\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> further arguments for <\code{\link[=api_url]{api_url}}>.}
+\item{table_or_survey_code}{e.g. "acs5" or "pl"}
+
+\item{other_geos}{a named list of other geographies, e.g. \code{list(state = 55L, county = 101L)}}
+
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic dots}}> other items to pass to the query}
+
+\item{use_key}{optional, should the query include a Census API key from the system environment. Defaults to \code{TRUE}}
 }
 \value{
-a tibble with "Variable", "Index", and "Value" fields, as well as one field for each geography.
+a tibble with "Group", "Index", "Value", and "Year" fields, as well as one field for each geography.
 }
 \description{
 Download a set of data from the US Census API

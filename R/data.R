@@ -14,7 +14,7 @@
 #'    \item{data}{A data frame produced by \code{acs_counts_list_to_tibble()}}
 #'  }
 #' @source
-#'  \url{https://www.census.gov/data/developers/guidance/api-user-guide.html}
+#'  [https://www.census.gov/data/developers/guidance/api-user-guide.html]
 "rusd_c23002a"
 
 #' Groups available for breaking down ACS employment data by sex and age
@@ -34,7 +34,7 @@
 #'     \item{data}{A data frame produced by \code{acs_groups_list_to_tibble()}}
 #'   }
 #' @source
-#'   \url{https://www.census.gov/data/developers/guidance/api-user-guide.html}
+#'   [https://www.census.gov/data/developers/guidance/api-user-guide.html]
 "c23002a_groups"
 
 #' Race and ethnicity codes and labels used by the U.S. Census Bureau
@@ -69,3 +69,33 @@
 #'   \item{Upper Age}{The highest age that this variable describes.}
 #' }
 "B21005_VARIABLES"
+
+#' Variables from the Decennial censuses
+#'
+#' @format A tibble with five columns
+#' \describe{
+#'   \item{Year}{The year of the decennial census.}
+#'   \item{Group}{The table that the variables come from.}
+#'   \item{Race/Ethnicity}{The OMB label for a race/ethnic group.}
+#'   \item{Index}{The row in the table that corresponds to the race/ethnicity.}
+#'   \item{Variable}{The name of the variable for an API call}
+#' }
+"DECENNIAL_POPULATION_FIELDS"
+
+#' Geographic levels of organization for data from the US Census Bureau's API
+#'
+#' @format A tibble with four columns
+#' \describe{
+#'   \item{Label}{A short, title-case description of a geographic level}
+#'   \item{Code}{The three-digit code for a level}
+#'   \item{Geography}{The lowercase term used to query the API for a level}
+#'   \item{Parent Geos}{A character vector of other Geographies that must be specified to query for this level.}
+#' }
+"GEOGRAPHY_HIERARCHY_METADATA"
+
+#' The current URL for accessing the U.S. Census Bureau's API.
+#' @source [https://api.census.gov/data]
+"CENSUS_API_URL"
+
+#' Variables for querying populations by race and ethnicity
+"ACS_RACE_ETHNICITY_VARIABLES"

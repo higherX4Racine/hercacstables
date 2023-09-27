@@ -9,25 +9,28 @@ api_url(
   for_geo,
   for_items,
   survey_type,
-  survey_or_table_code,
+  table_or_survey_code,
   year,
-  ...
+  ...,
+  use_key = TRUE
 )
 }
 \arguments{
-\item{variables}{a vector of variables}
+\item{variables}{a vector of variable names, like \code{"B01001_001E"}}
 
-\item{for_geo}{a single geographic level, like "tract" or "block"}
+\item{for_geo}{the geographical level the data will describe, e.g. \code{"tract"}}
 
-\item{for_items}{the specific geographies, or "*"}
+\item{for_items}{the specific instances of \code{for_geo} desired, e.g. \code{"*"} or \code{"000200"}}
 
 \item{survey_type}{e.g. "acs" or "dec"}
 
-\item{survey_or_table_code}{e.g. "acs5" or "pl"}
+\item{table_or_survey_code}{e.g. "acs5" or "pl"}
 
-\item{year}{the year of the survey}
+\item{year}{an integer year, e.g. \code{2021L}}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic dots}}> other items to pass to the query}
+
+\item{use_key}{optional, should the query include a Census API key from the system environment. Defaults to \code{TRUE}}
 }
 \value{
 one URL, as a string
@@ -43,7 +46,8 @@ api_url(paste0("B25003_00", 1:3, "E"),
               "acs5",
               2020L,
               state = 55L,
-              county = 101L)
+              county = 101L,
+              use_key = FALSE)
 
 api_url(paste0("P1_00", c(1, 3, 4), "N"),
               "tract",
@@ -52,5 +56,6 @@ api_url(paste0("P1_00", c(1, 3, 4), "N"),
               "pl",
               2020L,
               state = 55L,
-              county = 101L)
+              county = 101L,
+              use_key = FALSE)
 }

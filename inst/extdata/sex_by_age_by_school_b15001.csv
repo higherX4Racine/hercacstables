@@ -1,0 +1,84 @@
+group,index,variable,Sex,Lower Age,Upper Age,Age,Education
+B15001,1,B15001_001E,All,18,999,All,All
+B15001,2,B15001_002E,Male,18,999,All,All
+B15001,3,B15001_003E,Male,18,24,18 to 24 years,All
+B15001,4,B15001_004E,Male,18,24,18 to 24 years,Less than 9th grade
+B15001,5,B15001_005E,Male,18,24,18 to 24 years,"9th to 12th grade, no diploma"
+B15001,6,B15001_006E,Male,18,24,18 to 24 years,High school graduate (includes equivalency)
+B15001,7,B15001_007E,Male,18,24,18 to 24 years,"Some college, no degree"
+B15001,8,B15001_008E,Male,18,24,18 to 24 years,Associate's degree
+B15001,9,B15001_009E,Male,18,24,18 to 24 years,Bachelor's degree
+B15001,10,B15001_010E,Male,18,24,18 to 24 years,Graduate or professional degree
+B15001,11,B15001_011E,Male,25,34,25 to 34 years,All
+B15001,12,B15001_012E,Male,25,34,25 to 34 years,Less than 9th grade
+B15001,13,B15001_013E,Male,25,34,25 to 34 years,"9th to 12th grade, no diploma"
+B15001,14,B15001_014E,Male,25,34,25 to 34 years,High school graduate (includes equivalency)
+B15001,15,B15001_015E,Male,25,34,25 to 34 years,"Some college, no degree"
+B15001,16,B15001_016E,Male,25,34,25 to 34 years,Associate's degree
+B15001,17,B15001_017E,Male,25,34,25 to 34 years,Bachelor's degree
+B15001,18,B15001_018E,Male,25,34,25 to 34 years,Graduate or professional degree
+B15001,19,B15001_019E,Male,35,44,35 to 44 years,All
+B15001,20,B15001_020E,Male,35,44,35 to 44 years,Less than 9th grade
+B15001,21,B15001_021E,Male,35,44,35 to 44 years,"9th to 12th grade, no diploma"
+B15001,22,B15001_022E,Male,35,44,35 to 44 years,High school graduate (includes equivalency)
+B15001,23,B15001_023E,Male,35,44,35 to 44 years,"Some college, no degree"
+B15001,24,B15001_024E,Male,35,44,35 to 44 years,Associate's degree
+B15001,25,B15001_025E,Male,35,44,35 to 44 years,Bachelor's degree
+B15001,26,B15001_026E,Male,35,44,35 to 44 years,Graduate or professional degree
+B15001,27,B15001_027E,Male,45,64,45 to 64 years,All
+B15001,28,B15001_028E,Male,45,64,45 to 64 years,Less than 9th grade
+B15001,29,B15001_029E,Male,45,64,45 to 64 years,"9th to 12th grade, no diploma"
+B15001,30,B15001_030E,Male,45,64,45 to 64 years,High school graduate (includes equivalency)
+B15001,31,B15001_031E,Male,45,64,45 to 64 years,"Some college, no degree"
+B15001,32,B15001_032E,Male,45,64,45 to 64 years,Associate's degree
+B15001,33,B15001_033E,Male,45,64,45 to 64 years,Bachelor's degree
+B15001,34,B15001_034E,Male,45,64,45 to 64 years,Graduate or professional degree
+B15001,35,B15001_035E,Male,65,999,65 years and over,All
+B15001,36,B15001_036E,Male,65,999,65 years and over,Less than 9th grade
+B15001,37,B15001_037E,Male,65,999,65 years and over,"9th to 12th grade, no diploma"
+B15001,38,B15001_038E,Male,65,999,65 years and over,High school graduate (includes equivalency)
+B15001,39,B15001_039E,Male,65,999,65 years and over,"Some college, no degree"
+B15001,40,B15001_040E,Male,65,999,65 years and over,Associate's degree
+B15001,41,B15001_041E,Male,65,999,65 years and over,Bachelor's degree
+B15001,42,B15001_042E,Male,65,999,65 years and over,Graduate or professional degree
+B15001,43,B15001_043E,Female,18,999,All,All
+B15001,44,B15001_044E,Female,18,24,18 to 24 years,All
+B15001,45,B15001_045E,Female,18,24,18 to 24 years,Less than 9th grade
+B15001,46,B15001_046E,Female,18,24,18 to 24 years,"9th to 12th grade, no diploma"
+B15001,47,B15001_047E,Female,18,24,18 to 24 years,High school graduate (includes equivalency)
+B15001,48,B15001_048E,Female,18,24,18 to 24 years,"Some college, no degree"
+B15001,49,B15001_049E,Female,18,24,18 to 24 years,Associate's degree
+B15001,50,B15001_050E,Female,18,24,18 to 24 years,Bachelor's degree
+B15001,51,B15001_051E,Female,18,24,18 to 24 years,Graduate or professional degree
+B15001,52,B15001_052E,Female,25,34,25 to 34 years,All
+B15001,53,B15001_053E,Female,25,34,25 to 34 years,Less than 9th grade
+B15001,54,B15001_054E,Female,25,34,25 to 34 years,"9th to 12th grade, no diploma"
+B15001,55,B15001_055E,Female,25,34,25 to 34 years,High school graduate (includes equivalency)
+B15001,56,B15001_056E,Female,25,34,25 to 34 years,"Some college, no degree"
+B15001,57,B15001_057E,Female,25,34,25 to 34 years,Associate's degree
+B15001,58,B15001_058E,Female,25,34,25 to 34 years,Bachelor's degree
+B15001,59,B15001_059E,Female,25,34,25 to 34 years,Graduate or professional degree
+B15001,60,B15001_060E,Female,35,44,35 to 44 years,All
+B15001,61,B15001_061E,Female,35,44,35 to 44 years,Less than 9th grade
+B15001,62,B15001_062E,Female,35,44,35 to 44 years,"9th to 12th grade, no diploma"
+B15001,63,B15001_063E,Female,35,44,35 to 44 years,High school graduate (includes equivalency)
+B15001,64,B15001_064E,Female,35,44,35 to 44 years,"Some college, no degree"
+B15001,65,B15001_065E,Female,35,44,35 to 44 years,Associate's degree
+B15001,66,B15001_066E,Female,35,44,35 to 44 years,Bachelor's degree
+B15001,67,B15001_067E,Female,35,44,35 to 44 years,Graduate or professional degree
+B15001,68,B15001_068E,Female,45,64,45 to 64 years,All
+B15001,69,B15001_069E,Female,45,64,45 to 64 years,Less than 9th grade
+B15001,70,B15001_070E,Female,45,64,45 to 64 years,"9th to 12th grade, no diploma"
+B15001,71,B15001_071E,Female,45,64,45 to 64 years,High school graduate (includes equivalency)
+B15001,72,B15001_072E,Female,45,64,45 to 64 years,"Some college, no degree"
+B15001,73,B15001_073E,Female,45,64,45 to 64 years,Associate's degree
+B15001,74,B15001_074E,Female,45,64,45 to 64 years,Bachelor's degree
+B15001,75,B15001_075E,Female,45,64,45 to 64 years,Graduate or professional degree
+B15001,76,B15001_076E,Female,65,999,65 years and over,All
+B15001,77,B15001_077E,Female,65,999,65 years and over,Less than 9th grade
+B15001,78,B15001_078E,Female,65,999,65 years and over,"9th to 12th grade, no diploma"
+B15001,79,B15001_079E,Female,65,999,65 years and over,High school graduate (includes equivalency)
+B15001,80,B15001_080E,Female,65,999,65 years and over,"Some college, no degree"
+B15001,81,B15001_081E,Female,65,999,65 years and over,Associate's degree
+B15001,82,B15001_082E,Female,65,999,65 years and over,Bachelor's degree
+B15001,83,B15001_083E,Female,65,999,65 years and over,Graduate or professional degree

@@ -1,0 +1,174 @@
+﻿group,index,variable,Sex,Lower Age,Upper Age,Labor Force,Enlistment,Employment
+B23001,1,B23001_001E,All,16,999,All,All,All
+B23001,2,B23001_002E,Male,16,999,All,All,All
+B23001,3,B23001_003E,Male,16,19,All,All,All
+B23001,4,B23001_004E,Male,16,19,In labor force,All,All
+B23001,5,B23001_005E,Male,16,19,In labor force,In Armed Forces,All
+B23001,6,B23001_006E,Male,16,19,In labor force,Civilian,All
+B23001,7,B23001_007E,Male,16,19,In labor force,Civilian,Employed
+B23001,8,B23001_008E,Male,16,19,In labor force,Civilian,Unemployed
+B23001,9,B23001_009E,Male,16,19,Not in labor force,Civilian,Not in labor force
+B23001,10,B23001_010E,Male,20,21,All,All,All
+B23001,11,B23001_011E,Male,20,21,In labor force,All,All
+B23001,12,B23001_012E,Male,20,21,In labor force,In Armed Forces,All
+B23001,13,B23001_013E,Male,20,21,In labor force,Civilian,All
+B23001,14,B23001_014E,Male,20,21,In labor force,Civilian,Employed
+B23001,15,B23001_015E,Male,20,21,In labor force,Civilian,Unemployed
+B23001,16,B23001_016E,Male,20,21,Not in labor force,Civilian,Not in labor force
+B23001,17,B23001_017E,Male,22,24,All,All,All
+B23001,18,B23001_018E,Male,22,24,In labor force,All,All
+B23001,19,B23001_019E,Male,22,24,In labor force,In Armed Forces,All
+B23001,20,B23001_020E,Male,22,24,In labor force,Civilian,All
+B23001,21,B23001_021E,Male,22,24,In labor force,Civilian,Employed
+B23001,22,B23001_022E,Male,22,24,In labor force,Civilian,Unemployed
+B23001,23,B23001_023E,Male,22,24,Not in labor force,Civilian,Not in labor force
+B23001,24,B23001_024E,Male,25,29,All,All,All
+B23001,25,B23001_025E,Male,25,29,In labor force,All,All
+B23001,26,B23001_026E,Male,25,29,In labor force,In Armed Forces,All
+B23001,27,B23001_027E,Male,25,29,In labor force,Civilian,All
+B23001,28,B23001_028E,Male,25,29,In labor force,Civilian,Employed
+B23001,29,B23001_029E,Male,25,29,In labor force,Civilian,Unemployed
+B23001,30,B23001_030E,Male,25,29,Not in labor force,Civilian,Not in labor force
+B23001,31,B23001_031E,Male,30,34,All,All,All
+B23001,32,B23001_032E,Male,30,34,In labor force,All,All
+B23001,33,B23001_033E,Male,30,34,In labor force,In Armed Forces,All
+B23001,34,B23001_034E,Male,30,34,In labor force,Civilian,All
+B23001,35,B23001_035E,Male,30,34,In labor force,Civilian,Employed
+B23001,36,B23001_036E,Male,30,34,In labor force,Civilian,Unemployed
+B23001,37,B23001_037E,Male,30,34,Not in labor force,Civilian,Not in labor force
+B23001,38,B23001_038E,Male,35,44,All,All,All
+B23001,39,B23001_039E,Male,35,44,In labor force,All,All
+B23001,40,B23001_040E,Male,35,44,In labor force,In Armed Forces,All
+B23001,41,B23001_041E,Male,35,44,In labor force,Civilian,All
+B23001,42,B23001_042E,Male,35,44,In labor force,Civilian,Employed
+B23001,43,B23001_043E,Male,35,44,In labor force,Civilian,Unemployed
+B23001,44,B23001_044E,Male,35,44,Not in labor force,Civilian,Not in labor force
+B23001,45,B23001_045E,Male,45,54,All,All,All
+B23001,46,B23001_046E,Male,45,54,In labor force,All,All
+B23001,47,B23001_047E,Male,45,54,In labor force,In Armed Forces,All
+B23001,48,B23001_048E,Male,45,54,In labor force,Civilian,All
+B23001,49,B23001_049E,Male,45,54,In labor force,Civilian,Employed
+B23001,50,B23001_050E,Male,45,54,In labor force,Civilian,Unemployed
+B23001,51,B23001_051E,Male,45,54,Not in labor force,Civilian,Not in labor force
+B23001,52,B23001_052E,Male,55,59,All,All,All
+B23001,53,B23001_053E,Male,55,59,In labor force,All,All
+B23001,54,B23001_054E,Male,55,59,In labor force,In Armed Forces,All
+B23001,55,B23001_055E,Male,55,59,In labor force,Civilian,All
+B23001,56,B23001_056E,Male,55,59,In labor force,Civilian,Employed
+B23001,57,B23001_057E,Male,55,59,In labor force,Civilian,Unemployed
+B23001,58,B23001_058E,Male,55,59,Not in labor force,Civilian,Not in labor force
+B23001,59,B23001_059E,Male,60,61,All,All,All
+B23001,60,B23001_060E,Male,60,61,In labor force,All,All
+B23001,61,B23001_061E,Male,60,61,In labor force,In Armed Forces,All
+B23001,62,B23001_062E,Male,60,61,In labor force,Civilian,All
+B23001,63,B23001_063E,Male,60,61,In labor force,Civilian,Employed
+B23001,64,B23001_064E,Male,60,61,In labor force,Civilian,Unemployed
+B23001,65,B23001_065E,Male,60,61,Not in labor force,Civilian,Not in labor force
+B23001,66,B23001_066E,Male,62,64,All,All,All
+B23001,67,B23001_067E,Male,62,64,In labor force,All,All
+B23001,68,B23001_068E,Male,62,64,In labor force,In Armed Forces,All
+B23001,69,B23001_069E,Male,62,64,In labor force,Civilian,All
+B23001,70,B23001_070E,Male,62,64,In labor force,Civilian,Employed
+B23001,71,B23001_071E,Male,62,64,In labor force,Civilian,Unemployed
+B23001,72,B23001_072E,Male,62,64,Not in labor force,Civilian,Not in labor force
+B23001,73,B23001_073E,Male,65,69,All,All,All
+B23001,74,B23001_074E,Male,65,69,In labor force,All,All
+B23001,75,B23001_075E,Male,65,69,In labor force,Civilian,Employed
+B23001,76,B23001_076E,Male,65,69,In labor force,Civilian,Unemployed
+B23001,77,B23001_077E,Male,65,69,Not in labor force,Civilian,Not in labor force
+B23001,78,B23001_078E,Male,70,74,All,All,All
+B23001,79,B23001_079E,Male,70,74,In labor force,All,All
+B23001,80,B23001_080E,Male,70,74,In labor force,Civilian,Employed
+B23001,81,B23001_081E,Male,70,74,In labor force,Civilian,Unemployed
+B23001,82,B23001_082E,Male,70,74,Not in labor force,Civilian,Not in labor force
+B23001,83,B23001_083E,Male,75,999,All,All,All
+B23001,84,B23001_084E,Male,75,999,In labor force,All,All
+B23001,85,B23001_085E,Male,75,999,In labor force,Civilian,Employed
+B23001,86,B23001_086E,Male,75,999,In labor force,Civilian,Unemployed
+B23001,87,B23001_087E,Male,75,999,Not in labor force,Civilian,Not in labor force
+B23001,88,B23001_088E,Female,16,999,All,All,All
+B23001,89,B23001_089E,Female,16,19,All,All,All
+B23001,90,B23001_090E,Female,16,19,In labor force,All,All
+B23001,91,B23001_091E,Female,16,19,In labor force,In Armed Forces,All
+B23001,92,B23001_092E,Female,16,19,In labor force,Civilian,All
+B23001,93,B23001_093E,Female,16,19,In labor force,Civilian,Employed
+B23001,94,B23001_094E,Female,16,19,In labor force,Civilian,Unemployed
+B23001,95,B23001_095E,Female,16,19,Not in labor force,Civilian,Not in labor force
+B23001,96,B23001_096E,Female,20,21,All,All,All
+B23001,97,B23001_097E,Female,20,21,In labor force,All,All
+B23001,98,B23001_098E,Female,20,21,In labor force,In Armed Forces,All
+B23001,99,B23001_099E,Female,20,21,In labor force,Civilian,All
+B23001,100,B23001_100E,Female,20,21,In labor force,Civilian,Employed
+B23001,101,B23001_101E,Female,20,21,In labor force,Civilian,Unemployed
+B23001,102,B23001_102E,Female,20,21,Not in labor force,Civilian,Not in labor force
+B23001,103,B23001_103E,Female,22,24,All,All,All
+B23001,104,B23001_104E,Female,22,24,In labor force,All,All
+B23001,105,B23001_105E,Female,22,24,In labor force,In Armed Forces,All
+B23001,106,B23001_106E,Female,22,24,In labor force,Civilian,All
+B23001,107,B23001_107E,Female,22,24,In labor force,Civilian,Employed
+B23001,108,B23001_108E,Female,22,24,In labor force,Civilian,Unemployed
+B23001,109,B23001_109E,Female,22,24,Not in labor force,Civilian,Not in labor force
+B23001,110,B23001_110E,Female,25,29,All,All,All
+B23001,111,B23001_111E,Female,25,29,In labor force,All,All
+B23001,112,B23001_112E,Female,25,29,In labor force,In Armed Forces,All
+B23001,113,B23001_113E,Female,25,29,In labor force,Civilian,All
+B23001,114,B23001_114E,Female,25,29,In labor force,Civilian,Employed
+B23001,115,B23001_115E,Female,25,29,In labor force,Civilian,Unemployed
+B23001,116,B23001_116E,Female,25,29,Not in labor force,Civilian,Not in labor force
+B23001,117,B23001_117E,Female,30,34,All,All,All
+B23001,118,B23001_118E,Female,30,34,In labor force,All,All
+B23001,119,B23001_119E,Female,30,34,In labor force,In Armed Forces,All
+B23001,120,B23001_120E,Female,30,34,In labor force,Civilian,All
+B23001,121,B23001_121E,Female,30,34,In labor force,Civilian,Employed
+B23001,122,B23001_122E,Female,30,34,In labor force,Civilian,Unemployed
+B23001,123,B23001_123E,Female,30,34,Not in labor force,Civilian,Not in labor force
+B23001,124,B23001_124E,Female,35,44,All,All,All
+B23001,125,B23001_125E,Female,35,44,In labor force,All,All
+B23001,126,B23001_126E,Female,35,44,In labor force,In Armed Forces,All
+B23001,127,B23001_127E,Female,35,44,In labor force,Civilian,All
+B23001,128,B23001_128E,Female,35,44,In labor force,Civilian,Employed
+B23001,129,B23001_129E,Female,35,44,In labor force,Civilian,Unemployed
+B23001,130,B23001_130E,Female,35,44,Not in labor force,Civilian,Not in labor force
+B23001,131,B23001_131E,Female,45,54,All,All,All
+B23001,132,B23001_132E,Female,45,54,In labor force,All,All
+B23001,133,B23001_133E,Female,45,54,In labor force,In Armed Forces,All
+B23001,134,B23001_134E,Female,45,54,In labor force,Civilian,All
+B23001,135,B23001_135E,Female,45,54,In labor force,Civilian,Employed
+B23001,136,B23001_136E,Female,45,54,In labor force,Civilian,Unemployed
+B23001,137,B23001_137E,Female,45,54,Not in labor force,Civilian,Not in labor force
+B23001,138,B23001_138E,Female,55,59,All,All,All
+B23001,139,B23001_139E,Female,55,59,In labor force,All,All
+B23001,140,B23001_140E,Female,55,59,In labor force,In Armed Forces,All
+B23001,141,B23001_141E,Female,55,59,In labor force,Civilian,All
+B23001,142,B23001_142E,Female,55,59,In labor force,Civilian,Employed
+B23001,143,B23001_143E,Female,55,59,In labor force,Civilian,Unemployed
+B23001,144,B23001_144E,Female,55,59,Not in labor force,Civilian,Not in labor force
+B23001,145,B23001_145E,Female,60,61,All,All,All
+B23001,146,B23001_146E,Female,60,61,In labor force,All,All
+B23001,147,B23001_147E,Female,60,61,In labor force,In Armed Forces,All
+B23001,148,B23001_148E,Female,60,61,In labor force,Civilian,All
+B23001,149,B23001_149E,Female,60,61,In labor force,Civilian,Employed
+B23001,150,B23001_150E,Female,60,61,In labor force,Civilian,Unemployed
+B23001,151,B23001_151E,Female,60,61,Not in labor force,Civilian,Not in labor force
+B23001,152,B23001_152E,Female,62,64,All,All,All
+B23001,153,B23001_153E,Female,62,64,In labor force,All,All
+B23001,154,B23001_154E,Female,62,64,In labor force,In Armed Forces,All
+B23001,155,B23001_155E,Female,62,64,In labor force,Civilian,All
+B23001,156,B23001_156E,Female,62,64,In labor force,Civilian,Employed
+B23001,157,B23001_157E,Female,62,64,In labor force,Civilian,Unemployed
+B23001,158,B23001_158E,Female,62,64,Not in labor force,Civilian,Not in labor force
+B23001,159,B23001_159E,Female,65,69,All,All,All
+B23001,160,B23001_160E,Female,65,69,In labor force,All,All
+B23001,161,B23001_161E,Female,65,69,In labor force,Civilian,Employed
+B23001,162,B23001_162E,Female,65,69,In labor force,Civilian,Unemployed
+B23001,163,B23001_163E,Female,65,69,Not in labor force,Civilian,Not in labor force
+B23001,164,B23001_164E,Female,70,74,All,All,All
+B23001,165,B23001_165E,Female,70,74,In labor force,All,All
+B23001,166,B23001_166E,Female,70,74,In labor force,Civilian,Employed
+B23001,167,B23001_167E,Female,70,74,In labor force,Civilian,Unemployed
+B23001,168,B23001_168E,Female,70,74,Not in labor force,Civilian,Not in labor force
+B23001,169,B23001_169E,Female,75,999,All,All,All
+B23001,170,B23001_170E,Female,75,999,In labor force,All,All
+B23001,171,B23001_171E,Female,75,999,In labor force,Civilian,Employed
+B23001,172,B23001_172E,Female,75,999,In labor force,Civilian,Unemployed
+B23001,173,B23001_173E,Female,75,999,Not in labor force,Civilian,Not in labor force

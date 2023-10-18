@@ -2,11 +2,11 @@
 
 by_poverty <- "extdata" |>
     system.file(
-        "sex_by_poverty_by_school_b17003.csv",
+        "education_by_sex_and_poverty_b17003.csv",
         package = "hercacstables"
         ) |>
     readr::read_csv(
-        col_types = readr::cols(
+        col_types = list(
             group = readr::col_character(),
             index = readr::col_integer(),
             variable = readr::col_character(),
@@ -32,11 +32,11 @@ by_poverty <- "extdata" |>
 
 by_age <- "extdata" |>
     system.file(
-        "sex_by_age_by_school_b15001.csv",
+        "education_by_sex_and_age_b15001.csv",
         package = "hercacstables"
     ) |>
     readr::read_csv(
-        col_types = readr::cols(
+        col_types = list(
             group = readr::col_character(),
             index = readr::col_integer(),
             variable = readr::col_character(),
@@ -59,11 +59,11 @@ by_age <- "extdata" |>
 
 by_race_ethnicity <- "extdata" |>
     system.file(
-        "sex_school_for_race_c15002.csv",
+        "education_by_sex_and_race_c15002.csv",
         package = "hercacstables"
     ) |>
     readr::read_csv(
-        col_types = readr::cols(
+        col_types = list(
             group = readr::col_character(),
             index = readr::col_integer(),
             Sex = readr::col_character(),
@@ -101,8 +101,8 @@ by_race_ethnicity <- "extdata" |>
 
 EDUCATIONAL_ATTAINMENT_METADATA <- list(
     "sex_age" = by_age,
-    "race_ethnicity" = by_race_ethnicity,
-    "poverty" = by_poverty
+    "sex_race" = by_race_ethnicity,
+    "sex_poverty" = by_poverty
 )
 
 usethis::use_data(EDUCATIONAL_ATTAINMENT_METADATA, overwrite = TRUE)

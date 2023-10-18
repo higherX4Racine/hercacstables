@@ -169,3 +169,24 @@
 #'
 #' @source [https://api.census.gov/data]
 "EDUCATIONAL_ATTAINMENT_METADATA"
+
+#' Factor values associated with specific rows within employment-related ACS tables
+#'
+#' @format ## EMPLOYMENT_STATUS_METADATA
+#' A data frame with 439 rows and 12 columns:
+#' \describe{
+#'   \item{group}{<chr>}
+#'   \item{index}{<int>}
+#'   \item{variable}{<chr>}
+#'   \item{Sex}{<chr>}
+#'   \item{Lower Age}{<int>}
+#'   \item{Upper Age}{<int>}
+#'   \item{Labor Force}{<chr>}
+#'   \item{Enlistment}{<chr>}
+#'   \item{Employment}{<chr>}
+#'   \item{Suffix}{<chr>}
+#'   \item{Census Race/Ethnicity}{<chr>}
+#'   \item{Poverty}{<chr>}
+#' }
+#' @source [api.census.gov/data/acs/acs5/groups.html]
+"EMPLOYMENT_STATUS_METADATA"

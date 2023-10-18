@@ -1,0 +1,28 @@
+﻿group,index,Sex,Lower Age,Upper Age,Labor Force,Enlistment,Employment
+C23002,1,All,16,999,All,All,All
+C23002,2,Male,16,999,All,All,All
+C23002,3,Male,16,64,All,All,All
+C23002,4,Male,16,64,In labor force,All,All
+C23002,5,Male,16,64,In labor force,In Armed Forces,All
+C23002,6,Male,16,64,In labor force,Civilian,All
+C23002,7,Male,16,64,In labor force,Civilian,Employed
+C23002,8,Male,16,64,In labor force,Civilian,Unemployed
+C23002,9,Male,16,64,Not in labor force,Civilian,Not in labor force
+C23002,10,Male,65,999,All,All,All
+C23002,11,Male,65,999,In labor force,All,All
+C23002,12,Male,65,999,In labor force,Civilian,Employed
+C23002,13,Male,65,999,In labor force,Civilian,Unemployed
+C23002,14,Male,65,999,Not in labor force,Civilian,Not in labor force
+C23002,15,Female,16,999,All,All,All
+C23002,16,Female,16,64,All,All,All
+C23002,17,Female,16,64,In labor force,All,All
+C23002,18,Female,16,64,In labor force,In Armed Forces,All
+C23002,19,Female,16,64,In labor force,Civilian,All
+C23002,20,Female,16,64,In labor force,Civilian,Employed
+C23002,21,Female,16,64,In labor force,Civilian,Unemployed
+C23002,22,Female,16,64,Not in labor force,Civilian,Not in labor force
+C23002,23,Female,65,999,All,All,All
+C23002,24,Female,65,999,In labor force,All,All
+C23002,25,Female,65,999,In labor force,Civilian,Employed
+C23002,26,Female,65,999,In labor force,Civilian,Unemployed
+C23002,27,Female,65,999,Not in labor force,Civilian,Not in labor force

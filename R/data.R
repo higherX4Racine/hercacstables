@@ -190,3 +190,18 @@
 #' }
 #' @source [api.census.gov/data/acs/acs5/groups.html]
 "EMPLOYMENT_STATUS_METADATA"
+
+#' Variables describing unemployment at two levels of age granularity
+#'
+#' @format ## UNEMPLOYMENT_VARIABLES
+#' A data frame with 140 rows and 7 columns
+#' \describe{
+#'   \item{Sex}{<chr> Female or Male}
+#'   \item{Lower Age}{<int> 16 to 75}
+#'   \item{`Upper Age}{<int> 19 to Inf}
+#'   \item{Labor Status}{<chr> "In armed services", "Employed", "Unemployed", or "Not in labor force"}
+#'   \item{Group}{<chr> "B23001" (more granular) or "C23001" (less granular)}
+#'   \item{Index}{<int> The actual number of the variable in the ACS table.}
+#'   \item{Variable}{<chr> The full ACS variable name for the estimate, e.g. "B23001_001E"}
+#' }
+"UNEMPLOYMENT_VARIABLES"

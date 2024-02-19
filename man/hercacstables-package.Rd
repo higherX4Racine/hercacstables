@@ -2,7 +2,6 @@
 % Please edit documentation in R/hercacstables-package.R
 \docType{package}
 \name{hercacstables-package}
-\alias{hercacstables}
 \alias{hercacstables-package}
 \title{hercacstables: Work with American Community Survey Tables through the US Census API}
 \description{

@@ -1,0 +1,24 @@
+﻿group,index,variable,Poverty,Sex,Labor Force,Employment
+B17005,1,B17005_001E,All,All,All,All
+B17005,2,B17005_002E,Below,All,All,All
+B17005,3,B17005_003E,Below,Male,All,All
+B17005,4,B17005_004E,Below,Male,In labor force,All
+B17005,5,B17005_005E,Below,Male,In labor force,Employed
+B17005,6,B17005_006E,Below,Male,In labor force,Unemployed
+B17005,7,B17005_007E,Below,Male,Not in labor force,Not in labor force
+B17005,8,B17005_008E,Below,Female,All,All
+B17005,9,B17005_009E,Below,Female,In labor force,All
+B17005,10,B17005_010E,Below,Female,In labor force,Employed
+B17005,11,B17005_011E,Below,Female,In labor force,Unemployed
+B17005,12,B17005_012E,Below,Female,Not in labor force,Not in labor force
+B17005,13,B17005_013E,At or above,All,All,All
+B17005,14,B17005_014E,At or above,Male,All,All
+B17005,15,B17005_015E,At or above,Male,In labor force,All
+B17005,16,B17005_016E,At or above,Male,In labor force,Employed
+B17005,17,B17005_017E,At or above,Male,In labor force,Unemployed
+B17005,18,B17005_018E,At or above,Male,Not in labor force,Not in labor force
+B17005,19,B17005_019E,At or above,Female,All,All
+B17005,20,B17005_020E,At or above,Female,In labor force,All
+B17005,21,B17005_021E,At or above,Female,In labor force,Employed
+B17005,22,B17005_022E,At or above,Female,In labor force,Unemployed
+B17005,23,B17005_023E,At or above,Female,Not in labor force,Not in labor force

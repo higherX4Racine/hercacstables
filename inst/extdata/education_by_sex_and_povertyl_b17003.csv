@@ -1,0 +1,24 @@
+group,index,variable,Sex,Education,Poverty
+B17003,1,B17003_001E,All,All,All
+B17003,2,B17003_002E,All,All,Below
+B17003,3,B17003_003E,Male,All,Below
+B17003,4,B17003_004E,Male,Less than high school diploma,Below
+B17003,5,B17003_005E,Male,High school graduate (includes equivalency),Below
+B17003,6,B17003_006E,Male,Some college or associate's degree,Below
+B17003,7,B17003_007E,Male,Bachelor's degree or higher,Below
+B17003,8,B17003_008E,Female,All,Below
+B17003,9,B17003_009E,Female,Less than high school diploma,Below
+B17003,10,B17003_010E,Female,High school graduate (includes equivalency),Below
+B17003,11,B17003_011E,Female,Some college or associate's degree,Below
+B17003,12,B17003_012E,Female,Bachelor's degree or higher,Below
+B17003,13,B17003_013E,All,All,At or above
+B17003,14,B17003_014E,Male,All,At or above
+B17003,15,B17003_015E,Male,Less than high school diploma,At or above
+B17003,16,B17003_016E,Male,High school graduate (includes equivalency),At or above
+B17003,17,B17003_017E,Male,Some college or associate's degree,At or above
+B17003,18,B17003_018E,Male,Bachelor's degree or higher,At or above
+B17003,19,B17003_019E,Female,All,At or above
+B17003,20,B17003_020E,Female,Less than high school diploma,At or above
+B17003,21,B17003_021E,Female,High school graduate (includes equivalency),At or above
+B17003,22,B17003_022E,Female,Some college or associate's degree,At or above
+B17003,23,B17003_023E,Female,Bachelor's degree or higher,At or above

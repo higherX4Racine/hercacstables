@@ -14,7 +14,7 @@ A list with 4 items:
 }
 }
 \source{
-\url{https://www.census.gov/data/developers/guidance/api-user-guide.html}
+\link{https://www.census.gov/data/developers/guidance/api-user-guide.html}
 }
 \usage{
 rusd_c23002a

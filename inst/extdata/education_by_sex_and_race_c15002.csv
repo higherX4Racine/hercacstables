@@ -1,0 +1,12 @@
+group,index,Sex,Lower Age,Upper Age,Age,Education
+C15002,1,All,25,999,All,All
+C15002,2,Male,25,999,All,All
+C15002,3,Male,25,999,All,Less than high school diploma
+C15002,4,Male,25,999,All,High school graduate (includes equivalency)
+C15002,5,Male,25,999,All,Some college or associate's degree
+C15002,6,Male,25,999,All,Bachelor's degree or higher
+C15002,7,Female,25,999,All,All
+C15002,8,Female,25,999,All,Less than high school diploma
+C15002,9,Female,25,999,All,High school graduate (includes equivalency)
+C15002,10,Female,25,999,All,Some college or associate's degree
+C15002,11,Female,25,999,All,Bachelor's degree or higher

@@ -15,7 +15,7 @@ A list with 5 items:
 }
 }
 \source{
-\url{https://www.census.gov/data/developers/guidance/api-user-guide.html}
+\link{https://www.census.gov/data/developers/guidance/api-user-guide.html}
 }
 \usage{
 c23002a_groups

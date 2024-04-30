@@ -1,0 +1,16 @@
+Group,Variable,Index,Adults,Lower Age,Upper Age
+B09002,B09002_003E,3,Married Couple,0,2
+B09002,B09002_004E,4,Married Couple,3,4
+B09002,B09002_005E,5,Married Couple,5,5
+B09002,B09002_006E,6,Married Couple,6,11
+B09002,B09002_007E,7,Married Couple,12,17
+B09002,B09002_010E,10,"Male householder, no spouse present",0,2
+B09002,B09002_011E,11,"Male householder, no spouse present",3,4
+B09002,B09002_012E,12,"Male householder, no spouse present",5,5
+B09002,B09002_013E,13,"Male householder, no spouse present",6,11
+B09002,B09002_014E,14,"Male householder, no spouse present",12,17
+B09002,B09002_016E,16,"Female householder, no spouse present",0,2
+B09002,B09002_017E,17,"Female householder, no spouse present",3,4
+B09002,B09002_018E,18,"Female householder, no spouse present",5,5
+B09002,B09002_019E,19,"Female householder, no spouse present",6,11
+B09002,B09002_020E,20,"Female householder, no spouse present",12,17

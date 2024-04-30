@@ -16,17 +16,16 @@ Imports:
     cli,
     dplyr,
     glue,
-    httr,
     jsonlite,
     lubridate,
-    magrittr,
     purrr,
     readr,
     rlang,
     stringr,
     tibble,
     tidyr,
-    tidyselect
+    tidyselect,
+    utils
 Suggests: 
     testthat (>= 3.0.0),
     withr

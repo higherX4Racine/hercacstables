@@ -14,7 +14,7 @@
 #'    \item{data}{A data frame produced by \code{acs_counts_list_to_tibble()}}
 #'  }
 #' @source
-#'  [https://www.census.gov/data/developers/guidance/api-user-guide.html]
+#'  https://www.census.gov/data/developers/guidance/api-user-guide.html
 "rusd_c23002a"
 
 #' Groups available for breaking down ACS employment data by sex and age
@@ -34,7 +34,7 @@
 #'     \item{data}{A data frame produced by \code{acs_groups_list_to_tibble()}}
 #'   }
 #' @source
-#'   [https://www.census.gov/data/developers/guidance/api-user-guide.html]
+#'   https://www.census.gov/data/developers/guidance/api-user-guide.html
 "c23002a_groups"
 
 #' Race and ethnicity codes and labels used by the U.S. Census Bureau
@@ -94,7 +94,7 @@
 "GEOGRAPHY_HIERARCHY_METADATA"
 
 #' The current URL for accessing the U.S. Census Bureau's API.
-#' @source [https://api.census.gov/data]
+#' @source https://api.census.gov/data
 "CENSUS_API_URL"
 
 #' Variables for querying populations by race and ethnicity
@@ -104,9 +104,9 @@
 #'
 #' The census breaks down educational attainment to different levels of detail
 #' in different tables. For example, there are 8 levels in
-#' [`B15001`][https://api.census.gov/data/2021/acs/acs5/groups/B15001.html], but
+#' [`B15001`](https://api.census.gov/data/2021/acs/acs5/groups/B15001.html), but
 #' only 5 in the
-#' [`C15002*`][https://api.census.gov/data/2021/acs/acs5/groups/C15002H.html]
+#' [`C15002*`](https://api.census.gov/data/2021/acs/acs5/groups/C15002H.html)
 #' tables. Each row in this table connects a detailed level with a broader one.
 #'
 #' @format A tibble with two columns
@@ -115,18 +115,18 @@
 #'   \item{Broad}{a factor with 5 levels}
 #' }
 #'
-#' @source [https://api.census.gov/data]
+#' @source https://api.census.gov/data
 "EDUCATIONAL_ATTAINMENT_LEVELS"
 
 #' Census variables for different levels of educational achievement
 #'
 #' The census breaks down educational attainment to different levels of detail
 #' in different tables. For example, there are 8 levels in
-#' [`B15001`][https://api.census.gov/data/2021/acs/acs5/groups/B15001.html], but
+#' [`B15001`](https://api.census.gov/data/2021/acs/acs5/groups/B15001.html), but
 #' only 5 in the
-#' [`C15002*`][https://api.census.gov/data/2021/acs/acs5/groups/C15002H.html]
+#' [`C15002*`](https://api.census.gov/data/2021/acs/acs5/groups/C15002H.html)
 #' tables or
-#' [`B17003`][https://api.census.gov/data/2021/acs/acs5/groups/B17003.html].
+#' [`B17003`](https://api.census.gov/data/2021/acs/acs5/groups/B17003.html).
 #' Each row in this table connects a detailed level with a broader one.
 #'
 #' @format A list of three data frames
@@ -167,7 +167,7 @@
 #'   * Upper Age : int
 #'   * Age       : chr
 #'
-#' @source [https://api.census.gov/data]
+#' @source https://api.census.gov/data
 "EDUCATIONAL_ATTAINMENT_METADATA"
 
 #' Factor values associated with specific rows within employment-related ACS tables
@@ -188,7 +188,7 @@
 #'   \item{Census Race/Ethnicity}{<chr>}
 #'   \item{Poverty}{<chr>}
 #' }
-#' @source [api.census.gov/data/acs/acs5/groups.html]
+#' @source api.census.gov/data/acs/acs5/groups.html
 "EMPLOYMENT_STATUS_METADATA"
 
 #' Variables describing unemployment at two levels of age granularity
@@ -221,6 +221,23 @@
 #'   \item{Greatest Poverty Ratio}{<dbl> The highest ratio of income to poverty level in this tier}
 #'   \item{Standard of Living}{<chr> One of "Everyone," "Unsustainable," or "Self-sustaining"}
 #' }
-#' @source [https://api.census.gov/data/2022/acs/acs1/groups/B17026.html]
+#' @source https://api.census.gov/data/2022/acs/acs1/groups/B17026.html
 "STANDARD_OF_LIVING_METADATA"
+
+#' Categorize ACS variables about children per family
+#'
+#' These data come from table B17026, "OWN CHILDREN UNDER 18 YEARS BY FAMILY TYPE AND AGE"
+#'
+#' @format ## CHILDREN_PER_FAMILY_METADATA
+#' A data frame with 15 rows and 6 columns
+#' \describe{
+#'   \item{Group}{<chr> The table, always "B09002"}
+#'   \item{Variable}{<chr> The full variable name, e.g. "B09002_001E"}
+#'   \item{Index}{<int> The row of this variable in the table}
+#'   \item{Adults}{<chr> The adult(s) heading the household}
+#'   \item{Lower Age}{<int> The age of the youngest children counted by this variable}
+#'   \item{Upper Age}{<int> The age of the oldest children counted by this variable}
+#' }
+#' @source https://api.census.gov/data/2022/acs/acs1/groups/B09002.html
+"CHILDREN_PER_FAMILY_METADATA"
 

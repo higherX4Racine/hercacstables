@@ -12,7 +12,7 @@ A tibble with two columns
 }
 }
 \source{
-\link{https://api.census.gov/data}
+https://api.census.gov/data
 }
 \usage{
 EDUCATIONAL_ATTAINMENT_LEVELS
@@ -20,9 +20,9 @@ EDUCATIONAL_ATTAINMENT_LEVELS
 \description{
 The census breaks down educational attainment to different levels of detail
 in different tables. For example, there are 8 levels in
-\code{\link[=https://api.census.gov/data/2021/acs/acs5/groups/B15001.html]{B15001}}, but
+\href{https://api.census.gov/data/2021/acs/acs5/groups/B15001.html}{\code{B15001}}, but
 only 5 in the
-\code{\link[=https://api.census.gov/data/2021/acs/acs5/groups/C15002H.html]{C15002*}}
+\href{https://api.census.gov/data/2021/acs/acs5/groups/C15002H.html}{\verb{C15002*}}
 tables. Each row in this table connects a detailed level with a broader one.
 }
 \keyword{datasets}

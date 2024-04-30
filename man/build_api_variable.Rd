@@ -34,5 +34,5 @@ All detail table variables have the format "B000OOX_000E", where the "B" and
 tables <- c("B19013", "B18101", "B18101")
 races <- c("", "", "I")
 numbers <- 1
-census_build_acs_variable(tables, races, numbers)
+build_api_variable(tables, races, numbers)
 }

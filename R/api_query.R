@@ -1,8 +1,8 @@
 # Copyright (C) 2022 by Higher Expectations for Racine County
 
 .colonic <- function(...) {
-    list(...) %>%
-        purrr::imap(~ paste0("in=", .y, ":", .x)) %>%
+    list(...) |>
+        purrr::imap(~ paste0("in=", .y, ":", .x)) |>
         paste0(collapse = "&")
 }
 

@@ -19,7 +19,7 @@ A data frame with 13 rows and 6 columns
 }
 }
 \source{
-\link{https://api.census.gov/data/2022/acs/acs1/groups/B17026.html}
+https://api.census.gov/data/2022/acs/acs1/groups/B17026.html
 }
 \usage{
 STANDARD_OF_LIVING_METADATA

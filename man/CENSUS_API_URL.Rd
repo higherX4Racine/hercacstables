@@ -8,7 +8,7 @@
 An object of class \code{character} of length 1.
 }
 \source{
-\link{https://api.census.gov/data}
+https://api.census.gov/data
 }
 \usage{
 CENSUS_API_URL

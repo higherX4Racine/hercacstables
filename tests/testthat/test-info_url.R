@@ -5,6 +5,7 @@ test_that("bad arguments cause errors", {
 test_that("good arguments give good urls", {
   expect_equal(
     info_url("geography", 2012, 3),
-    "https://api.census.gov/data/2012/acs/acs3/geography.json"
+    glue::glue("https://api.census.gov/data/2012/acs/acs3/geography.json",
+               "?key={Sys.getenv('CENSUS_API_KEY')}")
   )
 })

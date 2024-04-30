@@ -27,20 +27,20 @@ test_that("The second argument can be the 'Variable' column's name", {
 })
 
 
-test_that("The second argument works with magrittr's pipe operator", {
-  ONE_LINER %>%
-    parse_acs_table_variable() %>%
+test_that("The second argument works with the pipe operator", {
+  ONE_LINER |>
+    parse_acs_table_variable() |>
     triple_test()
-  ONE_LINER %>%
-    parse_acs_table_variable(Foo) %>%
+  ONE_LINER |>
+    parse_acs_table_variable(Foo) |>
     triple_test()
-  ONE_LINER %>%
-    parse_acs_table_variable(Variable) %>%
+  ONE_LINER |>
+    parse_acs_table_variable(Variable) |>
     triple_test()
 })
 
 
-TEN_LINER <- dplyr::tibble(Index = 1:10) %>%
+TEN_LINER <- dplyr::tibble(Index = 1:10) |>
   dplyr::mutate(
     Variable = stringr::str_c(
       TABLE_NAME,
@@ -68,27 +68,27 @@ thirty_test <- function(x) {
 
 
 test_that("Multi-line tables work with defaults", {
-  TEN_LINER %>%
-    parse_acs_table_variable() %>%
+  TEN_LINER |>
+    parse_acs_table_variable() |>
     thirty_test()
 })
 
 
 test_that("Multi-line tables work with named columns", {
-  TEN_LINER %>%
-    parse_acs_table_variable("Foo") %>%
+  TEN_LINER |>
+    parse_acs_table_variable("Foo") |>
     thirty_test()
-  TEN_LINER %>%
-    parse_acs_table_variable("Variable") %>%
+  TEN_LINER |>
+    parse_acs_table_variable("Variable") |>
     thirty_test()
 })
 
 
 test_that("Multi-line tables work with rlang columns", {
-  TEN_LINER %>%
-    parse_acs_table_variable(Foo) %>%
+  TEN_LINER |>
+    parse_acs_table_variable(Foo) |>
     thirty_test()
-  TEN_LINER %>%
-    parse_acs_table_variable(Variable) %>%
+  TEN_LINER |>
+    parse_acs_table_variable(Variable) |>
     thirty_test()
 })

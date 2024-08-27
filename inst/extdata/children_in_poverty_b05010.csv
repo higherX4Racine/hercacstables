@@ -1,0 +1,16 @@
+Group,Variable,Index,Least Poverty Ratio,Greatest Poverty Ratio,Standard of Living,Native-Born Parents,Foreign-Born Parents
+B05010,B05010_004E,4,-999,1,Unsustainable,2,0
+B05010,B05010_005E,5,-999,1,Unsustainable,0,2
+B05010,B05010_006E,6,-999,1,Unsustainable,1,1
+B05010,B05010_008E,8,-999,1,Unsustainable,1,0
+B05010,B05010_009E,9,-999,1,Unsustainable,0,1
+B05010,B05010_012E,12,1,1.99,Unsustainable,2,0
+B05010,B05010_013E,13,1,1.99,Unsustainable,0,2
+B05010,B05010_014E,14,1,1.99,Unsustainable,1,1
+B05010,B05010_016E,16,1,1.99,Unsustainable,1,0
+B05010,B05010_017E,17,1,1.99,Unsustainable,0,1
+B05010,B05010_020E,20,2,999,Mixed,2,0
+B05010,B05010_021E,21,2,999,Mixed,0,2
+B05010,B05010_022E,22,2,999,Mixed,1,1
+B05010,B05010_024E,24,2,999,Mixed,1,0
+B05010,B05010_025E,25,2,999,Mixed,0,1

@@ -208,8 +208,10 @@
 
 #' Categorize ACS variables about income : poverty level ratios by family sustainability
 #'
-#' These data come from table B17026, "RATIO OF INCOME TO POVERTY LEVEL OF FAMILIES IN THE PAST 12 MONTHS"
-#' A family-sustaining wage is widely considered to be three times the federal poverty level.
+#' These data come from table B17026, "RATIO OF INCOME TO POVERTY LEVEL OF
+#' FAMILIES IN THE PAST 12 MONTHS."
+#' A family-sustaining wage is widely considered to be three times the federal
+#' poverty level.
 #'
 #' @format ## STANDARD_OF_LIVING_METADATA
 #' A data frame with 13 rows and 6 columns
@@ -224,9 +226,27 @@
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B17026.html
 "STANDARD_OF_LIVING_METADATA"
 
+#' Categorize ACS variables counting families by number of children
+#'
+#' These data come from table B11003, "FAMILY TYPE BY PRESENCE AND AGE OF OWN CHILDREN UNDER 18 YEARS"
+#'
+#' @format ## FAMILIES_WITH_CHILDREN_METADATA
+#' A data frame with 12 rows and 6 columns
+#' \describe{
+#'   \item{Group}{<chr> The table, always "B11003"}
+#'   \item{Variable}{<chr> The full variable name, e.g. "B11003_001E"}
+#'   \item{Index}{<int> The row of this variable in the table}
+#'   \item{Adults}{<chr> The adult(s) heading the household}
+#'   \item{Children under 6}{<lgl> Are there any children under 6 in this family?}
+#'   \item{Childr 6-17}{<lgl> Are there any children 6-17 in this family?}
+#' }
+#' @source https://api.census.gov/data/2022/acs/acs1/groups/B11003.html
+"FAMILIES_WITH_CHILDREN_METADATA"
+
 #' Categorize ACS variables about children per family
 #'
-#' These data come from table B17026, "OWN CHILDREN UNDER 18 YEARS BY FAMILY TYPE AND AGE"
+#' These data come from table B17026, "OWN CHILDREN UNDER 18 YEARS BY FAMILY
+#' TYPE AND AGE"
 #'
 #' @format ## CHILDREN_PER_FAMILY_METADATA
 #' A data frame with 15 rows and 6 columns
@@ -240,4 +260,25 @@
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B09002.html
 "CHILDREN_PER_FAMILY_METADATA"
+
+#' Categorize ACS variables about children living in poverty and parents' birth origins
+#'
+#' These data come from table B05010, "RATIO OF INCOME TO POVERTY LEVEL IN THE
+#' PAST 12 MONTHS BY NATIVITY OF CHILDREN UNDER 18 YEARS IN FAMILIES AND
+#' SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS."
+#'
+#' @format ## CHILDREN_IN_POVERTY_METADATA
+#' A data frame with 15 rows and 8 columns
+#' \describe{
+#'   \item{Group}{<chr> The table, always "B05010"}
+#'   \item{Variable}{<chr> The full variable name, e.g. "B05010_001E"}
+#'   \item{Index}{<int> The row of this variable in the table}
+#'   \item{Least Poverty Ratio}{<dbl> The lowest ratio of income to poverty level in this tier}
+#'   \item{Greatest Poverty Ratio}{<dbl> The highest ratio of income to poverty level in this tier}
+#'   \item{Standard of Living}{<chr> One of "Unsustainable," or "Mixed"}
+#'   \item{Native-born Parents}{<int> How many of the parents in the household were born in the USA.}
+#'   \item{Foreign-born Parents}{<int> How many of the parents in the household were not born in the USA.}
+#' }
+#' @source https://api.census.gov/data/2022/acs/acs1/groups/B05010.html
+"CHILDREN_IN_POVERTY_METADATA"
 

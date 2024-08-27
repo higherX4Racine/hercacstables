@@ -25,6 +25,7 @@ https://api.census.gov/data/2022/acs/acs1/groups/B09002.html
 CHILDREN_PER_FAMILY_METADATA
 }
 \description{
-These data come from table B17026, "OWN CHILDREN UNDER 18 YEARS BY FAMILY TYPE AND AGE"
+These data come from table B17026, "OWN CHILDREN UNDER 18 YEARS BY FAMILY
+TYPE AND AGE"
 }
 \keyword{datasets}

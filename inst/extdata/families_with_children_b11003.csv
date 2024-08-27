@@ -1,0 +1,13 @@
+Group,Variable,Index,Adults,Children under 6,Children 6-17
+B11003,B11003_004E,4,Married Couple,TRUE,FALSE
+B11003,B11003_005E,5,Married Couple,TRUE,TRUE
+B11003,B11003_006E,6,Married Couple,FALSE,TRUE
+B11003,B11003_007E,7,Married Couple,FALSE,FALSE
+B11003,B11003_011E,11,"Male householder, no spouse present",TRUE,FALSE
+B11003,B11003_012E,12,"Male householder, no spouse present",TRUE,TRUE
+B11003,B11003_013E,13,"Male householder, no spouse present",FALSE,TRUE
+B11003,B11003_014E,14,"Male householder, no spouse present",FALSE,FALSE
+B11003,B11003_017E,17,"Female householder, no spouse present",TRUE,FALSE
+B11003,B11003_018E,18,"Female householder, no spouse present",TRUE,TRUE
+B11003,B11003_019E,19,"Female householder, no spouse present",FALSE,TRUE
+B11003,B11003_020E,20,"Female householder, no spouse present",FALSE,FALSE

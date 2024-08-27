@@ -25,7 +25,9 @@ https://api.census.gov/data/2022/acs/acs1/groups/B17026.html
 STANDARD_OF_LIVING_METADATA
 }
 \description{
-These data come from table B17026, "RATIO OF INCOME TO POVERTY LEVEL OF FAMILIES IN THE PAST 12 MONTHS"
-A family-sustaining wage is widely considered to be three times the federal poverty level.
+These data come from table B17026, "RATIO OF INCOME TO POVERTY LEVEL OF
+FAMILIES IN THE PAST 12 MONTHS."
+A family-sustaining wage is widely considered to be three times the federal
+poverty level.
 }
 \keyword{datasets}

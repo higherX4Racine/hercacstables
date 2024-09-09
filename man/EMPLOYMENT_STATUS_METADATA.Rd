@@ -25,7 +25,7 @@ A data frame with 439 rows and 12 columns:
 }
 }
 \source{
-\link{api.census.gov/data/acs/acs5/groups.html}
+api.census.gov/data/acs/acs5/groups.html
 }
 \usage{
 EMPLOYMENT_STATUS_METADATA

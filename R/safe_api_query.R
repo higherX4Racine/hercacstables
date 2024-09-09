@@ -16,12 +16,12 @@ safe_api_query <- function(.x, max_per_query = 40, ...){
         rep(LETTERS,
             each = max_per_query,
             length.out = nrow(.x))
-    ) %>%
+    ) |>
         purrr::map(
             api_url,
             ...
-        ) %>%
+        ) |>
         purrr::map(
-            do_api_query
+            api_query
         )
 }

@@ -1,5 +1,3 @@
-## code to prepare `B21005_VARIABLES` dataset goes here
-
 B21005_VARIABLES <- "extdata" |>
     system.file(
         "b21005.csv",

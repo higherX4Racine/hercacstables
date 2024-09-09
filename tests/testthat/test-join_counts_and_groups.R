@@ -1,6 +1,6 @@
 test_that("A smooth joining is achieved", {
   require(dplyr)
-  my_counts <- expand.grid(Table = LETTERS[1:3], Row = 1:3) %>%
+  my_counts <- expand.grid(Table = LETTERS[1:3], Row = 1:3) |>
     mutate(N = 9:1)
   group_names <- c("Pochard", "Dabbler", "Sea Duck")
   my_groups <- tibble(

@@ -18,7 +18,7 @@
 #' tables <- c("B19013", "B18101", "B18101")
 #' races <- c("", "", "I")
 #' numbers <- 1
-#' census_build_acs_variable(tables, races, numbers)
+#' build_api_variable(tables, races, numbers)
 build_api_variable <- function(table_code,
                                race_code,
                                item_number,

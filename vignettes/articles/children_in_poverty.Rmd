@@ -1,0 +1,405 @@
+---
+title: "Children in Poverty"
+---
+
+```{r}
+#| label: setup
+#| include: FALSE
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  error = FALSE,
+  message = FALSE
+)
+```
+
+The two tracts are from the northern part of Nashua, NH.
+Here's a map:
+
+```{r}
+#| label: map-of-nashville-blocks
+#| fig-dim: !expr "c(8, 5)"
+#| echo: false
+
+ggplot2::ggplot() +
+    hercgeos::geom_terrain(
+        dplyr::mutate(
+            hercgeos::NASHVILLE_NH$blocks,
+            Terrain = hercgeos::terrain_factor(.data$UR20,
+                                               .water_area = .data$AWATER20,
+                                               .land_area = .data$ALAND20)
+        ),
+        .line_color = "white"
+    ) +
+    ggplot2::geom_sf(
+        data = hercgeos::NASHVILLE_NH$tracts,
+        fill = NA,
+        linewidth = 2
+    ) +
+    ggplot2::geom_sf_label(
+        data = hercgeos::NASHVILLE_NH$tracts,
+        mapping = ggplot2::aes(label = .data$GEOID)
+    ) +
+    ggspatial::annotation_scale(
+        unit_category = "imperial",
+        location = "br"
+    ) +
+    ggplot2::theme_void() +
+    ggplot2::theme(
+        legend.position = "none"
+    )
+```
+
+## Families by standard of living
+
+The American Community Survey has a
+[table](https://api.census.gov/data/2021/acs/acs5/groups/B17026.html)
+that categorizes families according to the ratio between their income and the
+[Federal poverty level in their community](https://www.census.gov/data/tables/time-series/demo/income-poverty/historical-poverty-thresholds.html).
+Nowadays, the Federal poverty level
+[does not](https://www.latimes.com/opinion/story/2021-09-24/federal-poverty-level-us-families)
+actually represent an income threshold where families really start struggling.
+It is actually more of a measure of where you are in real danger of [starving to
+death](https://www.ers.usda.gov/data-products/ag-and-food-statistics-charting-the-essentials/food-security-and-nutrition-assistance/).
+For that reason, Higher Expectations for Racine County uses
+**three times the Federal poverty level** as its threshold for a
+[family-sustaining income](https://selfsufficiencystandard.org/wisconsin/).
+The `hercacstables` package provides a table, `STANDARD_OF_LIVING_METADATA`,
+that describes this classification.
+
+```{r}
+#| label: show-income-brackets
+#| echo: false
+hercacstables::STANDARD_OF_LIVING_METADATA |>
+    dplyr::select(
+        "Variable",
+        "Least Poverty Ratio",
+        "Greatest Poverty Ratio",
+        "Standard of Living"
+    ) |>
+    knitr::kable(
+        caption = "Income ratios from ACS table B17026, classified into standards of living"
+    )
+```
+
+We use that table and the Census API look up how many families in each tract are
+in each Census income bracket.
+
+```{r}
+#| label: lookup-standard-of-living
+#| cache: true
+
+RAW_STANDARD_OF_LIVING <- hercacstables::STANDARD_OF_LIVING_METADATA |>
+    dplyr::pull(
+        "Variable"
+    ) |>
+    hercacstables::fetch_data(
+        year = 2021L,
+        for_geo = "tract",
+        for_items = c("010400", "010500"),
+        survey_type = "acs",
+        table_or_survey_code = "acs5",
+        other_geos = list(state = 33L,
+                          county = "011"),
+        use_key = TRUE
+    )
+```
+
+Then, we aggregate to get counts of families experiencing "Unsustainable" and
+"Sustainable" standards of living.
+
+```{r}
+#| label: wrangle-standard-of-living
+#| echo: false
+STANDARD_OF_LIVING <- RAW_STANDARD_OF_LIVING |>
+    dplyr::inner_join(
+        hercacstables::STANDARD_OF_LIVING_METADATA,
+        by = "Index"
+    ) |>
+    dplyr::count(
+        .data$tract,
+        .data$`Standard of Living`,
+        wt = .data$Value,
+        name = "Families"
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "Standard of Living",
+        values_from = "Families"
+    ) |>
+    dplyr::relocate(
+        "tract",
+        "Family-sustaining",
+        "Unsustainable",
+        "Everyone"
+    ) |>
+    dplyr::mutate(
+        `Percent Family-sustaining` = .data$`Family-sustaining` / .data$Everyone
+    )
+
+STANDARD_OF_LIVING  |>
+    dplyr::mutate(
+        `Percent Family-sustaining` =
+            scales::label_percent(accuracy = 1)(
+                .data$`Percent Family-sustaining`
+            )
+    ) |>
+    knitr::kable(
+        align = "lrrrr"
+    )
+```
+
+You can see that the economic situations in the two tracts are very different.
+
+## Families by children present
+
+We need to go from counts of families to counts of children, so we will next
+look up how many families in each tract have children.
+The census has a
+[table](https://api.census.gov/data/2022/acs/acs1/groups/B11003.html) for this
+that reports how many families have no kids, kids under 6, kids 6-17, or both.
+The `hercacstables` package has a table, `FAMILIES_WITH_CHILDREN_METADATA`, that
+describes the relationship between the ACS variables and the presence/absence of
+children.
+
+```{r}
+#| label: show-families-with-children-metadata
+#| echo: false
+hercacstables::FAMILIES_WITH_CHILDREN_METADATA |>
+    dplyr::select(
+        "Variable",
+        "Adults",
+        "Children under 6",
+        "Children 6-17"
+    ) |>
+    knitr::kable()
+```
+
+We can use this table to query the API to get the number of families with
+children in each of the census tracts that we are interested in.
+Notice that the only difference between this query and the previous one is which
+variables we are asking for.
+The whole point of the `hercacstables` package is to help you not repeat
+yourself when you are asking for many different pieces of census information
+about the same place.
+
+```{r}
+#| label: lookup-families-with-children
+#| cache: true
+
+RAW_FAMILIES_WITH_CHILDREN <- hercacstables::FAMILIES_WITH_CHILDREN_METADATA |>
+    dplyr::pull(
+        "Variable"
+    ) |>
+    hercacstables::fetch_data(
+        year = 2021L,
+        for_geo = "tract",
+        for_items = c("010400", "010500"),
+        survey_type = "acs",
+        table_or_survey_code = "acs5",
+        other_geos = list(state = 33L,
+                          county = "011"),
+        use_key = TRUE
+    )
+```
+
+We will aggregate the families into "Children Present" and "No Children."
+
+```{r}
+#| label: wrangle-families-with-children
+#| echo: false
+FAMILIES_WITH_CHILDREN <- RAW_FAMILIES_WITH_CHILDREN |>
+    dplyr::inner_join(
+        hercacstables::FAMILIES_WITH_CHILDREN_METADATA,
+        by = "Index"
+    ) |>
+    dplyr::count(
+        .data$tract,
+        `Children` = dplyr::if_else(
+            .data$`Children under 6` | .data$`Children 6-17`,
+            "Children Present",
+            "No Children"
+        ),
+        wt = .data$Value,
+        name = "Families"
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "Children",
+        values_from = "Families"
+    ) |>
+    dplyr::mutate(
+        Total = .data$`Children Present` + .data$`No Children`,
+        `Percent with Children` = .data$`Children Present` / .data$Total
+    )
+
+FAMILIES_WITH_CHILDREN |>
+    dplyr::mutate(
+        `Percent with Children` = scales::label_percent(accuracy = 1)(
+            .data$`Percent with Children`
+        )
+    ) |>
+    knitr::kable(
+        align = "lrrrr"
+    )
+```
+
+Once again, we see a pretty substantial difference between the two tracts.
+Reassuringly, the total number of families is the same in both sets of data.
+
+## Children per family by poverty level
+
+The last set of raw data that we need is the number of children living in
+poverty.
+"But, wait!" you say, "Isn't that everything we needed in the first place?"
+That would be true, except that the best we can get from the ACS is a 
+[table](https://api.census.gov/data/2022/acs/acs1/groups/B05010.html)
+that has detailed information about parents' birth origins but only distinguishes
+three income tiers: less than the Federal poverty level, 1x-2x, and more than 2x
+the Federal poverty level.
+The `hercacstables` package's table `CHILDREN_IN_POVERTY_METADATA` describes how
+the variables in that table map to parental place of birth and kid poverty.
+
+```{r}
+#| label: show-children-in-poverty-metadata
+#| echo: false
+hercacstables::CHILDREN_IN_POVERTY_METADATA |>
+    dplyr::select(
+        !c("Group", "Index")
+    ) |>
+    knitr::kable()
+```
+
+Here's the query to get those data:
+
+```{r}
+#| label: lookup-children-in_poverty
+#| cache: true
+
+RAW_CHILDREN_IN_POVERTY <- hercacstables::CHILDREN_IN_POVERTY_METADATA |>
+    dplyr::pull(
+        "Variable"
+    ) |>
+    hercacstables::fetch_data(
+        year = 2021L,
+        for_geo = "tract",
+        for_items = c("010400", "010500"),
+        survey_type = "acs",
+        table_or_survey_code = "acs5",
+        other_geos = list(state = 33L,
+                          county = "011"),
+        use_key = TRUE
+    )
+```
+
+We want **3x** the poverty level, so we will lump the "less than 1x" and "1x-2x"
+tiers into "Unsustainable," leaving us with the "2x+" tier that mixes both the
+"2x-3x" tier that we are calling "Unsustainable" and the "3x+" tier that we are
+calling "Sustainable."
+
+```{r}
+#| label: wrangle-children-in-poverty
+#| echo: false
+CHILDREN_IN_POVERTY <- RAW_CHILDREN_IN_POVERTY |>
+    dplyr::inner_join(
+        hercacstables::CHILDREN_IN_POVERTY_METADATA,
+        by = "Index"
+    ) |>
+    dplyr::count(
+        .data$tract,
+        .data$`Standard of Living`,
+        wt = .data$Value,
+        name = "Children"
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "Standard of Living",
+        values_from = "Children"
+    ) |>
+    dplyr::mutate(
+        Children = .data$Mixed + .data$Unsustainable
+    )
+
+CHILDREN_IN_POVERTY |>
+    knitr::kable()
+```
+
+## Join the three datasets
+
+Each of the three queries resulted in a data frame where rows correspond to
+census tracts, so we can join the three results by the "tract" column.
+We can also remove some of the duplicate columns to end up with just the tract,
+the number of kids, the number of families, and the percentages of families with
+children and with sustainable standards of living.
+
+```{r}
+#| label: join-the-data
+
+CHILDREN_BY_TRACT <- CHILDREN_IN_POVERTY |>
+    dplyr::inner_join(
+        FAMILIES_WITH_CHILDREN,
+        by = "tract"
+    ) |>
+    dplyr::inner_join(
+        STANDARD_OF_LIVING,
+        by = "tract"
+    ) |>
+    dplyr::select(
+        "tract",
+        "Children",
+        "Mixed",
+        "Observed Unsustainable" = "Unsustainable.x",
+        "Families" = "Total",
+        tidyselect::starts_with("Percent")
+    )
+```
+
+This is what that table looks like:
+
+```{r}
+#| label: show-joined-tables
+#| echo: false
+CHILDREN_BY_TRACT |>
+    dplyr::mutate(
+        dplyr::across(tidyselect::starts_with("Percent"),
+                      scales::label_percent(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "lrrrrrr"
+    )
+```
+
+You can see that, in this case, we did not actually need to pull the number of
+families with children.
+If we were doing an even nerdier dive, though, we could use the fraction of
+families with children to look at poverty across demographics like race or
+ethnicity.
+
+In this case, though, we just need to multiply the total number of children by
+the percentage of families that have an sustainable standard of living.
+
+```{r}
+#| label: compute-sustainable-kids
+
+SUSTAINABLE_KIDS <- CHILDREN_BY_TRACT |>
+    dplyr::mutate(
+        `Expected Unsustainable` = .data$Children * (1 - .data$`Percent Family-sustaining`),
+        `Extra Unsustainable` = .data$`Expected Unsustainable` - .data$`Observed Unsustainable`,
+        `Sustainable Kids` = .data$Mixed - .data$`Extra Unsustainable`,
+        `Percent kids in Sustainable` = .data$`Sustainable Kids` / .data$Children,
+        `Expected Sustainable` = .data$Children * .data$`Percent Family-sustaining`
+    )
+
+SUSTAINABLE_KIDS |>
+    dplyr::select(
+        "tract",
+        "Children",
+        "Percent Family-sustaining",
+        "Expected Sustainable",
+        "Expected Unsustainable",
+        "Mixed",
+        "Observed Unsustainable",
+        "Extra Unsustainable",
+        "Sustainable Kids",
+        "Percent kids in Sustainable"
+    ) |>
+    knitr::kable()
+```

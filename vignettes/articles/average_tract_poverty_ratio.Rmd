@@ -1,0 +1,15 @@
+---
+title: "Average Poverty Ratios by Tract in Racine County, WI"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(hercacstables)
+```
+

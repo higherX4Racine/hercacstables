@@ -9,7 +9,7 @@ test_that("a raw ACS counts table gets tidy", {
     C23002A_002EA = c(NULL, NULL, NULL, NULL),
     state = rep(55, 4),
     county = 100:103
-  ) %>% mutate(GEO_ID = paste0("US00", state, county))
+  ) |> mutate(GEO_ID = paste0("US00", .data$state, .data$county))
 
   long_counts <- tribble(
     ~state, ~county, ~GEO_ID, ~Table, ~Row, ~E, ~M,
@@ -24,7 +24,7 @@ test_that("a raw ACS counts table gets tidy", {
   )
 
   expect_equal(
-    raw_counts %>% counts_pivot_longer("C23002A"),
+    raw_counts |> counts_pivot_longer("C23002A"),
     long_counts
   )
 })

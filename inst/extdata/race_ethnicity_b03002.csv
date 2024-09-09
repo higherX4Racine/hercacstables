@@ -1,16 +1,16 @@
-Variable,Ethnicity,Race,Race/Ethnicity
-B03002_001E,All,All,All
-B03002_003E,Not Hispanic or Latino,White alone,White
-B03002_004E,Not Hispanic or Latino,Black or African American alone,Black or African American
-B03002_005E,Not Hispanic or Latino,American Indian and Alaska Native alone,American Indian and Alaska Native
-B03002_006E,Not Hispanic or Latino,Asian alone,Asian
-B03002_007E,Not Hispanic or Latino,Native Hawaiian and Other Pacific Islander alone,Native Hawaiian and Other Pacific Islander
-B03002_008E,Not Hispanic or Latino,Some other race alone,Some other race
-B03002_009E,Not Hispanic or Latino,Two or more races,Two or more races
-B03002_013E,Hispanic or Latino,White alone,Hispanic or Latino
-B03002_014E,Hispanic or Latino,Black or African American alone,Black or African American
-B03002_015E,Hispanic or Latino,American Indian and Alaska Native alone,American Indian and Alaska Native
-B03002_016E,Hispanic or Latino,Asian alone,Hispanic or Latino
-B03002_017E,Hispanic or Latino,Native Hawaiian and Other Pacific Islander alone,Native Hawaiian and Other Pacific Islander
-B03002_018E,Hispanic or Latino,Some other race alone,Hispanic or Latino
-B03002_019E,Hispanic or Latino,Two or more races,Two or more races
+Group,Index,Ethnicity,Race
+B03002,1,All,All
+B03002,3,Not Hispanic or Latino,White alone
+B03002,4,Not Hispanic or Latino,Black or African American alone
+B03002,5,Not Hispanic or Latino,American Indian and Alaska Native alone
+B03002,6,Not Hispanic or Latino,Asian alone
+B03002,7,Not Hispanic or Latino,Native Hawaiian and Other Pacific Islander alone
+B03002,8,Not Hispanic or Latino,Some other race alone
+B03002,9,Not Hispanic or Latino,Two or more races
+B03002,13,Hispanic or Latino,White alone
+B03002,14,Hispanic or Latino,Black or African American alone
+B03002,15,Hispanic or Latino,American Indian and Alaska Native alone
+B03002,16,Hispanic or Latino,Asian alone
+B03002,17,Hispanic or Latino,Native Hawaiian and Other Pacific Islander alone
+B03002,18,Hispanic or Latino,Some other race alone
+B03002,19,Hispanic or Latino,Two or more races

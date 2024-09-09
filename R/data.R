@@ -39,12 +39,13 @@
 
 #' Race and ethnicity codes and labels used by the U.S. Census Bureau
 #'
-#' @format A tibble with two columns:
+#' @format A tibble with ten rows and three columns:
 #'   \describe{
-#'     \item{code}{A capital letter designating a race or ethnicity}
-#'     \item{label}{A short description of a race or ethnicity}
+#'     \item{Census Race}{A short description of a race or ethnicity}
+#'     \item{Suffix}{A capital letter designating a race or ethnicity}
+#'     \item{Inclusive Table}{The name of a table that includes people of single and multi-racial identities that claim this identity}
 #'   }
-"race_or_ethnicity"
+"RACE_ETHNICITY_SUBTABLE_METADATA"
 
 #' Group, Variable, and Geography information for the latest 5-Year ACS
 #'
@@ -281,4 +282,30 @@
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B05010.html
 "CHILDREN_IN_POVERTY_METADATA"
+
+#' US population size for 10 different race/ethnicity categories in 2022
+#'
+#' This is an example set that emulates the results of running
+#' [`fetch_data()`] for two different sets of ACS tables.
+#' The data for the "broad" level of detail are from tables B01001 its prefix-
+#' designated sub-tables, such as B01001H for
+#'   * labeled as "broad" in the Detail Level field.
+#'   * which has population by age, with different tables for each identity
+#' * B03002 - which has population by race x ethnicity
+#'
+#' The data from the B01001 tables are all from the first row, which is the
+#' total population of that particular racial/ethnic identity.
+#' The data from table B03002 are
+#'
+#' @format ## US_RACE_ETHNICITY_POPS_2022
+#' A data frame with 10 rows and 5 columns
+#' \describe{
+#'   \item{us}{<int> The geography used in the API call. Always 1}
+#'   \item{Group}{<chr> The source table for the row, "B01001" with a suffix.}
+#'   \item{Index}{<int> The row of this variable in the table. Always 1}
+#'   \item{Value}{<int> The number of people in the race/ethnicity category.}
+#'   \item{Year}{<int> The year used in the API call. Always 2022}
+#' }
+#' @source https://api.census.gov/data/2022/acs/acs5/groups.html
+"US_RACE_ETHNICITY_POPS_2022"
 

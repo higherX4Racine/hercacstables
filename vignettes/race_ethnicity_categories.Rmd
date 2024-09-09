@@ -12,7 +12,8 @@ vignette: >
 #| include: FALSE
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  cache = FALSE
 )
 library(hercacstables)
 ```
@@ -216,9 +217,9 @@ results.
 API calls are much slower than local functions, so it is usually a good idea to
 isolate them and run them as few times as possible.
 
-```{r}
+```{r, cache=TRUE}
 #| label: check-values-for-convenience-tables
-#| cache: true
+
 convenience_check_values_raw <- fetch_data(
     convenience_check_variables$Variable,
     year = 2022,                  # the most recent one available at the time of writing
@@ -258,7 +259,14 @@ convenience_check_values <- convenience_check_values_raw |>
                                    "No")
     )
 
-knitr::kable(convenience_check_values)
+convenience_check_values |>
+    dplyr::mutate(
+        dplyr::across(tidyselect::all_of(c("Subtable", "Convenience")),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "lrrl"
+    )
 ```
 
 We don't have to include any of the confusing "Group," "Index," or "Variable"
@@ -278,7 +286,278 @@ I just hid them before because it would have been confusing.
 
 ```{r}
 #| label: show-inclusive-columns-too
-knitr::kable(RACE_ETHNICITY_SUBTABLE_METADATA)
+#| echo: false
+RACE_ETHNICITY_SUBTABLE_METADATA |>
+    dplyr::select(
+        "Census Race",
+        "Suffix",
+        "Inclusive Table"
+    ) |>
+    knitr::kable()
+```
+
+The population reported in the inclusive tables should be as large, or larger,
+than the population reported in the exclusive tables.
+We can use `hercacstables` to check this, too.
+
+##### Census variables for inclusive and exclusive counts
+
+```{r}
+#| label: inclusive-exclusive-population-variables
+incl_excl_pop_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
+    dplyr::filter(
+        nchar(.data$`Inclusive Table`) > 0
+    ) |>
+    dplyr::mutate(
+        `Exclusive Table` = paste0("B01001", .data$Suffix)
+    ) |>
+    dplyr::select(
+        "Census Race",
+        Inclusive = "Inclusive Table",
+        Exclusive = "Exclusive Table"
+    ) |>
+    tidyr::pivot_longer(
+        cols = tidyselect::ends_with("clusive"),
+        names_to = "Table",
+        values_to = "Group"
+    ) |>
+    dplyr::mutate(
+        Variable = build_api_variable(.data$Group, "", 1)
+    )
+
+knitr::kable(incl_excl_pop_variables)
+```
+
+##### Raw inclusive and exclusive counts
+
+```{r, cache=TRUE}
+#| label: fetch-inclusive-exclusive-populations
+incl_excl_pop_values_raw <- fetch_data(
+    variables = incl_excl_pop_variables$Variable,
+    year = 2022,
+    for_geo = "us",
+    for_items = "*",
+    survey_type = "acs",
+    table_or_survey_code = "acs5"
+)
+```
+
+##### Comparing inclusive and exclusive counts
+
+```{r}
+#| label: wrangle-inclusive-exclusive-populations
+incl_excl_pop_values <- incl_excl_pop_values_raw |>
+    dplyr::inner_join(
+        incl_excl_pop_variables,
+        by = c("Group")
+    ) |>
+    dplyr::select(
+        "Census Race",
+        "Table",
+        "Value"
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "Table",
+        values_from = "Value"
+    ) |>
+    dplyr::mutate(
+        Difference = .data$Inclusive - .data$Exclusive,
+        `Percent Multiracial` = .data$Difference / .data$Inclusive
+    ) |>
+    dplyr::arrange(
+        dplyr::desc(.data$Inclusive)
+    )
+
+incl_excl_pop_values |>
+    dplyr::mutate(
+        dplyr::across(tidyselect::all_of(c("Inclusive",
+                                           "Exclusive",
+                                           "Difference")),
+                      scales::label_comma(accuracy = 1)),
+        `Percent Multiracial` = scales::label_percent(accuracy = 1)(
+            .data$`Percent Multiracial`
+        )
+    ) |>
+    knitr::kable(
+        align = "lrrrr"
+    )
+```
+
+#### Hispanic ethnicity and broad racial identity
+
+Table `B03002` contains counts of people by Hispanic ethnicity for each of the
+ten broad racial identities.
+As always, the first row is the total population size.
+There are then two groups of rows.
+Rows 2-11 count people who are not Hispanic.
+Rows 12-21 count people who identify as Hispanic.
+Rows 2 and 12 are the total populations of non-Hispanic and Hispanic people.
+Rows 10, 11, 20, and 21 contain subgroupings that distinguish between people who 
+identify as biracial and those who identify as multiracial.
+
+That means that we can take rows one through eight of
+`RACE_ETHNICITY_SUBTABLE_METADATA` and map them onto rows in `B03002`.
+In fact, this is so useful that it is also included in
+`RACE_ETHNICITY_SUBTABLE_METADATA`.
+
+```{r}
+#| label: hispanic-and-broad-race-variables
+#| echo: false
+
+RACE_ETHNICITY_SUBTABLE_METADATA |>
+    dplyr::filter(
+        nchar(.data$`non-Hispanic`) > 0
+    ) |>
+    dplyr::select(
+        "Census Race",
+        "non-Hispanic",
+        "Hispanic"
+    ) |>
+    knitr::kable()
+```
+
+Let's use these to look at nationwide trends across racial identities in their
+percentages of Hispanic ethnicity.
+
+First, we will define our metadata table.
+
+```{r}
+#| label: define-hispanic-and-broad-race-variables
+
+hispanic_and_broad_race_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
+    dplyr::filter(
+        nchar(.data$`non-Hispanic`) > 0
+    ) |>
+    dplyr::select(
+        "Census Race",
+        "non-Hispanic",
+        "Hispanic"
+    ) |>
+    tidyr::pivot_longer(
+        cols = tidyselect::ends_with("Hispanic"),
+        names_to = "Ethnicity",
+        values_to = "Variable"
+    ) |>
+    tidyr::separate_wider_position(
+        cols = "Variable",
+        widths = c(Group = 6, 1,
+                   Index = 3,
+                   1),
+        cols_remove = FALSE
+    ) |>
+    dplyr::mutate(
+        Index = as.integer(.data$Index)
+    )
+
+knitr::kable(hispanic_and_broad_race_variables)
+```
+
+Next, we pull 13 years of ACS data.
+
+```{r, cache=TRUE}
+#| label: fetch-hispanic-and-broad-race-data
+
+hispanic_and_broad_race_raw <- c(2009:2019, 2021:2022) |>
+    purrr::map(
+        ~ fetch_data(
+            hispanic_and_broad_race_variables$Variable,
+            year = .,
+            for_geo = "us",
+            for_items = "*",
+            survey_type = "acs",
+            table_or_survey_code = "acs1"
+        )
+    )
+```
+
+Then, we put the data into a nice, tidy format.
+
+```{r}
+#| label: tidy-hispanic-and-broad-race-data
+hispanic_and_broad_race <- hispanic_and_broad_race_raw |>
+    purrr::list_rbind() |>
+    dplyr::inner_join(
+        hispanic_and_broad_race_variables,
+        by = "Index"
+    ) |>
+    dplyr::select(
+        "Census Race",
+        "Ethnicity",
+        "Year",
+        "Value"
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "Ethnicity",
+        values_from = "Value",
+        values_fill = 0
+    ) |>
+    dplyr::mutate(
+        Total = .data$Hispanic + .data$`non-Hispanic`,
+        `Percent Hispanic` = .data$Hispanic / .data$Total
+    )
+    
+hispanic_and_broad_race |>
+    dplyr::slice_sample(
+        n = 1,
+        by = "Year"
+    ) |>
+    dplyr::mutate(
+        dplyr::across(c("Hispanic", "non-Hispanic", "Total"),
+                      scales::label_comma(accuracy = 1)),
+        dplyr::across("Percent Hispanic",
+                      scales::label_percent(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "lrrrrr"
+    )
+```
+
+Finally, we plot it
+
+```{r}
+#| label: plot-changes-in-hispanic-percentage
+#| fig-dim: !expr "c(6, 6)"
+#| dpi: 120
+
+hispanic_and_broad_race |>
+    dplyr::mutate(
+        `Census Race` = stringr::str_to_title(.data$`Census Race`)
+    ) |>
+    ggplot2::ggplot(
+        ggplot2::aes(x = .data$Year,
+                     y = .data$`Percent Hispanic`,
+                     color = .data$`Census Race`)
+    ) +
+    ggplot2::geom_line(
+        linewidth = 1,
+        lineend = "round",
+        linejoin = "mitre"
+    ) +
+    ggplot2::geom_point(
+        size = 3
+    ) +
+    ggplot2::scale_x_continuous(
+        name = NULL,
+        labels = scales::label_number(big.mark = ""),
+        limits = c(2005, 2025),
+        breaks = scales::breaks_width(5),
+        minor_breaks = scales::breaks_width(1)
+    ) +
+    ggplot2::scale_y_continuous(
+        name = "Percentage Hispanic",
+        labels = scales::label_percent(accuracy = 1),
+        limits = c(0, 1),
+        breaks = scales::breaks_width(0.2),
+        minor_breaks = scales::breaks_width(0.05)
+    ) +
+    ggplot2::scale_color_discrete(
+        guide = ggplot2::guide_legend(
+            title = NULL,
+            position = "top",
+            nrow = 4
+        )
+    ) +
+    ggplot2::theme_minimal()
 ```
 
 #### Methodological detail tables
@@ -290,89 +569,15 @@ concerning racial identities.
 We can skip those.
 
 
-## Older 
+## Appendix
 
-There are 
-It might just be the number 1 if you asked for information about the whole
-country.
-One of the most common use-cases for Census data is to compare living conditions
-among different racial and ethnic identities.
-The ACS has some tables with very detailed information about racial identity and
-place of ancestry.
-These categories do not necessarily conform to the Office of Management and
-Budget's [2024 recommendations](https://www.census.gov/newsroom/blogs/random-samplings/2024/04/updates-race-ethnicity-standards.html) for reporting race ([see below](#omb-minimum-reporting-categories)).
-Instead, they are clearly the result of gradual changes to table methodology that
-have struggled to keep up with United States that has become more racially and
-ethnically diverse and nuanced.
-
-### Broad racial/ethnic categories
-
-Currently, there are many sets of tables that have both one whole-population and
-several racial/ethnic-identity-specific versions.
-These ten identities are the same ones that appear in table
-[B02001, Race](https://api.census.gov/data/2022/acs/acs5/groups/B02001.html).
-For example, the very first table,
-[B01001, Sex by Age](https://api.census.gov/data/2022/acs/acs5/groups.html),
-belongs to a set like this.
-There are nine other related tables:
-
-```{r}
-#| label: b01001-set-of-table
-
-age_by_sex_groups <- METADATA_ACS5 |> 
-    purrr::pluck(
-        "groups"                                     
-    ) |>
-    dplyr::filter(
-        stringr::str_detect(.data$name, "B01001")    
-    ) |>
-    dplyr::select(
-        "name",                                      
-        "description"
-    )
-
-knitr::kable(age_by_sex_groups)
-```
-
-The racial/ethnic categories in this set of tables are, in the Census's order,
-White, Black, Native American, Asian, Pacific Islander, Some Other Race, Two or More Races, white but not Hispanic, and Hispanic or Latino.
-These categories are not mutually exclusive, which can be problematic.
-They are, however, used in many sets of tables.
-
-### Race and ethnicity
-
-#### Subtables of race and ethnicity
+### Subtables of race and ethnicity
 
 ```{r}
 #| label: show-broad-subtables
+#| echo: false
 knitr::kable(broad_subtables)
 ```
-
-### More specific racial/ethnicy categories
-
-```{r}
-#| label: racial-ethnic-tables
-
-ethnicity_tables <- METADATA_ACS5 |> 
-    purrr::pluck(
-        "groups"                                   
-    ) |>
-    dplyr::filter(
-        stringr::str_detect(.data$description, "RACE"),
-        stringr::str_detect(.data$name, "\\d$")
-    ) |>
-    dplyr::select(
-        "name",
-        "description"
-    )
-
-knitr::kable(ethnicity_tables)
-```
-
-The `METADATA_ACS5` list has information about the geographies, groups, and
-variables that are made available by the ACS API.
-
-## Appendix
 
 ### OMB Minimum Reporting Categories
 
@@ -387,121 +592,6 @@ variables that are made available by the ACS API.
 | Native Hawaiian or Pacific Islander | Individuals with origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands, including, for example, Native Hawaiian, Samoan, Chamorro, Tongan, Fijian, and Marshallese. |
 | White | Individuals with origins in any of the original peoples of Europe, including, for example, English, German, Irish, Italian, Polish, and Scottish. |
 
-
-## Identifying the Census's labels.
-
-The first place to look for racial/ethnic categories is the first detailed
-table in the ACS:
-[B01001, Age by Sex](https://api.census.gov/data/2022/acs/acs5/groups.html).
-You don't have to follow that link, though, because the `hercacstables` package
-includes information about every table that the ACS provides.
-The `METADATA_ACS5` list has information about the geographies, groups, and
-variables that are made available by the ACS API.
-
-```{r}
-#| label: age-by-sex-glimpse
-
-age_by_sex_groups <- METADATA_ACS5 |> 
-    purrr::pluck(
-        "groups"                                     
-    ) |>
-    dplyr::filter(
-        stringr::str_detect(.data$name, "B01001")    
-    ) |>
-    dplyr::select(
-        "name",                                      
-        "description"
-    )
-
-knitr::kable(age_by_sex_groups)
-```
-
-You can see that each racial/ethnic category is denoted by a one-letter suffix
-at the end of a table's name.
-
-```{r}
-#| label: ids-for-race
-race_ethnicity_categories <- age_by_sex_groups |>
-    dplyr::mutate(
-        Suffix = .data$name |>
-            stringr::str_extract("\\D$") |>
-            dplyr::coalesce(""),
-        `Census Race` = .data$description |>
-            stringr::str_extract("(?<=\\().*(?=\\))") |>
-            dplyr::coalesce("TOTAL")
-    ) |>
-    dplyr::select(
-        "Suffix",
-        "Census Race"
-    )
-
-knitr::kable(race_ethnicity_categories)
-```
-
-The first row of each table is the total population, so we can query each table
-to get the latest total population numbers for each category.
-
-```{r}
-#| label: fetch-national-pops-in-2022
-#| eval: false
-
-raw_national_populations <- METADATA_ACS5$variables |>
-    dplyr::filter(
-        stringr::str_detect(.data$variable, "B01001.*_001E")
-    ) |>
-    dplyr::pull(
-        "variable"
-    ) |>
-    fetch_data(
-        year = 2022L,
-        for_geo = "us",
-        for_items = "*",
-        survey_type = "acs",
-        table_or_survey_code = "acs5"
-    )
-
-knitr::kable(raw_national_populations)
-```
-
-```{r}
-#| label: sneakily-load-national-pops
-#| echo: false
-
-raw_national_populations <- US_RACE_ETHNICITY_POPS_2022
-
-knitr::kable(raw_national_populations)
-```
-
-```{r}
-#| label: wrangle-national-populations
-
-national_populations <- raw_national_populations |>
-    dplyr::mutate(
-        Suffix = stringr::str_remove(.data$Group, "B01001")
-    ) |>
-    dplyr::inner_join(
-        race_ethnicity_categories,
-        by = "Suffix"
-    ) |>
-    dplyr::select(
-        "Census Race",
-        "Suffix",
-        Population = "Value"
-    )
-
-national_populations |>
-    dplyr::arrange(
-        dplyr::desc(.data$Population)
-    ) |>
-    dplyr::mutate(
-        Population = scales::label_comma(accuracy = 1)(.data$Population)
-    ) |>
-    knitr::kable(
-        caption = "Nationwide population of race/ethnicities in 2022",
-        align = "llr"
-    )
-```
-
 ## Separating race and ethnicity
 
 This combination of categories is terrible for a variety of reasons.
@@ -515,6 +605,8 @@ counted in subtable "I" could also be counted in any subtable other than "H."
 
 ```{r}
 #| label: compute-subgroupings
+#| eval: false
+#| echo: false
 
 national_subgroupings <- national_populations |>
     dplyr::mutate(
@@ -557,6 +649,8 @@ people.
 
 ```{r}
 #| label: non-hispanic-non-white
+#| eval: false
+#| echo: false
 
 hispanic_margins <- tibble::tribble(
     ~ Suffix, ~ Sign, ~ `Race/Ethnicity`,
@@ -604,7 +698,8 @@ There is another table that gives the breakdown in more detail, though:
 
 ```{r}
 #| label: fetch-racine-race-counts-by-tract
-#| cache: true
+#| eval: false
+#| echo: false
 raw_racine_races <- ACS_RACE_ETHNICITY_VARIABLES |>
     purrr::pmap_chr(
         function(Group, Index, ...) {
@@ -624,6 +719,8 @@ raw_racine_races <- ACS_RACE_ETHNICITY_VARIABLES |>
 
 ```{r}
 #| label: wrangle-racine-race-counts-by-tract
+#| eval: false
+#| echo: false
 racine_races <- raw_racine_races |>
     dplyr::inner_join(
         ACS_RACE_ETHNICITY_VARIABLES,
@@ -656,6 +753,3 @@ county_subtotals <- racine_races |>
 
 knitr::kable(county_subtotals)
 ```
-
-## Creating your own labels
-

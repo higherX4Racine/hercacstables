@@ -39,11 +39,13 @@
 
 #' Race and ethnicity codes and labels used by the U.S. Census Bureau
 #'
-#' @format A tibble with ten rows and three columns:
+#' @format A tibble with ten rows and five columns:
 #'   \describe{
 #'     \item{Census Race}{A short description of a race or ethnicity}
 #'     \item{Suffix}{A capital letter designating a race or ethnicity}
 #'     \item{Inclusive Table}{The name of a table that includes people of single and multi-racial identities that claim this identity}
+#'     \item{non-Hispanic}{The row in table `B03002` with counts of people with this racial identity and no Hispanic ethnic identity}
+#'     \item{Hispanic}{The row in table `B03002` with counts of people with this racial identity and a Hispanic ethnic identity}
 #'   }
 "RACE_ETHNICITY_SUBTABLE_METADATA"
 
@@ -97,9 +99,6 @@
 #' The current URL for accessing the U.S. Census Bureau's API.
 #' @source https://api.census.gov/data
 "CENSUS_API_URL"
-
-#' Variables for querying populations by race and ethnicity
-"ACS_RACE_ETHNICITY_VARIABLES"
 
 #' Census labels for different levels of educational achievement
 #'

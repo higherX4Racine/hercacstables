@@ -14,19 +14,16 @@ fetch_data <- function(variables,
                        other_geos = NULL,
                        ...,
                        use_key = TRUE) {
-    .json <- api_url |>
-        do.call(
-            rlang::list2(variables = variables,
-                         for_geo = for_geo,
-                         for_items = for_items,
-                         year = year,
-                         survey_type = survey_type,
-                         table_or_survey_code = table_or_survey_code,
-                         ...,
-                         !!!other_geos,
-                         use_key = use_key)
-        ) |>
-        jsonlite::read_json()
+
+    .json <- fetch_json_as_list(variables = variables,
+                                for_geo = for_geo,
+                                for_items = for_items,
+                                year = year,
+                                survey_type = survey_type,
+                                table_or_survey_code = table_or_survey_code,
+                                other_geos = other_geos,
+                                ...,
+                                use_key = use_key)
 
     .json |>
         tail(

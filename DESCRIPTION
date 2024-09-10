@@ -42,5 +42,5 @@ RoxygenNote: 7.3.2
 Config/Needs/website: rmarkdown
 VignetteBuilder: knitr
 Remotes: 
-    r-lib/scales
+    higherx4Racine/hercgeos
 URL: https://higherx4racine.github.io/hercacstables/

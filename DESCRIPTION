@@ -28,6 +28,7 @@ Imports:
     utils
 Suggests: 
     ggplot2,
+    ggspatial,
     hercgeos,
     knitr,
     rmarkdown,

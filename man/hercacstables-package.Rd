@@ -7,6 +7,13 @@
 \description{
 The American Community Survey (ACS) from the US Census's website returns data in a weirdly idiosyncratic way. There are many subtotals in each table. Grouping variables are organized in a tree-like, rather than tabular fashion. This package is intended to make it easy to access and use the ACS data with R.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://higherx4racine.github.io/hercacstables/}
+}
+
+}
 \author{
 \strong{Maintainer}: Ben Taft \email{ben.taft@career2cradle.org}
 

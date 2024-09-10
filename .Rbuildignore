@@ -5,3 +5,7 @@
 ^data-raw$
 ^vignettes/articles$
 ^vignettes/.*cache$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

@@ -5,3 +5,5 @@
 .DS_Store
 inst/doc
 vignettes/*_cache
+vignettes/articles/*_cache
+docs

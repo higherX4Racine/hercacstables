@@ -11,7 +11,6 @@ fetch_json_as_list(
   for_items,
   survey_type,
   table_or_survey_code,
-  other_geos = NULL,
   ...,
   use_key = TRUE
 )

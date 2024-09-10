@@ -11,11 +11,10 @@ fetch_json_as_list <- function(variables,
                                for_items,
                                survey_type,
                                table_or_survey_code,
-                               other_geos = NULL,
                                ...,
                                use_key = TRUE) {
     variables |>
-        rlang::list2(
+        api_url(
             variables = _,
             for_geo = for_geo,
             for_items = for_items,
@@ -23,12 +22,7 @@ fetch_json_as_list <- function(variables,
             survey_type = survey_type,
             table_or_survey_code = table_or_survey_code,
             ...,
-            !!!other_geos,
             use_key = use_key
-        ) |>
-        do.call(
-            what = api_url,
-            args = _
         ) |>
         jsonlite::read_json()
 }

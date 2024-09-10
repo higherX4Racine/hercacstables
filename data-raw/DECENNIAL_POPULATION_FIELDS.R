@@ -14,10 +14,10 @@ DECENNIAL_RACES <- tibble::tribble(
 )
 
 DECENNIAL_TABLES <- tibble::tribble(
-    ~ Year, ~ Group, ~ Pad, ~ Suffix,
-    2000L,  "PL002", "",    "",
-    2010L,  "P002",  "",    "",
-    2020L,  "P2",    "_",   "N"
+    ~ Vintage, ~ Group, ~ Pad, ~ Suffix,
+    2000L,     "PL002", "",    "",
+    2010L,     "P002",  "",    "",
+    2020L,     "P2",    "_",   "N"
 )
 
 DECENNIAL_POPULATION_FIELDS <- DECENNIAL_TABLES |>
@@ -34,7 +34,7 @@ DECENNIAL_POPULATION_FIELDS <- DECENNIAL_TABLES |>
                                   .data$Suffix)
     ) |>
     dplyr::select(
-        "Year",
+        "Vintage",
         "Group",
         "Race/Ethnicity",
         "Index",

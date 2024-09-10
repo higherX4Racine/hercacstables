@@ -700,11 +700,24 @@ There is another table that gives the breakdown in more detail, though:
 #| label: fetch-racine-race-counts-by-tract
 #| eval: false
 #| echo: false
-raw_racine_races <- ACS_RACE_ETHNICITY_VARIABLES |>
-    purrr::pmap_chr(
-        function(Group, Index, ...) {
-            build_api_variable(Group, "", Index)
-        }
+
+racine_race_ethnicity_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
+    dplyr::filter(
+        nchar(.data$Hispanic) > 0
+    ) |>
+    dplyr::select(
+        "Census Race",
+        tidyselect::ends_with("Hispanic")
+    ) |>
+    tidyr::pivot_longer(
+        cols = tidyselect::everything(),
+        names_to = "Ethnicity",
+        values_to = "Variable"
+    )
+
+raw_racine_races <- racine_race_ethnicity_variables |>
+    dplyr::pull(
+        "Variable"
     ) |>
     fetch_data(
         year = 2022,

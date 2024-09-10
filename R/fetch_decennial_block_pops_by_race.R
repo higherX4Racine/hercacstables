@@ -16,42 +16,45 @@
 #' @export
 fetch_decennial_block_pops_by_race <- function(state, county) {
     hercacstables::DECENNIAL_POPULATION_FIELDS |>
-        dplyr::group_by(
-            .data$Year
+        dplyr::select(
+            "Variable",
+            "Vintage"
         ) |>
         dplyr::summarize(
             Variables = list(.data$Variable),
-            .groups = "drop"
+            .by = "Vintage"
         ) |>
         dplyr::mutate(
             Data = purrr::map2(
                 .data$Variables,
-                .data$Year,
-                hercacstables::fetch_data,
-                for_geo = "block",
-                other_geos = hercacstables::make_other_geos("block",
-                                                            state = state,
-                                                            county = county),
-                for_items = "*",
-                survey_type = "dec",
-                table_or_survey_code = "pl"
-            ) |>
-                purrr::map(
-                    hercacstables::replace_geographies_with_geoid
-                ),
-            .keep = "unused"
+                .data$Vintage,
+                ~ hercacstables::fetch_data(
+                    variables = .x,
+                    year = .y,
+                    for_geo = "block",
+                    other_geos = list(state = state,
+                                      county = county),
+                    for_items = "*",
+                    survey_type = "dec",
+                    table_or_survey_code = "pl"
+                )
+            )
         ) |>
         tidyr::unnest(
             "Data"
         ) |>
+        dplyr::mutate(
+            GEOID = paste0(.data$state,
+                           .data$county,
+                           .data$tract,
+                           .data$block)
+        ) |>
         dplyr::inner_join(
             hercacstables::DECENNIAL_POPULATION_FIELDS,
-            by = c("Group",
-                   "Index", # this is what identifies the race/ethnicity
-                   "Year")
+            by = c("Vintage", "Group", "Index")
         ) |>
         dplyr::select(
-            Vintage = "Year",
+            "Vintage",
             "Race/Ethnicity",
             "GEOID",
             Population = "Value"

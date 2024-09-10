@@ -1,41 +1,4 @@
-#' Employment in the area served by Racine Unified School District, WI in 2019
-#'
-#' A list containing several stages of parsing results from querying the US
-#' Census Bureau's data API for the American Community Survey. This set contains
-#' the results from searching for summary table "C23002A" for the Racine Unified
-#' School district (code 12360) in Wisconsin (55). It contains counts for white
-#' people broken down by sex, age, and employment status.
-#'
-#' @format A list with 4 items:
-#'  \describe{
-#'    \item{url}{the actual URL used to query the Census's data API}
-#'    \item{json}{The JSON-formatted string that the Census responded with}
-#'    \item{list}{The list produced by \code{jsonlite::parse_json()}}
-#'    \item{data}{A data frame produced by \code{acs_counts_list_to_tibble()}}
-#'  }
-#' @source
-#'  https://www.census.gov/data/developers/guidance/api-user-guide.html
-"rusd_c23002a"
-
-#' Groups available for breaking down ACS employment data by sex and age
-#'
-#' A list containing several stages of parsing results from querying the US
-#' Census Bureau's data API for the American Community Survey. This set contains
-#' the results from searching for the summary table called "C23002A". That table
-#' contains counts for white people broken down by sex, age, and employment
-#' status.
-#'
-#' @format A list with 5 items:
-#'   \describe{
-#'     \item{url}{the actual URL used to query the Census's data API}
-#'     \item{json}{The JSON-formatted string that the Census responded with}
-#'     \item{list}{The list produced by \code{jsonlite::parse_json()}}
-#'     \item{fields}{The fields that \code{acs_groups_list_to_tibble} uses}
-#'     \item{data}{A data frame produced by \code{acs_groups_list_to_tibble()}}
-#'   }
-#' @source
-#'   https://www.census.gov/data/developers/guidance/api-user-guide.html
-"c23002a_groups"
+# Copyright (C) 2024 by Higher Expectations for Racine County
 
 #' Race and ethnicity codes and labels used by the U.S. Census Bureau
 #'
@@ -58,20 +21,6 @@
 #'   \item{variables}{Each variable's Group, its full code, and its Label.}
 #'   }
 "METADATA_ACS5"
-
-#' Variables in B21005: Age x Veteran x Employed for Civilians 18-64
-#'
-#' @format A tibble with seven columns
-#' \describe{
-#'   \item{Name}{The name of the variable, e.g. B21005_0001E}
-#'   \item{Age}{The Census's description of the age range described by this variable.}
-#'   \item{Veteran}{`TRUE` if the variable describes veterans, and `NA` for subtotals.}
-#'   \item{In Labor Force}{`TRUE`, `FALSE`, or `NA` for subtotals.}
-#'   \item{Employed}{`TRUE`, `FALSE`, or `NA` for subtotals.}
-#'   \item{Lower Age}{The lowest age that this variable describes.}
-#'   \item{Upper Age}{The highest age that this variable describes.}
-#' }
-"B21005_VARIABLES"
 
 #' Variables from the Decennial censuses
 #'
@@ -191,21 +140,6 @@
 #' @source api.census.gov/data/acs/acs5/groups.html
 "EMPLOYMENT_STATUS_METADATA"
 
-#' Variables describing unemployment at two levels of age granularity
-#'
-#' @format ## UNEMPLOYMENT_VARIABLES
-#' A data frame with 140 rows and 7 columns
-#' \describe{
-#'   \item{Sex}{<chr> Female or Male}
-#'   \item{Lower Age}{<int> 16 to 75}
-#'   \item{`Upper Age}{<int> 19 to Inf}
-#'   \item{Labor Status}{<chr> "In armed services", "Employed", "Unemployed", or "Not in labor force"}
-#'   \item{Group}{<chr> "B23001" (more granular) or "C23001" (less granular)}
-#'   \item{Index}{<int> The actual number of the variable in the ACS table.}
-#'   \item{Variable}{<chr> The full ACS variable name for the estimate, e.g. "B23001_001E"}
-#' }
-"UNEMPLOYMENT_VARIABLES"
-
 #' Categorize ACS variables about income : poverty level ratios by family sustainability
 #'
 #' These data come from table B17026, "RATIO OF INCOME TO POVERTY LEVEL OF
@@ -281,30 +215,3 @@
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B05010.html
 "CHILDREN_IN_POVERTY_METADATA"
-
-#' US population size for 10 different race/ethnicity categories in 2022
-#'
-#' This is an example set that emulates the results of running
-#' [`fetch_data()`] for two different sets of ACS tables.
-#' The data for the "broad" level of detail are from tables B01001 its prefix-
-#' designated sub-tables, such as B01001H for
-#'   * labeled as "broad" in the Detail Level field.
-#'   * which has population by age, with different tables for each identity
-#' * B03002 - which has population by race x ethnicity
-#'
-#' The data from the B01001 tables are all from the first row, which is the
-#' total population of that particular racial/ethnic identity.
-#' The data from table B03002 are
-#'
-#' @format ## US_RACE_ETHNICITY_POPS_2022
-#' A data frame with 10 rows and 5 columns
-#' \describe{
-#'   \item{us}{<int> The geography used in the API call. Always 1}
-#'   \item{Group}{<chr> The source table for the row, "B01001" with a suffix.}
-#'   \item{Index}{<int> The row of this variable in the table. Always 1}
-#'   \item{Value}{<int> The number of people in the race/ethnicity category.}
-#'   \item{Year}{<int> The year used in the API call. Always 2022}
-#' }
-#' @source https://api.census.gov/data/2022/acs/acs5/groups.html
-"US_RACE_ETHNICITY_POPS_2022"
-

@@ -27,6 +27,7 @@ Imports:
     tidyselect,
     utils
 Suggests: 
+    ggplot2,
     knitr,
     rmarkdown,
     scales,

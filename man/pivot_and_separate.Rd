@@ -7,8 +7,9 @@
 pivot_and_separate(.frame, ...)
 }
 \arguments{
-\item{.frame}{a data frame from the census with columns named like \code{B01001_001E}
-@param ... <\code{\link[rlang:dyn-dots]{dynamic-dots}}> named regular expressions for extracting fields from the column names}
+\item{.frame}{a data frame from the census with columns named like \code{B01001_001E}}
+
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> named regular expressions for extracting fields from the column names}
 }
 \value{
 a pivoted data frames where the columns that matched the regular expression are converted to rows that are described by the extracted fields.

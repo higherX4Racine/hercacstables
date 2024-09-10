@@ -60,6 +60,22 @@ EMPLOYMENT_STATUS_METADATA <- list(
         ),
     "extdata" |>
         system.file(
+            "employed_by_age_and_veterancy_b21005.csv",
+            package = "hercacstables"
+        ) |>
+        readr::read_csv(
+            col_types = readr::cols(
+                Name = readr::col_character(),
+                Age = readr::col_character(),
+                Veteran = readr::col_logical(),
+                `In Labor Force` = readr::col_logical(),
+                Employed = readr::col_logical(),
+                `Lower Age` = readr::col_integer(),
+                `Upper Age` = readr::col_integer()
+            )
+        ),
+    "extdata" |>
+        system.file(
             "employed_by_sex_and_poverty_b17005.csv",
             package = "hercacstables"
         ) |>

@@ -22,5 +22,5 @@ downloading metadata about geographies, groups of variables, or specific
 variables.
 }
 \examples{
-info_url("groups", 2021L, 5L)
+hercacstables:::info_url("groups", 2021L, 5L)
 }

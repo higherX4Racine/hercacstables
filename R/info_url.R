@@ -9,10 +9,9 @@
 #' @param .year_span Either 1, 3, or 5, depending upon the desired time resolution.
 #'
 #' @return A string that contains a URL.
-#' @export
 #'
 #' @examples
-#' info_url("groups", 2021L, 5L)
+#' hercacstables:::info_url("groups", 2021L, 5L)
 info_url <- function(.info_type, .year, .year_span) {
     rlang::arg_match(
         .info_type,

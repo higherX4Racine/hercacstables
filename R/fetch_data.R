@@ -14,48 +14,29 @@ fetch_data <- function(variables,
                        other_geos = NULL,
                        ...,
                        use_key = TRUE) {
-    .json <- api_url |>
-        do.call(
-            rlang::list2(variables = variables,
-                         for_geo = for_geo,
-                         for_items = for_items,
-                         year = year,
-                         survey_type = survey_type,
-                         table_or_survey_code = table_or_survey_code,
-                         ...,
-                         !!!other_geos,
-                         use_key = use_key)
-        ) |>
-        jsonlite::read_json()
 
-    .json |>
-        tail(
-            -1
+    variables |>
+        fetch_json_as_list(
+            for_geo = for_geo,
+            for_items = for_items,
+            year = year,
+            survey_type = survey_type,
+            table_or_survey_code = table_or_survey_code,
+            !!!other_geos,
+            ...,
+            use_key = use_key
         ) |>
-        purrr::list_transpose() |>
-        rlang::set_names(
-            as.character(.json[[1]])
-        ) |>
-        tibble::as_tibble() |>
-        dplyr::mutate(
-            dplyr::across(tidyselect::where(is.list),
-                          ~ dplyr::na_if(as.character(.), "NULL"))
-        ) |>
-        tidyr::pivot_longer(
-            !c(for_geo, names(other_geos)),
-            names_to = "Variable",
-            values_to = "Value"
-        ) |>
-        tidyr::separate_wider_regex(
-            "Variable",
-            patterns = c(Group = "^[^_]+", # this hard-codes the separator and could be a problem
-                         "_?", # same as previous comment
-                         Index = "\\d{3}",
-                         ".*")
+        rlang::inject() |>
+        json_list_to_frame() |>
+        pivot_and_separate(
+            Group = "^[^_]+", # this hard-codes the separator and could be a problem
+            "_?",             # same as previous comment
+            Index = "\\d{3}",
+            ".*"
         ) |>
         dplyr::mutate(
             Year = year,
-            Index = as.integer(.data$Index),
-            Value = as.numeric(.data$Value)
+            dplyr::across(tidyselect::any_of("Index"),
+                          as.integer)
         )
 }

@@ -7,7 +7,7 @@
 #'
 #' @return one URL, as a string
 #' @export
-#'
+#' @seealso [api_query()]
 #' @examples
 #' api_url(paste0("B25003_00", 1:3, "E"),
 #'               "tract",

@@ -59,3 +59,6 @@ api_url(paste0("P1_00", c(1, 3, 4), "N"),
               county = 101L,
               use_key = FALSE)
 }
+\seealso{
+\code{\link[=api_query]{api_query()}}
+}

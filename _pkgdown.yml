@@ -6,16 +6,17 @@ reference:
   desc: >
     you will call these to get American Community Survey data
   contents:
-  - api_query
-  - api_url
   - build_api_variable
+  - build_api_url
+  - build_for_geographies
+  - build_in_geographies
+  - build_info_url
   - fetch_acs5_tract_data
   - fetch_data
   - fetch_decennial_block_pops_by_race
   - fetch_json_as_list
   - fetch_metadata_table
   - hercacstables
-  - info_url
   - json_list_to_frame
   - margins_by_demography_and_place
   - pivot_and_separate
@@ -36,6 +37,3 @@ reference:
   - METADATA_ACS5
   - RACE_ETHNICITY_SUBTABLE_METADATA
   - STANDARD_OF_LIVING_METADATA
-- title: Constants
-  desc: >
-    Constant values

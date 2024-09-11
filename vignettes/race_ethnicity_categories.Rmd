@@ -592,7 +592,7 @@ knitr::kable(broad_subtables)
 | Native Hawaiian or Pacific Islander | Individuals with origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands, including, for example, Native Hawaiian, Samoan, Chamorro, Tongan, Fijian, and Marshallese. |
 | White | Individuals with origins in any of the original peoples of Europe, including, for example, English, German, Irish, Italian, Polish, and Scottish. |
 
-<!--->
+<!---
 ## Separating race and ethnicity
 
 This combination of categories is terrible for a variety of reasons.
@@ -767,4 +767,4 @@ county_subtotals <- racine_races |>
 
 knitr::kable(county_subtotals)
 ```
-<!--->
+--->

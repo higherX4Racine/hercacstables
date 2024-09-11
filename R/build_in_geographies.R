@@ -3,7 +3,7 @@
 #' @param ...  <[`dynamic-dots`][rlang::dyn-dots]> key-value pairs like "state=03"
 #'
 #' @return A string of ampersand-separated `in=geo:code` pairs
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' hercacstables:::build_in_geographies(state=55, county = 101, barf=NULL)

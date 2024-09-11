@@ -6,9 +6,10 @@
 #'
 #' @param .x a tibble with a column called "Variable"
 #' @param max_per_query defaults to 40
-#' @param ... other arguments for "hercacstables::api_url"
+#' @param ... other arguments for [`build_api_url()`]
 #'
 #' @return a list of JSON-formatted census replies.
+#' @seealso [build_api_url()]
 #' @export
 safe_api_query <- function(.x, max_per_query = 40, ...){
     split(
@@ -18,10 +19,6 @@ safe_api_query <- function(.x, max_per_query = 40, ...){
             length.out = nrow(.x))
     ) |>
         purrr::map(
-            api_url,
-            ...
-        ) |>
-        purrr::map(
-            api_query
+            ~ build_api_query(., ...)
         )
 }

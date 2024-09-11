@@ -11,15 +11,28 @@
 #' @return A string that contains a URL.
 #'
 #' @examples
-#' hercacstables:::info_url("groups", 2021L, 5L)
-info_url <- function(.info_type, .year, .year_span) {
+#' hercacstables:::build_info_url("groups", 2021L, 5L)
+build_info_url <- function(.info_type, .year, .year_span) {
     rlang::arg_match(
         .info_type,
         c("geography", "groups", "variables")
     )
 
-    glue::glue("https://{.CENSUS_API_DOMAIN}",
-               "/{acs_path(.year, .year_span)}",
-               "/{.info_type}.json",
-               "?key={Sys.getenv('CENSUS_API_KEY')}")
+    query_parameters <- list(`key` = Sys.getenv("CENSUS_API_KEY"))
+
+    url_components <- list(
+        scheme = CENSUS_API_SCHEME,
+        hostname = CENSUS_API_HOSTNAME,
+        path = c(CENSUS_API_PATHROOT,
+                 .year,
+                 "acs",
+                 paste0("acs", .year_span),
+                 paste0(.info_type, ".json")),
+        query = query_parameters
+    )
+
+    class(url_components) <- "url"
+    url_components |>
+        httr::build_url() |>
+        URLencode()
 }

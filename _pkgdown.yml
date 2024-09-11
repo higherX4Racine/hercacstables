@@ -1,4 +1,39 @@
 url: https://higherx4racine.github.io/hercacstables/
 template:
   bootstrap: 5
-
+reference:
+- title: Functions
+  desc: >
+    you will call these to get American Community Survey data
+  contents:
+  - build_api_variable
+  - build_api_url
+  - build_for_geographies
+  - build_in_geographies
+  - build_info_url
+  - fetch_acs5_tract_data
+  - fetch_data
+  - fetch_decennial_block_pops_by_race
+  - fetch_json_as_list
+  - fetch_metadata_table
+  - hercacstables
+  - json_list_to_frame
+  - margins_by_demography_and_place
+  - pivot_and_separate
+  - safe_api_query
+- title: Metadata
+  desc: >
+    These tables connect real-world meanings to the table-name-row-number codes
+    that you need to pull data from the Census API.
+  contents:
+  - CHILDREN_IN_POVERTY_METADATA
+  - CHILDREN_PER_FAMILY_METADATA
+  - DECENNIAL_POPULATION_FIELDS
+  - EDUCATIONAL_ATTAINMENT_LEVELS
+  - EDUCATIONAL_ATTAINMENT_METADATA
+  - EMPLOYMENT_STATUS_METADATA
+  - FAMILIES_WITH_CHILDREN_METADATA
+  - GEOGRAPHY_HIERARCHY_METADATA
+  - METADATA_ACS5
+  - RACE_ETHNICITY_SUBTABLE_METADATA
+  - STANDARD_OF_LIVING_METADATA

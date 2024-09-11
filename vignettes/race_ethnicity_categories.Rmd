@@ -198,7 +198,7 @@ convenience_check_variables <- tibble::tribble(
 ) |>
     dplyr::mutate(
         Group = paste0(.data$Table, .data$Suffix),
-        Variable = build_api_variable(table_code = .data$Table,
+        Variable = build_api_variable(group_code = .data$Table,
                                       race_code = .data$Suffix,
                                       item_number = .data$Index),
         `Table Type` = dplyr::if_else(nchar(.data$Suffix) > 0,
@@ -265,7 +265,7 @@ convenience_check_values |>
                       scales::label_comma(accuracy = 1))
     ) |>
     knitr::kable(
-        align = "lrrl"
+        align = "llrrl"
     )
 ```
 
@@ -322,7 +322,7 @@ incl_excl_pop_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
         values_to = "Group"
     ) |>
     dplyr::mutate(
-        Variable = build_api_variable(.data$Group, "", 1)
+        Variable = build_api_variable(.data$Group, 1)
     )
 
 knitr::kable(incl_excl_pop_variables)
@@ -592,6 +592,7 @@ knitr::kable(broad_subtables)
 | Native Hawaiian or Pacific Islander | Individuals with origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands, including, for example, Native Hawaiian, Samoan, Chamorro, Tongan, Fijian, and Marshallese. |
 | White | Individuals with origins in any of the original peoples of Europe, including, for example, English, German, Irish, Italian, Polish, and Scottish. |
 
+<!---
 ## Separating race and ethnicity
 
 This combination of categories is terrible for a variety of reasons.
@@ -766,3 +767,4 @@ county_subtotals <- racine_races |>
 
 knitr::kable(county_subtotals)
 ```
+--->

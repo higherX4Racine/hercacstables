@@ -41,3 +41,6 @@ a tibble with "Group", "Index", "Value", and "Year" fields, as well as one field
 \description{
 Download a set of data from the US Census API
 }
+\seealso{
+\code{\link[=build_api_url]{build_api_url()}}
+}

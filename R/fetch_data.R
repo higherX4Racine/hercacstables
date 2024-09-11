@@ -1,9 +1,10 @@
 #' Download a set of data from the US Census API
 #'
-#' @inheritParams api_url
+#' @inheritParams build_api_url
 #' @param other_geos optional, a named list of other geographies, e.g. `list(state = 55L, county = 101L)`
 #'
 #' @return a tibble with "Group", "Index", "Value", and "Year" fields, as well as one field for each geography.
+#' @seealso [build_api_url()]
 #' @export
 fetch_data <- function(variables,
                        year,

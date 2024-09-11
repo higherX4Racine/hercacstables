@@ -2,13 +2,13 @@
 #'
 #' This function downloads a large JSON object and parses it into a tibble.
 #'
-#' @param .info_type See `info_url`.
-#' @param .year See `info_url`.
-#' @param .year_span See `info_url`.
+#' @param .info_type See [`build_info_url()`].
+#' @param .year See [`build_info_url()`].
+#' @param .year_span See [`build_info_url`].
 #'
 #' @return A tibble.
 #'
-#' @seealso `info_url`
+#' @seealso [`build_info_url()`]
 #' @export
 fetch_metadata_table <- function(.info_type, .year, .year_span) {
     .pluck_map <- list(
@@ -18,7 +18,7 @@ fetch_metadata_table <- function(.info_type, .year, .year_span) {
     )
 
     .table <- .info_type |>
-        info_url(
+        build_info_url(
             .year,
             .year_span
         ) |>

@@ -265,7 +265,7 @@ convenience_check_values |>
                       scales::label_comma(accuracy = 1))
     ) |>
     knitr::kable(
-        align = "lrrl"
+        align = "llrrl"
     )
 ```
 

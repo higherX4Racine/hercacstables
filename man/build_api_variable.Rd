@@ -5,19 +5,19 @@
 \title{Vectorized Creation of Census ACS Variables}
 \usage{
 build_api_variable(
-  table_code,
-  race_code,
+  group_code,
   item_number,
+  race_code = "",
   separator = "_",
   suffix = "E"
 )
 }
 \arguments{
-\item{table_code}{the table code, like "B18101"}
-
-\item{race_code}{either an empty string or one of [A..I]}
+\item{group_code}{the group code, like "B18101"}
 
 \item{item_number}{some integer between 0 and 999}
+
+\item{race_code}{optional, either an empty string or one of [A..I]}
 
 \item{separator}{optional, usually "_" for ACS variables.}
 
@@ -27,12 +27,12 @@ build_api_variable(
 a vector of strings, each of which is a variable name
 }
 \description{
-All detail table variables have the format "B000OOX_000E", where the "B" and
-"E" are literal and the "X" is a race code.
+All detail group variables have the format "B000OO*_000E", where the "B" and
+"E" are literal and the "*" is a race code.
 }
 \examples{
-tables <- c("B19013", "B18101", "B18101")
+groups <- c("B19013", "B18101", "B18101")
 races <- c("", "", "I")
 numbers <- 1
-build_api_variable(tables, races, numbers)
+build_api_variable(groups, numbers, races)
 }

@@ -45,10 +45,6 @@
 #' }
 "GEOGRAPHY_HIERARCHY_METADATA"
 
-#' The current URL for accessing the U.S. Census Bureau's API.
-#' @source https://api.census.gov/data
-"CENSUS_API_URL"
-
 #' Census labels for different levels of educational achievement
 #'
 #' The census breaks down educational attainment to different levels of detail

@@ -11,11 +11,14 @@ safe_api_query(.x, max_per_query = 40, ...)
 
 \item{max_per_query}{defaults to 40}
 
-\item{...}{other arguments for "hercacstables::api_url"}
+\item{...}{other arguments for \code{\link[=build_api_url]{build_api_url()}}}
 }
 \value{
 a list of JSON-formatted census replies.
 }
 \description{
 The census API complains if you have more than 50 variables per query.
+}
+\seealso{
+\code{\link[=build_api_url]{build_api_url()}}
 }

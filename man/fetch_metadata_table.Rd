@@ -7,11 +7,11 @@
 fetch_metadata_table(.info_type, .year, .year_span)
 }
 \arguments{
-\item{.info_type}{See \code{info_url}.}
+\item{.info_type}{See \code{\link[=build_info_url]{build_info_url()}}.}
 
-\item{.year}{See \code{info_url}.}
+\item{.year}{See \code{\link[=build_info_url]{build_info_url()}}.}
 
-\item{.year_span}{See \code{info_url}.}
+\item{.year_span}{See \code{\link{build_info_url}}.}
 }
 \value{
 A tibble.
@@ -20,5 +20,5 @@ A tibble.
 This function downloads a large JSON object and parses it into a tibble.
 }
 \seealso{
-\code{info_url}
+\code{\link[=build_info_url]{build_info_url()}}
 }

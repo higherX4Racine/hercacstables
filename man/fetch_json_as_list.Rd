@@ -39,7 +39,7 @@ a list of items read from json
 Make a call to the Census API and convert the JSON response to an R list.
 }
 \seealso{
-\code{\link[=api_url]{api_url()}}
+\code{\link[=build_api_url]{build_api_url()}}
 
 \code{\link[jsonlite:read_json]{jsonlite::read_json()}}
 }

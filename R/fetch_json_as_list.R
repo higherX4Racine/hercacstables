@@ -1,9 +1,9 @@
 #' Make a call to the Census API and convert the JSON response to an R list.
 #'
-#' @inheritParams api_url
+#' @inheritParams build_api_url
 #'
 #' @return a list of items read from json
-#' @seealso [api_url()]
+#' @seealso [build_api_url()]
 #' @seealso [jsonlite::read_json()]
 fetch_json_as_list <- function(variables,
                                year,
@@ -14,7 +14,7 @@ fetch_json_as_list <- function(variables,
                                ...,
                                use_key = TRUE) {
     variables |>
-        api_url(
+        build_api_url(
             variables = _,
             for_geo = for_geo,
             for_items = for_items,

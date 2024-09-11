@@ -36,9 +36,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a></h2>
 
-
+      <div class="section-desc"><p>you will call these to get American Community Survey data</p></div>
 
 
     </div><div class="section level2">
@@ -48,11 +48,106 @@
 
       <dl><dt>
 
-          <code><a href="CENSUS_API_URL.html">CENSUS_API_URL</a></code>
+          <code><a href="build_api_variable.html">build_api_variable()</a></code>
 
         </dt>
-        <dd>The current URL for accessing the U.S. Census Bureau's API.</dd>
+        <dd>Vectorized Creation of Census ACS Variables</dd>
       </dl><dl><dt>
+
+          <code><a href="build_api_url.html">build_api_url()</a></code>
+
+        </dt>
+        <dd>Create an API call to send to api.census.gov</dd>
+      </dl><dl><dt>
+
+          <code><a href="build_for_geographies.html">build_for_geographies()</a></code>
+
+        </dt>
+        <dd>Use the <code>for</code> geography to specify the level that you are querying data for.</dd>
+      </dl><dl><dt>
+
+          <code><a href="build_in_geographies.html">build_in_geographies()</a></code>
+
+        </dt>
+        <dd>Create the part of a Census API query that describes containing geographies</dd>
+      </dl><dl><dt>
+
+          <code><a href="build_info_url.html">build_info_url()</a></code>
+
+        </dt>
+        <dd>Get the URL for JSON metadata about one table of ACS data</dd>
+      </dl><dl><dt>
+
+          <code><a href="fetch_acs5_tract_data.html">fetch_acs5_tract_data()</a></code>
+
+        </dt>
+        <dd>Pull data from the 5-year American Community Survey</dd>
+      </dl><dl><dt>
+
+          <code><a href="fetch_data.html">fetch_data()</a></code>
+
+        </dt>
+        <dd>Download a set of data from the US Census API</dd>
+      </dl><dl><dt>
+
+          <code><a href="fetch_decennial_block_pops_by_race.html">fetch_decennial_block_pops_by_race()</a></code>
+
+        </dt>
+        <dd>Get decennial census estimates of per-block populations by race/ethnicity</dd>
+      </dl><dl><dt>
+
+          <code><a href="fetch_json_as_list.html">fetch_json_as_list()</a></code>
+
+        </dt>
+        <dd>Make a call to the Census API and convert the JSON response to an R list.</dd>
+      </dl><dl><dt>
+
+          <code><a href="fetch_metadata_table.html">fetch_metadata_table()</a></code>
+
+        </dt>
+        <dd>Fetch metadata about a specific ACS data set from the Census API.</dd>
+      </dl><dl><dt>
+
+          <code><a href="hercacstables.html">hercacstables</a></code>
+
+        </dt>
+        <dd>Tools for parsing ACS data tables</dd>
+      </dl><dl><dt>
+
+          <code><a href="json_list_to_frame.html">json_list_to_frame()</a></code>
+
+        </dt>
+        <dd>Convert a list of json objects from the census into a data frame</dd>
+      </dl><dl><dt>
+
+          <code><a href="margins_by_demography_and_place.html">margins_by_demography_and_place()</a></code>
+
+        </dt>
+        <dd>Determine the relative contribution of different demographic groups to the populations of a set of areas.</dd>
+      </dl><dl><dt>
+
+          <code><a href="pivot_and_separate.html">pivot_and_separate()</a></code>
+
+        </dt>
+        <dd>Take a wide-formatted response from the Census API and convert it to long</dd>
+      </dl><dl><dt>
+
+          <code><a href="safe_api_query.html">safe_api_query()</a></code>
+
+        </dt>
+        <dd>Split a census query into fewer than 50 variables per query</dd>
+      </dl></div><div class="section level2">
+      <h2 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a></h2>
+
+      <div class="section-desc"><p>These tables connect real-world meanings to the table-name-row-number codes that you need to pull data from the Census API.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="CHILDREN_IN_POVERTY_METADATA.html">CHILDREN_IN_POVERTY_METADATA</a></code>
 
@@ -118,98 +213,9 @@
 
         </dt>
         <dd>Categorize ACS variables about income : poverty level ratios by family sustainability</dd>
-      </dl><dl><dt>
-
-          <code><a href="acs_path.html">acs_path()</a></code>
-
-        </dt>
-        <dd>Check for valid options and return the path part of an API call for ACS data.</dd>
-      </dl><dl><dt>
-
-          <code><a href="api_query.html">api_query()</a></code>
-
-        </dt>
-        <dd>Construct the query part of the URL for a call to the US Census API</dd>
-      </dl><dl><dt>
-
-          <code><a href="api_url.html">api_url()</a></code>
-
-        </dt>
-        <dd>Create an API call to send to api.census.gov</dd>
-      </dl><dl><dt>
-
-          <code><a href="build_api_variable.html">build_api_variable()</a></code>
-
-        </dt>
-        <dd>Vectorized Creation of Census ACS Variables</dd>
-      </dl><dl><dt>
-
-          <code><a href="fetch_acs5_tract_data.html">fetch_acs5_tract_data()</a></code>
-
-        </dt>
-        <dd>Pull data from the 5-year American Community Survey</dd>
-      </dl><dl><dt>
-
-          <code><a href="fetch_data.html">fetch_data()</a></code>
-
-        </dt>
-        <dd>Download a set of data from the US Census API</dd>
-      </dl><dl><dt>
-
-          <code><a href="fetch_decennial_block_pops_by_race.html">fetch_decennial_block_pops_by_race()</a></code>
-
-        </dt>
-        <dd>Get decennial census estimates of per-block populations by race/ethnicity</dd>
-      </dl><dl><dt>
-
-          <code><a href="fetch_json_as_list.html">fetch_json_as_list()</a></code>
-
-        </dt>
-        <dd>Make a call to the Census API and convert the JSON response to an R list.</dd>
-      </dl><dl><dt>
-
-          <code><a href="fetch_metadata_table.html">fetch_metadata_table()</a></code>
-
-        </dt>
-        <dd>Fetch metadata about a specific ACS data set from the Census API.</dd>
-      </dl><dl><dt>
-
-          <code><a href="hercacstables.html">hercacstables</a></code>
-
-        </dt>
-        <dd>Tools for parsing ACS data tables</dd>
-      </dl><dl><dt>
-
-          <code><a href="info_url.html">info_url()</a></code>
-
-        </dt>
-        <dd>Get the URL for JSON metadata about one table of ACS data</dd>
-      </dl><dl><dt>
-
-          <code><a href="json_list_to_frame.html">json_list_to_frame()</a></code>
-
-        </dt>
-        <dd>Convert a list of json objects from the census into a data frame</dd>
-      </dl><dl><dt>
-
-          <code><a href="margins_by_demography_and_place.html">margins_by_demography_and_place()</a></code>
-
-        </dt>
-        <dd>Determine the relative contribution of different demographic groups to the populations of a set of areas.</dd>
-      </dl><dl><dt>
-
-          <code><a href="pivot_and_separate.html">pivot_and_separate()</a></code>
-
-        </dt>
-        <dd>Take a wide-formatted response from the Census API and convert it to long</dd>
-      </dl><dl><dt>
-
-          <code><a href="safe_api_query.html">safe_api_query()</a></code>
-
-        </dt>
-        <dd>Split a census query into fewer than 50 variables per query</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

@@ -309,7 +309,7 @@ way that “maps” from the Census variable to the real-world meaning.</p>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        Group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Table</span>, <span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span><span class="op">)</span>,</span>
-<span>        Variable <span class="op">=</span> <span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span>table_code <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Table</span>,</span>
+<span>        Variable <span class="op">=</span> <span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span>group_code <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Table</span>,</span>
 <span>                                      race_code <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span>,</span>
 <span>                                      item_number <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Index</span><span class="op">)</span>,</span>
 <span>        `Table Type` <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>,</span>
@@ -475,43 +475,43 @@ subtables.</p>
 <span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>        align <span class="op">=</span> <span class="st">"lrrl"</span></span>
+<span>        align <span class="op">=</span> <span class="st">"llrrl"</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Population</th>
-<th align="right">Race</th>
+<th align="left">Race</th>
 <th align="right">Subtable</th>
-<th align="left">Convenience</th>
+<th align="right">Convenience</th>
 <th align="left">Identical</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">People</td>
-<td align="right">White</td>
+<td align="left">White</td>
 <td align="right">218,123,424</td>
-<td align="left">218,123,424</td>
+<td align="right">218,123,424</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">People</td>
-<td align="right">Black</td>
+<td align="left">Black</td>
 <td align="right">41,288,572</td>
-<td align="left">41,288,572</td>
+<td align="right">41,288,572</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="odd">
 <td align="left">Households</td>
-<td align="right">White</td>
+<td align="left">White</td>
 <td align="right">89,093,698</td>
-<td align="left">89,093,698</td>
+<td align="right">89,093,698</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">Households</td>
-<td align="right">Black</td>
+<td align="left">Black</td>
 <td align="right">15,396,339</td>
-<td align="left">15,396,339</td>
+<td align="right">15,396,339</td>
 <td align="left">Yes</td>
 </tr>
 </tbody>
@@ -621,7 +621,7 @@ use <code>hercacstables</code> to check this, too.</p>
 <span>        values_to <span class="op">=</span> <span class="st">"Group"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        Variable <span class="op">=</span> <span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Group</span>, <span class="st">""</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>        Variable <span class="op">=</span> <span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Group</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">incl_excl_pop_variables</span><span class="op">)</span></span></code></pre></div>
@@ -1576,32 +1576,44 @@ Scottish.</td>
 </tr>
 </tbody>
 </table>
+<!---
+## Separating race and ethnicity
+
+This combination of categories is terrible for a variety of reasons.
+Leaving aside the panoply of historical and ethical ones, there is also a purely
+data one.
+The table with not suffix letter holds the population for the whole area.
+The different subtables will not necessarily add up to match that overall
+population because there is overlap between the two groups.
+Specifically, because these categories combine race and ethnicity, folks who are
+counted in subtable "I" could also be counted in any subtable other than "H."
+
+
+
+Ok, so it looks like we can avoid double-counting, but only if we ignore
+Hispanic ethnicity.
+
+But, that means that we can count the total number of non-Hispanic, non-White
+people.
+
+
+
+I can't stop myself from pointing out that this table is only possible because
+the Census decided that we just had to know which folks were not only white, but
+also not Hispanic.
+
+The ten categories that we see above are often the ten categories that the
+Census uses to disaggregate their data.
+As we saw above, that system does not give any information about how non-white
+racial identities are distributed between Hispanic and non-Hispanic ethnic
+identities.
+There is another table that gives the breakdown in more detail, though:
+
+
+
+
+--->
 </div>
-</div>
-<div class="section level2">
-<h2 id="separating-race-and-ethnicity">Separating race and ethnicity<a class="anchor" aria-label="anchor" href="#separating-race-and-ethnicity"></a>
-</h2>
-<p>This combination of categories is terrible for a variety of reasons.
-Leaving aside the panoply of historical and ethical ones, there is also
-a purely data one. The table with not suffix letter holds the population
-for the whole area. The different subtables will not necessarily add up
-to match that overall population because there is overlap between the
-two groups. Specifically, because these categories combine race and
-ethnicity, folks who are counted in subtable “I” could also be counted
-in any subtable other than “H.”</p>
-<p>Ok, so it looks like we can avoid double-counting, but only if we
-ignore Hispanic ethnicity.</p>
-<p>But, that means that we can count the total number of non-Hispanic,
-non-White people.</p>
-<p>I can’t stop myself from pointing out that this table is only
-possible because the Census decided that we just had to know which folks
-were not only white, but also not Hispanic.</p>
-<p>The ten categories that we see above are often the ten categories
-that the Census uses to disaggregate their data. As we saw above, that
-system does not give any information about how non-white racial
-identities are distributed between Hispanic and non-Hispanic ethnic
-identities. There is another table that gives the breakdown in more
-detail, though:</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

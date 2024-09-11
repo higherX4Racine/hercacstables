@@ -8,7 +8,6 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/race_ethnicity_categories.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/authors.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/index.html</loc></url>
-<url><loc>https://higherx4racine.github.io/hercacstables/reference/CENSUS_API_URL.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/CHILDREN_IN_POVERTY_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/CHILDREN_PER_FAMILY_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/DECENNIAL_POPULATION_FIELDS.html</loc></url>
@@ -20,10 +19,11 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/METADATA_ACS5.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/RACE_ETHNICITY_SUBTABLE_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/STANDARD_OF_LIVING_METADATA.html</loc></url>
-<url><loc>https://higherx4racine.github.io/hercacstables/reference/acs_path.html</loc></url>
-<url><loc>https://higherx4racine.github.io/hercacstables/reference/api_query.html</loc></url>
-<url><loc>https://higherx4racine.github.io/hercacstables/reference/api_url.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/build_api_url.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/build_api_variable.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/build_for_geographies.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/build_in_geographies.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/build_info_url.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/fetch_acs5_tract_data.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/fetch_data.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/fetch_decennial_block_pops_by_race.html</loc></url>
@@ -32,7 +32,6 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/hercacstables-package.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/hercacstables.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/index.html</loc></url>
-<url><loc>https://higherx4racine.github.io/hercacstables/reference/info_url.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/json_list_to_frame.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/margins_by_demography_and_place.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/pivot_and_separate.html</loc></url>

@@ -18,16 +18,22 @@ build_info_url <- function(.info_type, .year, .year_span) {
         c("geography", "groups", "variables")
     )
 
-    query_parameters <- list(`key` = Sys.getenv("CENSUS_API_KEY"))
+    if (api_key_is_set()) {
+        query_parameters <- list(`key` = api_key_value())
+    } else {
+        query_parameters <- list()
+    }
 
     url_components <- list(
         scheme = CENSUS_API_SCHEME,
         hostname = CENSUS_API_HOSTNAME,
-        path = c(CENSUS_API_PATHROOT,
-                 .year,
-                 "acs",
-                 paste0("acs", .year_span),
-                 paste0(.info_type, ".json")),
+        path = c(
+            CENSUS_API_PATHROOT,
+            .year,
+            "acs",
+            paste0("acs", .year_span),
+            paste0(.info_type, ".json")
+        ),
         query = query_parameters
     )
 

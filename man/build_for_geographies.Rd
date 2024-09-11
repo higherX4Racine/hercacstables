@@ -21,3 +21,4 @@ Use the \code{for} geography to specify the level that you are querying data for
 hercacstables:::build_for_geographies("block")
 hercacstables:::build_for_geographies("tract", "000400", "000500")
 }
+\keyword{internal}

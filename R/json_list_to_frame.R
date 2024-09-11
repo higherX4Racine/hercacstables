@@ -3,6 +3,7 @@
 #' @param .json_list the list of objects
 #'
 #' @return a [tibble::tibble()] with column names taken from the list
+#' @keywords internal
 json_list_to_frame <- function(.json_list){
     .json_list |>
         tail(-1) |>

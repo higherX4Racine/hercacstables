@@ -15,3 +15,4 @@ a \code{\link[tibble:tibble]{tibble::tibble()}} with column names taken from the
 \description{
 Convert a list of json objects from the census into a data frame
 }
+\keyword{internal}

@@ -3,6 +3,8 @@
 #' @inheritParams build_api_url
 #'
 #' @return a list of items read from json
+#' @keywords internal
+#'
 #' @seealso [build_api_url()]
 #' @seealso [jsonlite::read_json()]
 fetch_json_as_list <- function(variables,

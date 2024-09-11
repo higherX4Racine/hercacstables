@@ -19,3 +19,4 @@ Create the part of a Census API query that describes containing geographies
 hercacstables:::build_in_geographies(state=55, county = 101, barf=NULL)
 
 }
+\keyword{internal}

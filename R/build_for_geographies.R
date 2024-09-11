@@ -4,6 +4,7 @@
 #' @param ...  <[`dynamic-dots`][rlang::dyn-dots]> The specific items to search for, which will be all items if you leave them empty.
 #'
 #' @return a list with one element named `for` which is a "key:value" string
+#' @keywords internal
 #'
 #' @examples
 #' hercacstables:::build_for_geographies("block")

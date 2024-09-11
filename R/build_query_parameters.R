@@ -11,7 +11,7 @@ build_query_parameters <- function(variables,
 
     if (use_key) {
         query_parameters <- c(query_parameters,
-                              key = Sys.getenv("CENSUS_API_KEY"))
+                              key = api_key_value())
     }
 
     return(query_parameters)

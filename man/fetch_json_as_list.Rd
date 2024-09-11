@@ -43,3 +43,4 @@ Make a call to the Census API and convert the JSON response to an R list.
 
 \code{\link[jsonlite:read_json]{jsonlite::read_json()}}
 }
+\keyword{internal}

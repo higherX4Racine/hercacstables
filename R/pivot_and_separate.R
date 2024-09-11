@@ -4,6 +4,8 @@
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> named regular expressions for extracting fields from the column names
 #'
 #' @return a pivoted data frames where the columns that matched the regular expression are converted to rows that are described by the extracted fields.
+#' @keywords internal
+#'
 #' @seealso [tidyr::pivot_longer()]
 #' @seealso [tidyr::separate_wider_regex()]
 pivot_and_separate <- function(.frame, ...) {

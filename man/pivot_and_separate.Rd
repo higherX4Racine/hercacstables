@@ -22,3 +22,4 @@ Take a wide-formatted response from the Census API and convert it to long
 
 \code{\link[tidyr:separate_wider_delim]{tidyr::separate_wider_regex()}}
 }
+\keyword{internal}

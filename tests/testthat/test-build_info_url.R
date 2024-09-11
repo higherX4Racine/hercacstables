@@ -7,6 +7,6 @@ test_that("good arguments give good urls", {
         build_info_url("geography", 2012, 3),
         glue::glue("{CENSUS_API_SCHEME}://{CENSUS_API_HOSTNAME}/",
                    "{CENSUS_API_PATHROOT}/2012/acs/acs3/geography.json",
-                   "?key={Sys.getenv('CENSUS_API_KEY')}")
+                   "?key={api_key_value()}")
     )
 })

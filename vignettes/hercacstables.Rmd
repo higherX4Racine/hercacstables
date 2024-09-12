@@ -1,0 +1,176 @@
+---
+title: "hercacstables"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{hercacstables}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(hercacstables)
+```
+
+## Welcome
+
+If this is your first time using `hercacstables` then you probably want to
+[register with the Census](#set-up-your-api-key).
+Otherwise, welcome back!
+
+This package helps R users to access data from the United States Census Bureau,
+especially its American Community Survey.
+
+The database has an enormous amount of information, stored in a versatile but
+cumbersome format.
+Data are stored in hundreds of different tables, called "groups," that give
+breakdowns of information.
+For example, group
+[`B21005`](https://api.census.gov/data/2022/acs/acs5/groups/B21005.html)
+reports counts of people according to their employment status, military service,
+and age.
+Each row in a group reports a value for a specific slice of the topic.
+For example, row 5 in group `B21005` gives the number of employed veterans
+between the ages of 18 and 34.
+The Census combines the group code and row into a variable, `B21005_005E`.
+This packing of information gives the Census a very flexible way to report all
+of their data.
+However, it is challenging for the user because you have to somehow know the
+variables that report the data that you are interested in.
+
+In light of that, `hercacstables` is designed to help people make repeated,
+efficient use of the Census's API.
+There are _metadata_ tables that explicitly connect real-world concepts to
+Census variables.
+You can then use database-style joins to connect the concepts to the values that
+you pull from the API.
+
+## Worked example
+
+If you want to use the Census API then you probably have a real-world question
+that you think the data will help you to answer.
+For example, you might ask
+
+> **How have populations changed in Ohio's four largest school districts?**
+
+To answer this with `hercacstables`, you should break it down into three
+component questions.
+
+#### **Who?**
+
+What population or populations are you trying to understand?
+This will help us identify the
+[groups](https://api.census.gov/data/2022/acs/acs5/groups.html) and
+[variables](https://api.census.gov/data/2022/acs/acs5/variables.html)
+that we will specifically ask for.
+
+All of thosee groups and values can be accessed offline with
+`hercacstables::METADATA_ACS5`.
+
+We want to know about populations in school districts.
+It makes sense then to only look at school-aged children, say 5-18.
+Our requests should only ask for data about kids in that age range.
+We can do this with the built-in table `hercacstables::AGE_AND_SEX_METADATA`.
+
+```{r}
+#| label: school-children-metadata
+school_children_metadata <- AGE_AND_SEX_METADATA |>
+    dplyr::filter(
+        .data$`Lower Age` >= 5,
+        .data$`Upper Age` <= 18
+    )
+
+knitr::kable(school_children_metadata)
+```
+
+From this table we can see that we will need to include six variables in our API
+query.
+
+```{r}
+#| label: variables-for-query
+variables_for_query <- school_children_metadata$variable
+print(variables_for_query)
+```
+
+#### **Where?**
+
+What kind of place, and specific location, should the data describe?
+The Census API can provide information at many
+[levels of geographical detail](https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html).
+Some questions might pertain to entire states.
+Others might involve comparisons among all of the tracts in a metropolitan area.
+The "geography" table of `hercacstables::METADATA_ACS5` provides a list of
+geographic levels.
+If you know the real-world name of a place, but not the numeric code that the
+Census uses for it, then you can look it up
+[here](https://www.census.gov/library/reference/code-lists/ansi.html).
+
+For the question that we're dealing with, we want to look at the geographic area
+served by a school district.
+There are actually three different kinds of school district geographic levels.
+
+```{r}
+#| label: school-district-geographies
+school_district_geographies <- hercacstables::METADATA_ACS5 |>
+    purrr::pluck("geography") |>
+    dplyr::filter(stringr::str_detect(.data$`Geographic Level`, "school"))
+
+school_district_geographies |>
+    knitr::kable()
+```
+
+From this table we can see that we will need to query for values about unified
+school districts.
+
+We also see that we must supply the FIPS code for the state of Ohio.
+If you don't know it off the top of your head, you can use a
+[page](https://www.census.gov/library/reference/code-lists/ansi.html) on the
+Census's website to search for the FIPS code of a specific geography.
+
+Ohio's FIPS code is 39.
+
+```{r}
+#| label: geography-for-query
+geography_for_query <- school_district_geographies$`Geographic Level`[3]
+print(geography_for_query)
+ohio_fips <- 39
+```
+
+
+#### **What?** Is it just counts, or is there something more specific that we want to know?
+
+There is a lot of overlap between this question and ["Who"](#who?).
+It is worthwhile to ask it separately because it will help you refine and focus
+your approach.
+
+In our case, we 
+
+## Set up your API key
+
+You should use an API key to identify yourself when you access data.census.gov.
+Like many public APIs, the US Census Bureau's data portal allows anonymous
+users.
+However, it limits the number of requests that an anonymous user can send, both
+per second and per day.
+If you [register](http://api.census.gov/data/key_signup.html) with the site, it
+will send you a key.
+You can use the key to identify yourself when making future calls.
+Chances are that you will never come up against any kind of throttling.
+
+To make it easy for new users, `hercacstables` includes a function,
+`api_key_setup()`, that will take you to the sign-up page and then help you
+permanently save your key as a local environment variable.
+That variable is called "CENSUS_API_KEY" to be compatible with another popular
+package for accessing the Census API,
+[tidycensus](https://walker-data.com/tidycensus/index.html).
+
+```{r}
+#| eval: false
+api_key_setup()
+```

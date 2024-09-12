@@ -6,7 +6,7 @@ METADATA_ACS5 <- NULL
 
 while (.YEAR > 2003L) {
     status_code <- "groups" |>
-        info_url(.YEAR, 5L) |>
+        build_info_url(.YEAR, 5L) |>
         httr::HEAD() |>
         httr::status_code()
 

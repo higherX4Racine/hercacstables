@@ -9,7 +9,7 @@ A list with three items
 \describe{
 \item{geography}{Available geographies and how to ask for them in the API.}
 \item{groups}{Each group's ID, its Universe, and its Description.}
-\item{variables}{Each variable's Group, its full code, and its Label.}
+\item{variables}{Each variable's Group, its full code, and Details about what it encodes.}
 }
 }
 \usage{

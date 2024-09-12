@@ -84,14 +84,10 @@ api_key_setup <- function() {
             cat("Your current key is", current_api_key)
             return(invisible(0))
         }
-        next_step <- .api_key_menu()
-
-        if (next_step == 1) {
-            utils::browseURL("http://api.census.gov/data/key_signup.html")
-        } else if (next_step == 2) {
-            .api_key_set(.api_key_prompt())
-        } else {
-            return(invisible(1))
-        }
+        switch(.api_key_menu(),
+            `1` = utils::browseURL("http://api.census.gov/data/key_signup.html"),
+            `2` = .api_key_set(.api_key_prompt()),
+            `3` = return(invisible(1))
+        )
     }
 }

@@ -29,6 +29,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/hercacstables.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
@@ -118,7 +119,7 @@ occurs throughout the American Community Survey.</p>
 <div class="section level3">
 <h3 id="subtable-categories-of-race-and-ethnicity">Subtable categories of race and ethnicity<a class="anchor" aria-label="anchor" href="#subtable-categories-of-race-and-ethnicity"></a>
 </h3>
-<p>There are 44 <a href="#subtables-of-race-and-ethnicity">separate sets
+<p>There are 47 <a href="#subtables-of-race-and-ethnicity">separate sets
 of tables</a> that subdivide their information according to this
 ten-category scheme. Each identity is designated by a suffix at the end
 of a table’s name. In other words, all of the values from a table with
@@ -180,88 +181,15 @@ the table describes.</p>
 <div class="section level3">
 <h3 id="tables-with-race-in-their-description">Tables with “RACE” in their description<a class="anchor" aria-label="anchor" href="#tables-with-race-in-their-description"></a>
 </h3>
-<p>There are also 12 tables that have the word “RACE” in their
+<p>There are also 0 tables that have the word “RACE” in their
 description.</p>
-<table style="width:100%;" class="table">
-<colgroup>
-<col width="6%">
-<col width="88%">
-<col width="4%">
-</colgroup>
+<table class="table">
 <thead><tr class="header">
-<th align="left">name</th>
-<th align="left">description</th>
+<th align="left">Group</th>
+<th align="left">Description</th>
 <th align="right">rows</th>
 </tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">B02001</td>
-<td align="left">RACE</td>
-<td align="right">10</td>
-</tr>
-<tr class="even">
-<td align="left">B02008</td>
-<td align="left">WHITE ALONE OR IN COMBINATION WITH ONE OR MORE OTHER
-RACES</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">B02009</td>
-<td align="left">BLACK OR AFRICAN AMERICAN ALONE OR IN COMBINATION WITH
-ONE OR MORE OTHER RACES</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">B02010</td>
-<td align="left">AMERICAN INDIAN AND ALASKA NATIVE ALONE OR IN
-COMBINATION WITH ONE OR MORE OTHER RACES</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">B02011</td>
-<td align="left">ASIAN ALONE OR IN COMBINATION WITH ONE OR MORE OTHER
-RACES</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">B02012</td>
-<td align="left">NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE OR IN
-COMBINATION WITH ONE OR MORE OTHER RACES</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">B02013</td>
-<td align="left">SOME OTHER RACE ALONE OR IN COMBINATION WITH ONE OR
-MORE OTHER RACES</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">B03002</td>
-<td align="left">HISPANIC OR LATINO ORIGIN BY RACE</td>
-<td align="right">21</td>
-</tr>
-<tr class="odd">
-<td align="left">B25006</td>
-<td align="left">RACE OF HOUSEHOLDER</td>
-<td align="right">10</td>
-</tr>
-<tr class="even">
-<td align="left">B98013</td>
-<td align="left">TOTAL POPULATION COVERAGE RATE BY WEIGHTING RACE AND
-HISPANIC OR LATINO GROUPS</td>
-<td align="right">7</td>
-</tr>
-<tr class="odd">
-<td align="left">B99021</td>
-<td align="left">ALLOCATION OF RACE</td>
-<td align="right">3</td>
-</tr>
-<tr class="even">
-<td align="left">C02003</td>
-<td align="left">DETAILED RACE</td>
-<td align="right">19</td>
-</tr>
-</tbody>
+<tbody></tbody>
 </table>
 <p>They seem to fall into four categories. There are two tables with 10
 rows each, <code>B02001</code> and <code>B25006</code>. These are
@@ -541,7 +469,7 @@ because it would have been confusing.</p>
 <thead><tr class="header">
 <th align="left">Census Race</th>
 <th align="left">Suffix</th>
-<th align="left">Inclusive Table</th>
+<th align="left">Inclusive Group</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -605,19 +533,19 @@ use <code>hercacstables</code> to check this, too.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">incl_excl_pop_variables</span> <span class="op">&lt;-</span> <span class="va">RACE_ETHNICITY_SUBTABLE_METADATA</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Inclusive Table`</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Inclusive Group`</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        `Exclusive Table` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"B01001"</span>, <span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span><span class="op">)</span></span>
+<span>        `Exclusive Group` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"B01001"</span>, <span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
 <span>        <span class="st">"Census Race"</span>,</span>
-<span>        Inclusive <span class="op">=</span> <span class="st">"Inclusive Table"</span>,</span>
-<span>        Exclusive <span class="op">=</span> <span class="st">"Exclusive Table"</span></span>
+<span>        Inclusive <span class="op">=</span> <span class="st">"Inclusive Group"</span>,</span>
+<span>        Exclusive <span class="op">=</span> <span class="st">"Exclusive Group"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span></span>
 <span>        cols <span class="op">=</span> <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">ends_with</a></span><span class="op">(</span><span class="st">"clusive"</span><span class="op">)</span>,</span>
-<span>        names_to <span class="op">=</span> <span class="st">"Table"</span>,</span>
+<span>        names_to <span class="op">=</span> <span class="st">"Type of count"</span>,</span>
 <span>        values_to <span class="op">=</span> <span class="st">"Group"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -627,14 +555,14 @@ use <code>hercacstables</code> to check this, too.</p>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">incl_excl_pop_variables</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="61%">
-<col width="12%">
-<col width="10%">
+<col width="58%">
 <col width="16%">
+<col width="9%">
+<col width="15%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Census Race</th>
-<th align="left">Table</th>
+<th align="left">Type of count</th>
 <th align="left">Group</th>
 <th align="left">Variable</th>
 </tr></thead>
@@ -738,11 +666,11 @@ use <code>hercacstables</code> to check this, too.</p>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
 <span>        <span class="st">"Census Race"</span>,</span>
-<span>        <span class="st">"Table"</span>,</span>
+<span>        <span class="st">"Type of count"</span>,</span>
 <span>        <span class="st">"Value"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span></span>
-<span>        names_from <span class="op">=</span> <span class="st">"Table"</span>,</span>
+<span>        names_from <span class="op">=</span> <span class="st">"Type of count"</span>,</span>
 <span>        values_from <span class="op">=</span> <span class="st">"Value"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -1297,217 +1225,245 @@ identities. We can skip those.</p>
 <col width="96%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">name</th>
-<th align="left">description</th>
+<th align="left">Group</th>
+<th align="left">Description</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">B01001</td>
-<td align="left">SEX BY AGE</td>
+<td align="left">Sex by Age (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B01002</td>
-<td align="left">MEDIAN AGE BY SEX</td>
+<td align="left">Median Age by Sex (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B05003</td>
-<td align="left">SEX BY AGE BY NATIVITY AND CITIZENSHIP STATUS</td>
+<td align="left">Sex by Age by Nativity and Citizenship Status (Hispanic
+or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B06004</td>
-<td align="left">PLACE OF BIRTH IN THE UNITED STATES</td>
+<td align="left">Place of Birth (Hispanic or Latino) in the United
+States</td>
 </tr>
 <tr class="odd">
 <td align="left">B07004</td>
-<td align="left">GEOGRAPHICAL MOBILITY IN THE PAST YEAR FOR CURRENT
-RESIDENCE IN THE UNITED STATES</td>
+<td align="left">Geographical Mobility in the Past Year (Hispanic or
+Latino) for Current Residence in the United States</td>
 </tr>
 <tr class="even">
 <td align="left">B07404</td>
-<td align="left">GEOGRAPHICAL MOBILITY IN THE PAST YEAR FOR RESIDENCE 1
-YEAR AGO IN THE UNITED STATES</td>
+<td align="left">Geographical Mobility in the Past Year (Hispanic or
+Latino) for Residence 1 Year Ago in the United States</td>
 </tr>
 <tr class="odd">
 <td align="left">B08105</td>
-<td align="left">MEANS OF TRANSPORTATION TO WORK</td>
+<td align="left">Means of Transportation to Work (Hispanic or
+Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B08505</td>
-<td align="left">MEANS OF TRANSPORTATION TO WORK FOR WORKPLACE
-GEOGRAPHY</td>
+<td align="left">Means of Transportation to Work for Workplace Geography
+(Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B10051</td>
-<td align="left">GRANDPARENTS LIVING WITH OWN GRANDCHILDREN UNDER 18
-YEARS BY RESPONSIBILITY FOR OWN GRANDCHILDREN AND AGE OF
-GRANDPARENT</td>
+<td align="left">Grandparents Living With Own Grandchildren Under 18
+Years by Responsibility for Own Grandchildren and Age of Grandparent
+(Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B11001</td>
-<td align="left">HOUSEHOLD TYPE (INCLUDING LIVING ALONE)</td>
+<td align="left">Household Type (Including Living Alone) (Hispanic or
+Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B11002</td>
-<td align="left">HOUSEHOLD TYPE BY RELATIVES AND NONRELATIVES FOR
-POPULATION IN HOUSEHOLDS</td>
+<td align="left">Household Type by Relatives and Nonrelatives for
+Population in Households (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B12002</td>
-<td align="left">SEX BY MARITAL STATUS FOR THE POPULATION 15 YEARS AND
-OVER</td>
+<td align="left">Sex by Marital Status for the Population 15 Years and
+Over (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B12007</td>
-<td align="left">MEDIAN AGE AT FIRST MARRIAGE</td>
+<td align="left">Median Age at First Marriage (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B13002</td>
-<td align="left">WOMEN 15 TO 50 YEARS WHO HAD A BIRTH IN THE PAST 12
-MONTHS BY MARITAL STATUS</td>
+<td align="left">Women 15 to 50 Years Who Had a Birth in the Past 12
+Months by Marital Status (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B14007</td>
-<td align="left">SCHOOL ENROLLMENT BY DETAILED LEVEL OF SCHOOL FOR THE
-POPULATION 3 YEARS AND OVER</td>
+<td align="left">School Enrollment by Detailed Level of School for the
+Population 3 Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B16005</td>
-<td align="left">NATIVITY BY LANGUAGE SPOKEN AT HOME BY ABILITY TO SPEAK
-ENGLISH FOR THE POPULATION 5 YEARS AND OVER</td>
+<td align="left">Nativity by Language Spoken at Home by Ability to Speak
+English for the Population 5 Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B17001</td>
-<td align="left">POVERTY STATUS IN THE PAST 12 MONTHS BY SEX BY AGE</td>
+<td align="left">Poverty Status in the Past 12 Months by Sex by Age
+(Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B17010</td>
-<td align="left">POVERTY STATUS IN THE PAST 12 MONTHS OF FAMILIES BY
-FAMILY TYPE BY PRESENCE OF RELATED CHILDREN UNDER 18 YEARS BY AGE OF
-RELATED CHILDREN</td>
+<td align="left">Poverty Status in the Past 12 Months of Families by
+Family Type by Presence of Related Children Under 18 Years by Age of
+Related Children (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B17020</td>
-<td align="left">POVERTY STATUS IN THE PAST 12 MONTHS BY AGE</td>
+<td align="left">Poverty Status in the Past 12 Months by Age (Hispanic
+or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B18101</td>
-<td align="left">AGE BY DISABILITY STATUS</td>
+<td align="left">Age by Disability Status (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19001</td>
-<td align="left">HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2021
-INFLATION-ADJUSTED DOLLARS)</td>
+<td align="left">Household Income in the Past 12 Months (in 2022
+Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B19013</td>
-<td align="left">MEDIAN HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2021
-INFLATION-ADJUSTED DOLLARS)</td>
+<td align="left">Median Household Income in the Past 12 Months (in 2022
+Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19025</td>
-<td align="left">AGGREGATE HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN
-2021 INFLATION-ADJUSTED DOLLARS)</td>
+<td align="left">Aggregate Household Income in the Past 12 Months (in
+2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B19037</td>
-<td align="left">AGE OF HOUSEHOLDER BY HOUSEHOLD INCOME IN THE PAST 12
-MONTHS (IN 2021 INFLATION-ADJUSTED DOLLARS)</td>
+<td align="left">Age of Householder by Household Income in the Past 12
+Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino
+Householder)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19101</td>
-<td align="left">FAMILY INCOME IN THE PAST 12 MONTHS (IN 2021
-INFLATION-ADJUSTED DOLLARS)</td>
+<td align="left">Family Income in the Past 12 Months (in 2022
+Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B19113</td>
-<td align="left">MEDIAN FAMILY INCOME IN THE PAST 12 MONTHS (IN 2021
-INFLATION-ADJUSTED DOLLARS)</td>
+<td align="left">Median Family Income in the Past 12 Months (in 2022
+Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19202</td>
-<td align="left">MEDIAN NONFAMILY HOUSEHOLD INCOME IN THE PAST 12 MONTHS
-(IN 2021 INFLATION-ADJUSTED DOLLARS)</td>
+<td align="left">Median Nonfamily Household Income in the Past 12 Months
+(in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino
+Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B19301</td>
-<td align="left">PER CAPITA INCOME IN THE PAST 12 MONTHS (IN 2021
-INFLATION-ADJUSTED DOLLARS)</td>
+<td align="left">Per Capita Income in the Past 12 Months (in 2022
+Inflation-Adjusted Dollars) (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19313</td>
-<td align="left">AGGREGATE INCOME IN THE PAST 12 MONTHS (IN 2021
-INFLATION-ADJUSTED DOLLARS) FOR THE POPULATION 15 YEARS AND OVER</td>
+<td align="left">Aggregate Income in the Past 12 Months (in 2022
+Inflation-Adjusted Dollars) for the Population 15 Years and Over
+(Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B20005</td>
-<td align="left">SEX BY WORK EXPERIENCE IN THE PAST 12 MONTHS BY
-EARNINGS IN THE PAST 12 MONTHS (IN 2021 INFLATION-ADJUSTED DOLLARS) FOR
-THE POPULATION 16 YEARS AND OVER</td>
+<td align="left">Sex by Work Experience in the Past 12 Months by
+Earnings in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) for
+the Population 16 Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B20017</td>
-<td align="left">MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2021
-INFLATION-ADJUSTED DOLLARS) BY SEX BY WORK EXPERIENCE IN THE PAST 12
-MONTHS FOR THE POPULATION 16 YEARS AND OVER WITH EARNINGS</td>
+<td align="left">Median Earnings in the Past 12 Months (in 2022
+Inflation-Adjusted Dollars) by Sex by Work Experience in the Past 12
+Months for the Population 16 Years and Over With Earnings (Hispanic or
+Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B22005</td>
-<td align="left">RECEIPT OF FOOD STAMPS/SNAP IN THE PAST 12 MONTHS BY
-RACE OF HOUSEHOLDER</td>
+<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by
+Race of Householder (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B25003</td>
-<td align="left">TENURE</td>
+<td align="left">Tenure (Hispanic or Latino Householder)</td>
+</tr>
+<tr class="even">
+<td align="left">B25008</td>
+<td align="left">Total Population in Occupied Housing Units by Tenure
+(Hispanic or Latino Householder)</td>
+</tr>
+<tr class="odd">
+<td align="left">B25010</td>
+<td align="left">Average Household Size of Occupied Housing Units by
+Tenure (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B25014</td>
-<td align="left">OCCUPANTS PER ROOM</td>
+<td align="left">Occupants per Room (Hispanic or Latino
+Householder)</td>
 </tr>
 <tr class="odd">
 <td align="left">B25032</td>
-<td align="left">UNITS IN STRUCTURE</td>
+<td align="left">Units in Structure (Hispanic or Latino
+Householder)</td>
 </tr>
 <tr class="even">
+<td align="left">B25077</td>
+<td align="left">Median Value (Dollars, Hispanic or Latino
+Householder)</td>
+</tr>
+<tr class="odd">
 <td align="left">B26103</td>
-<td align="left">GROUP QUARTERS TYPE (3 TYPES)</td>
+<td align="left">Group Quarters Type (3 Types) (Hispanic or Latino)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">B26203</td>
-<td align="left">GROUP QUARTERS TYPE (5 TYPES)</td>
+<td align="left">Group Quarters Type (5 Types) (Hispanic or Latino)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">B28009</td>
-<td align="left">PRESENCE OF A COMPUTER AND TYPE OF INTERNET
-SUBSCRIPTION IN HOUSEHOLD</td>
+<td align="left">Presence of a Computer and Type of Internet
+Subscription in Household (Hispanic or Latino)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">C15002</td>
-<td align="left">SEX BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 25
-YEARS AND OVER</td>
+<td align="left">Sex by Educational Attainment for the Population 25
+Years and Over (Hispanic or Latino)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">C15010</td>
-<td align="left">FIELD OF BACHELOR’S DEGREE FOR FIRST MAJOR THE
-POPULATION 25 YEARS AND OVER</td>
+<td align="left">Field of Bachelor’s Degree for First Major the
+Population 25 Years and Over (Hispanic or Latino)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">C21001</td>
-<td align="left">SEX BY AGE BY VETERAN STATUS FOR THE CIVILIAN
-POPULATION 18 YEARS AND OVER</td>
-</tr>
-<tr class="even">
-<td align="left">C23002</td>
-<td align="left">SEX BY AGE BY EMPLOYMENT STATUS FOR THE POPULATION 16
-YEARS AND OVER</td>
+<td align="left">Sex by Age by Veteran Status for the Civilian
+Population 18 Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
-<td align="left">C24010</td>
-<td align="left">SEX BY OCCUPATION FOR THE CIVILIAN EMPLOYED POPULATION
-16 YEARS AND OVER</td>
+<td align="left">C23002</td>
+<td align="left">Sex by Age by Employment Status for the Population 16
+Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
+<td align="left">C24010</td>
+<td align="left">Sex by Occupation for the Civilian Employed Population
+16 Years and Over (Hispanic or Latino)</td>
+</tr>
+<tr class="odd">
 <td align="left">C27001</td>
-<td align="left">HEALTH INSURANCE COVERAGE STATUS BY AGE</td>
+<td align="left">Health Insurance Coverage Status by Age (Hispanic or
+Latino)</td>
 </tr>
 </tbody>
 </table>

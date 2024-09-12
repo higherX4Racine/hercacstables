@@ -4,10 +4,12 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/LICENSE.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/average_tract_poverty_ratio.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/children_in_poverty.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/articles/hercacstables.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/index.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/race_ethnicity_categories.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/authors.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/index.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/AGE_AND_SEX_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/CHILDREN_IN_POVERTY_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/CHILDREN_PER_FAMILY_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/DECENNIAL_POPULATION_FIELDS.html</loc></url>
@@ -34,6 +36,7 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/fetch_metadata_table.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/hercacstables-package.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/hercacstables.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/hoist_table_metadata.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/index.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/json_list_to_frame.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/margins_by_demography_and_place.html</loc></url>

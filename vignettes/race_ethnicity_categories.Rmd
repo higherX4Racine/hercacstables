@@ -82,11 +82,11 @@ Nevertheless, it occurs throughout the American Community Survey.
 
 broad_subtables <- METADATA_ACS5 |>
     purrr::pluck("groups") |>
-    dplyr::filter(stringr::str_detect(name, "I$")) |>
-    dplyr::select("name", "description") |>
+    dplyr::filter(stringr::str_detect(.data$Group, "I$")) |>
+    dplyr::select("Group", "Description") |>
     dplyr::mutate(
-        name = stringr::str_remove(.data$name, "I$"),
-        description = .data$description |>
+        Group = stringr::str_remove(.data$Group, "I$"),
+        Description = .data$Description |>
             stringr::str_remove("\\(HISPANIC OR LATINO[^)]*\\)") |>
             stringr::str_squish()
     )
@@ -122,17 +122,17 @@ RACE_ETHNICITY_SUBTABLE_METADATA |>
 #| echo: false
 tables_that_name_race <- METADATA_ACS5$groups |>
     dplyr::filter(
-        stringr::str_detect(.data$name, "\\d$"),
-        stringr::str_detect(.data$description, "RACE")
+        stringr::str_detect(.data$Group, "\\d$"),
+        stringr::str_detect(.data$Description, "RACE")
     ) |>
     dplyr::select(
-        "name", "description"
+        "Group", "Description"
     ) |>
     dplyr::left_join(
         dplyr::count(METADATA_ACS5$variables,
-                     .data$group,
+                     .data$Group,
                      name = "rows"),
-        by = c(name = "group")
+        by = "Group"
     )
 ```
 
@@ -291,7 +291,7 @@ RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::select(
         "Census Race",
         "Suffix",
-        "Inclusive Table"
+        "Inclusive Group"
     ) |>
     knitr::kable()
 ```
@@ -306,19 +306,19 @@ We can use `hercacstables` to check this, too.
 #| label: inclusive-exclusive-population-variables
 incl_excl_pop_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::filter(
-        nchar(.data$`Inclusive Table`) > 0
+        nchar(.data$`Inclusive Group`) > 0
     ) |>
     dplyr::mutate(
-        `Exclusive Table` = paste0("B01001", .data$Suffix)
+        `Exclusive Group` = paste0("B01001", .data$Suffix)
     ) |>
     dplyr::select(
         "Census Race",
-        Inclusive = "Inclusive Table",
-        Exclusive = "Exclusive Table"
+        Inclusive = "Inclusive Group",
+        Exclusive = "Exclusive Group"
     ) |>
     tidyr::pivot_longer(
         cols = tidyselect::ends_with("clusive"),
-        names_to = "Table",
+        names_to = "Type of count",
         values_to = "Group"
     ) |>
     dplyr::mutate(
@@ -353,11 +353,11 @@ incl_excl_pop_values <- incl_excl_pop_values_raw |>
     ) |>
     dplyr::select(
         "Census Race",
-        "Table",
+        "Type of count",
         "Value"
     ) |>
     tidyr::pivot_wider(
-        names_from = "Table",
+        names_from = "Type of count",
         values_from = "Value"
     ) |>
     dplyr::mutate(

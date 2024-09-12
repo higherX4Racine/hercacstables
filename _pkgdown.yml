@@ -15,11 +15,12 @@ reference:
   - safe_api_query
 - subtitle: Learning about the API
   desc: >
-    These functions help look up information about which Census tables store
-    which information.
+    These functions and tables will help you to look up information about which
+    Census tables store which information.
   contents:
   - build_info_url
   - fetch_metadata_table
+  - hoist_table_metadata
   - METADATA_ACS5
   - DECENNIAL_POPULATION_FIELDS
   - GEOGRAPHY_HIERARCHY_METADATA
@@ -28,6 +29,8 @@ reference:
   desc: >
     These tables connect real-world meanings to the table-name-row-number codes
     that you need to pull data from the Census API.
+  contents:
+  - AGE_AND_SEX_METADATA
 - subtitle: Families
   contents:
   - CHILDREN_IN_POVERTY_METADATA

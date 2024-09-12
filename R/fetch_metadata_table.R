@@ -2,86 +2,96 @@
 #'
 #' This function downloads a large JSON object and parses it into a tibble.
 #'
-#' @param .info_type See [`build_info_url()`].
-#' @param .year See [`build_info_url()`].
-#' @param .year_span See [`build_info_url`].
+#' @inheritParams build_info_url
 #'
 #' @return A tibble.
 #'
-#' @seealso [`build_info_url()`]
 #' @export
+#' @concept metadata
 fetch_metadata_table <- function(.info_type, .year, .year_span) {
-    .pluck_map <- list(
-        geography = "fips",
-        groups = "groups",
-        variables = "variables"
-    )
-
-    .table <- .info_type |>
-        build_info_url(
-            .year,
-            .year_span
-        ) |>
+    .list <- .info_type |>
+        build_info_url(.year, .year_span) |>
         jsonlite::read_json() |>
-        purrr::pluck(
-            .pluck_map[[.info_type]]
-        ) |>
-        purrr::list_transpose(
-            simplify = NA
-        ) |>
-        tibble::as_tibble() |>
-        dplyr::rename_with(
-            stringr::str_squish
-        )
+        purrr::pluck(1) |>
+        purrr::map(.metadata_row_to_tibble)
 
     switch(
         .info_type,
-        geography = .wrangle_geography(.table),
-        groups = .wrangle_groups(.table),
-        variables = .wrangle_variables(.table)
+        geography = .wrangle_geography(.list),
+        groups = .wrangle_groups(.list),
+        variables = .wrangle_variables(.list)
     )
 }
 
-.wrangle_geography <- function(.table) {
-    .table |>
+.lists_to_wrapped_chars <- function(.list) {
+    list(as.character(.list))
+}
+
+.metadata_row_to_tibble <- function(.element) {
+    .element |>
+        purrr::map_if(
+            is.list, .lists_to_wrapped_chars
+        ) |>
+        tibble::as_tibble()
+}
+
+.wrangle_geography <- function(.list) {
+    .list |>
+        purrr::list_rbind() |>
         dplyr::mutate(
             referenceDate = lubridate::ymd(.data$referenceDate)
-        )
-}
-
-.wrangle_groups <- function(.table) {
-    .table <- .table |>
-        dplyr::arrange(
-            .data$name
-        )
-}
-
-.wrangle_variables <- function(.table) {
-    .table |>
+        ) |>
         dplyr::select(
-            "label",
-            "concept",
-            "group"
+            `Geographic Level` = "name",
+            `Required Geographies` = "requires",
+            `Wildcard Option` = "optionalWithWCFor"
+        )
+}
+
+.wrangle_groups <- function(.list) {
+    .list |>
+        purrr::list_rbind() |>
+        dplyr::select(
+            "Group" = "name",
+            "Description" = "description",
+            "Universe" = "universe "
+        ) |>
+        dplyr::arrange(
+            .data$Group
+        )
+}
+
+.wrangle_variables <- function(.list) {
+    .list |>
+        purrr::list_rbind(
+            names_to = "variable"
         ) |>
         dplyr::filter(
             stringr::str_detect(.data$group,
                                 pattern = "N/A",
                                 negate = TRUE),
-            nchar(.data$group) < 8L
+            stringr::str_detect(.data$label,
+                                "^Geography$",
+                                negate = TRUE)
         ) |>
         dplyr::mutate(
-            variable = names(.data$concept),
-            concept = .data$concept |>
-                rlang::set_names(nm = NULL) |>
-                as.character()
+            Index = .data$variable |>
+                stringr::str_extract("\\d+(?=\\D?$)") |>
+                as.integer(),
+            Details = .data$label |>
+                stringr::str_remove_all(":") |>
+                stringr::str_remove("Estimate!!") |>
+                stringr::str_remove("Total(!!|$)") |>
+                stringr::str_split("( ?-+)?!+")
         ) |>
-        dplyr::relocate(
-            "concept",
-            "group",
-            "variable",
-            "label"
+        dplyr::select(
+            Concept = "concept",
+            Group = "group",
+            "Index",
+            Variable = "variable",
+            "Details"
         ) |>
         dplyr::arrange(
-            .data$variable
+            .data$Variable
         )
 }

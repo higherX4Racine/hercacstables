@@ -18,8 +18,9 @@
 #'   \describe{
 #'   \item{geography}{Available geographies and how to ask for them in the API.}
 #'   \item{groups}{Each group's ID, its Universe, and its Description.}
-#'   \item{variables}{Each variable's Group, its full code, and its Label.}
+#'   \item{variables}{Each variable's Group, its full code, and Details about what it encodes.}
 #'   }
+#' @concept metadata
 "METADATA_ACS5"
 
 #' Variables from the Decennial censuses
@@ -211,3 +212,23 @@
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B05010.html
 "CHILDREN_IN_POVERTY_METADATA"
+
+#' The fundamental demographics of age and sex from table `B01001`
+#'
+#' The age splits are more detailed in the whole-population table than they are
+#' in the tables that pertain to specific racial identities. A future project
+#' is to add a second part to the table that maps from those tables' rows to
+#' age and sex.
+#'
+#' @format ## AGE_AND_SEX_METADATA
+#' A data frame with 49 rows and 6 columns.
+#' \describe{
+#' \item{group}{<chr> Always "B01001"}
+#' \item{index}{<int> The row in the source table that this metadata row describes.}
+#' \item{variable}{<chr> The full variable name, e.g. "B01001_001E"}
+#' \item{Sex}{<chr> One of "All," "Male," or "Female"}
+#' \item{Lower Age}{<int> inclusive, in \[-999, 85\]}
+#' \item{Upper Age}{<int> inclusive, in \[4, 999\]}
+#' }
+#' @source https://api.census.gov/data/2022/acs/acs1/groups/B01001.html
+"AGE_AND_SEX_METADATA"

@@ -20,6 +20,7 @@ reference:
   contents:
   - build_info_url
   - fetch_metadata_table
+  - hoist_table_metadata
   - METADATA_ACS5
   - DECENNIAL_POPULATION_FIELDS
   - GEOGRAPHY_HIERARCHY_METADATA

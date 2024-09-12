@@ -2,33 +2,18 @@
 #'
 #' This function downloads a large JSON object and parses it into a tibble.
 #'
-#' @param .info_type See [`build_info_url()`].
-#' @param .year See [`build_info_url()`].
-#' @param .year_span See [`build_info_url`].
+#' @inheritParams build_info_url
 #'
 #' @return A tibble.
 #'
-#' @seealso [`build_info_url()`]
 #' @export
+#' @concept metadata
 fetch_metadata_table <- function(.info_type, .year, .year_span) {
     .list <- .info_type |>
-        build_info_url(
-            .year,
-            .year_span
-        ) |>
+        build_info_url(.year, .year_span) |>
         jsonlite::read_json() |>
-        purrr::pluck(
-            1
-        ) |>
-        purrr::map(
-            \(.element) {
-                .element |>
-                    purrr::map_if(
-                        is.list, ~ list(as.character(.))
-                    ) |>
-                    tibble::as_tibble()
-            }
-        )
+        purrr::pluck(1) |>
+        purrr::map(.metadata_row_to_tibble)
 
     switch(
         .info_type,
@@ -36,6 +21,18 @@ fetch_metadata_table <- function(.info_type, .year, .year_span) {
         groups = .wrangle_groups(.list),
         variables = .wrangle_variables(.list)
     )
+}
+
+.lists_to_wrapped_chars <- function(.list) {
+    list(as.character(.list))
+}
+
+.metadata_row_to_tibble <- function(.element) {
+    .element |>
+        purrr::map_if(
+            is.list, .lists_to_wrapped_chars
+        ) |>
+        tibble::as_tibble()
 }
 
 .wrangle_geography <- function(.list) {
@@ -83,8 +80,9 @@ fetch_metadata_table <- function(.info_type, .year, .year_span) {
                 as.integer(),
             Details = .data$label |>
                 stringr::str_remove_all(":") |>
-                stringr::str_remove("Estimate!!Total!*") |>
-                stringr::str_split("!+")
+                stringr::str_remove("Estimate!!") |>
+                stringr::str_remove("Total(!!|$)") |>
+                stringr::str_split("( ?-+)?!+")
         ) |>
         dplyr::select(
             Concept = "concept",

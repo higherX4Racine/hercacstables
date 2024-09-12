@@ -18,4 +18,5 @@ METADATA_ACS5
 \description{
 Group, Variable, and Geography information for the latest 5-Year ACS
 }
+\concept{metadata}
 \keyword{datasets}

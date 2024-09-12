@@ -7,11 +7,11 @@
 fetch_metadata_table(.info_type, .year, .year_span)
 }
 \arguments{
-\item{.info_type}{See \code{\link[=build_info_url]{build_info_url()}}.}
+\item{.info_type}{One of "geography", "groups", or "variables".}
 
-\item{.year}{See \code{\link[=build_info_url]{build_info_url()}}.}
+\item{.year}{An integer year between 2004 and the current year, inclusive.}
 
-\item{.year_span}{See \code{\link{build_info_url}}.}
+\item{.year_span}{Either 1, 3, or 5, depending upon the desired time resolution.}
 }
 \value{
 A tibble.
@@ -19,6 +19,4 @@ A tibble.
 \description{
 This function downloads a large JSON object and parses it into a tibble.
 }
-\seealso{
-\code{\link[=build_info_url]{build_info_url()}}
-}
+\concept{metadata}

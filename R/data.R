@@ -20,6 +20,7 @@
 #'   \item{groups}{Each group's ID, its Universe, and its Description.}
 #'   \item{variables}{Each variable's Group, its full code, and Details about what it encodes.}
 #'   }
+#' @concept metadata
 "METADATA_ACS5"
 
 #' Variables from the Decennial censuses

@@ -11,7 +11,6 @@ fetch_data(
   for_items,
   survey_type,
   table_or_survey_code,
-  other_geos = NULL,
   ...,
   use_key = TRUE
 )
@@ -28,8 +27,6 @@ fetch_data(
 \item{survey_type}{e.g. "acs" or "dec"}
 
 \item{table_or_survey_code}{e.g. "acs5" or "pl"}
-
-\item{other_geos}{optional, a named list of other geographies, e.g. \code{list(state = 55L, county = 101L)}}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic dots}}> other items to pass to the query}
 

@@ -26,9 +26,12 @@ Imports:
     tidyselect,
     utils
 Suggests: 
+    broom,
+    forcats,
     ggplot2,
     ggspatial,
     glue,
+    gt,
     hercgeos,
     knitr,
     rmarkdown,

@@ -43,8 +43,9 @@ fetch_metadata_table <- function(.info_type, .year, .year_span) {
         ) |>
         dplyr::select(
             `Geographic Level` = "name",
-            `Required Geographies` = "requires",
-            `Wildcard Option` = "optionalWithWCFor"
+            `Containing Geographies` = "requires",
+            `Wildcard Option` = "optionalWithWCFor",
+            `Reference Date` = "referenceDate"
         )
 }
 

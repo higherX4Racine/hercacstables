@@ -726,8 +726,8 @@ raw_racine_races <- racine_race_ethnicity_variables |>
         for_items = "*",
         survey_type = "acs",
         table_or_survey_code = "acs5",
-        other_geos = list(state = 55L, 
-                          county = 101L)
+        state = 55L, 
+        county = 101L
     )
 ```
 

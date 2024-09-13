@@ -4,7 +4,7 @@
 ^README\.Rmd$
 ^data-raw$
 ^vignettes/articles$
-^vignettes/.*cache$
+^.*cache$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$

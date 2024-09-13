@@ -64,3 +64,4 @@ reference:
     Other functions, usually legacy ones, that might help with things
   contents:
   - margins_by_demography_and_place
+  - subtract_parts_from_whole

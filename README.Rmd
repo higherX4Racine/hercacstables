@@ -160,7 +160,11 @@ household_variables <- hercacstables::METADATA_ACS5 |>
     dplyr::select("Group", "Index", "Variable", "Ethnicity")
 
 household_variables |>
-    gt::gt()
+    gt::gt() |>
+    gt::cols_align(
+        "right",
+        columns = tidyselect::where(is.numeric)
+    )
 ```
 
 ### find the **geographic levels** and **geographic area**
@@ -274,7 +278,11 @@ raw_households <- YEARS_INCLUDED |>
 raw_households |>
     dplyr::filter(.data$Year == 2022) |>
     gt::gt() |>
-    gt::fmt_integer(columns = "Value")
+    gt::fmt_integer(columns = "Value") |>
+    gt::cols_align(
+        "right",
+        columns = tidyselect::where(is.numeric)
+    )
 ```
 
 ### wrangle the data
@@ -316,7 +324,11 @@ households <- raw_households |>
 households |>
     dplyr::filter(.data$Year == 2022) |>
     gt::gt() |>
-    gt::fmt_integer(columns = "Households")
+    gt::fmt_integer(columns = "Households") |>
+    gt::cols_align(
+        "right",
+        columns = tidyselect::where(is.numeric)
+    )
 ```
 
 
@@ -466,7 +478,14 @@ household_model |>
     gt::fmt_number(columns = "statistic",
                    n_sigfig = 4) |>
     gt::fmt_number(columns = "p.value",
-                   decimals = 4)
+                   decimals = 4) |>
+    gt::cols_align(
+        "right",
+        columns = tidyselect::where(is.numeric)
+    ) |>
+    gt::cols_align_decimal(
+        "p.value"
+    )
 ```
 
 It looks like EVERYTHING is significant, so let's look at all of the parameters
@@ -485,7 +504,14 @@ household_model |>
                                "statistic"),
                    n_sigfig = 4) |>
     gt::fmt_number(columns = "p.value",
-                   decimals = 4)
+                   decimals = 4) |>
+    gt::cols_align(
+        "right",
+        columns = tidyselect::where(is.numeric)
+    ) |>
+    gt::cols_align_decimal(
+        "p.value"
+    )
 ```
 
 #### summarize

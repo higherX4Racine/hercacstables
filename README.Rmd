@@ -134,7 +134,7 @@ hercacstables::METADATA_ACS5 |>
     purrr::pluck("groups") |>
     dplyr::filter(stringr::str_detect(.data$Universe, "Household"),
                   stringr::str_detect(.data$Description, "Hispanic|Ethnic")) |>
-    gt::gt()
+    knitr::kable()
 ```
 
 It looks like our best bet is group "B11001I."
@@ -159,8 +159,8 @@ household_variables <- hercacstables::METADATA_ACS5 |>
     ) |>
     dplyr::select("Group", "Index", "Variable", "Ethnicity")
 
-household_variables |>
-    gt::gt()
+knitr::kable(household_variables,
+             align = c("lrll"))
 ```
 
 ### find the **geographic levels** and **geographic area**
@@ -189,6 +189,9 @@ geography_definitions <- tibble::tribble(
     MANCHESTER_NH,   "Manchester",
     NASHUA_NH,       "Nashua"
 )
+
+geography_definitions |>
+    knitr::kable()
 ```
 
 ### find the **time interval**
@@ -273,8 +276,13 @@ raw_households <- YEARS_INCLUDED |>
 #| label: show-the-raw-data
 raw_households |>
     dplyr::filter(.data$Year == 2022) |>
-    gt::gt() |>
-    gt::fmt_integer(columns = "Value")
+    dplyr::mutate(
+        dplyr::across(c("Value"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "lllrrrl"
+    )
 ```
 
 ### wrangle the data
@@ -315,8 +323,13 @@ households <- raw_households |>
 
 households |>
     dplyr::filter(.data$Year == 2022) |>
-    gt::gt() |>
-    gt::fmt_integer(columns = "Households")
+    dplyr::mutate(
+        dplyr::across(c("Households"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "rllr"
+    )
 ```
 
 
@@ -360,8 +373,13 @@ households <- households |>
 
 households |>
     dplyr::filter(.data$Year == 2022) |>
-    gt::gt() |>
-    gt::fmt_integer(columns = "Households")
+    dplyr::mutate(
+        dplyr::across(c("Households"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "rllr"
+    )
 ```
 
 ### Answer the question
@@ -460,13 +478,18 @@ I try to interpret specific parameters.
 household_model |>
     anova() |>
     broom::tidy() |>
-    gt::gt() |>
-    gt::fmt_engineering(columns = c("sumsq",
-                                    "meansq")) |>
-    gt::fmt_number(columns = "statistic",
-                   n_sigfig = 4) |>
-    gt::fmt_number(columns = "p.value",
-                   decimals = 4)
+    dplyr::mutate(
+        dplyr::across(c("sumsq",
+                        "meansq"),
+                      scales::label_comma(accuracy = 1)),
+        dplyr::across("statistic",
+                      \(.) signif(., 4)),
+        dplyr::across("p.value",
+                      \(.) round(., 4))
+    ) |>
+    knitr::kable(
+        align = "lrrrrr"
+    )
 ```
 
 It looks like EVERYTHING is significant, so let's look at all of the parameters
@@ -479,13 +502,17 @@ household_model |>
     dplyr::filter(
         .data$`p.value` < 0.1
     ) |>
-    gt::gt() |>
-    gt::fmt_number(columns = c("estimate",
-                               "std.error",
-                               "statistic"),
-                   n_sigfig = 4) |>
-    gt::fmt_number(columns = "p.value",
-                   decimals = 4)
+    dplyr::mutate(
+        dplyr::across(c("estimate",
+                        "std.error",
+                        "statistic"),
+                      \(.) signif(., 4)),
+        dplyr::across("p.value",
+                      \(.) round(., 4))
+    ) |>
+    knitr::kable(
+        align = "lrrrr"
+    )
 ```
 
 #### summarize

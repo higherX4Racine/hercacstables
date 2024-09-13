@@ -31,7 +31,6 @@ Suggests:
     ggplot2,
     ggspatial,
     glue,
-    gt,
     hercgeos,
     knitr,
     rmarkdown,

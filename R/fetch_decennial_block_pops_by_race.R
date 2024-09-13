@@ -32,11 +32,11 @@ fetch_decennial_block_pops_by_race <- function(state, county) {
                     variables = .x,
                     year = .y,
                     for_geo = "block",
-                    other_geos = list(state = state,
-                                      county = county),
                     for_items = "*",
                     survey_type = "dec",
-                    table_or_survey_code = "pl"
+                    table_or_survey_code = "pl",
+                    state = state,
+                    county = county
                 )
             )
         ) |>

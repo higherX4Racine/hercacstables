@@ -100,8 +100,8 @@ RAW_STANDARD_OF_LIVING <- hercacstables::STANDARD_OF_LIVING_METADATA |>
         for_items = c("010400", "010500"),
         survey_type = "acs",
         table_or_survey_code = "acs5",
-        other_geos = list(state = 33L,
-                          county = "011"),
+        state = 33L,
+        county = "011",
         use_key = TRUE
     )
 ```
@@ -197,8 +197,8 @@ RAW_FAMILIES_WITH_CHILDREN <- hercacstables::FAMILIES_WITH_CHILDREN_METADATA |>
         for_items = c("010400", "010500"),
         survey_type = "acs",
         table_or_survey_code = "acs5",
-        other_geos = list(state = 33L,
-                          county = "011"),
+        state = 33L,
+        county = "011",
         use_key = TRUE
     )
 ```
@@ -285,8 +285,8 @@ RAW_CHILDREN_IN_POVERTY <- hercacstables::CHILDREN_IN_POVERTY_METADATA |>
         for_items = c("010400", "010500"),
         survey_type = "acs",
         table_or_survey_code = "acs5",
-        other_geos = list(state = 33L,
-                          county = "011"),
+        state = 33L,
+        county = "011",
         use_key = TRUE
     )
 ```

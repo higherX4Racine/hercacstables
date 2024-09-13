@@ -4,6 +4,5 @@
 .httr-oauth
 .DS_Store
 inst/doc
-vignettes/*_cache
-vignettes/articles/*_cache
+*_cache
 docs

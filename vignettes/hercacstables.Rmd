@@ -131,8 +131,8 @@ school_district_geographies |>
 It looks like the specific geographic level that we should ask about is "school
 districts (unified)".
 
-The "Required Geographies" column lets us know that we also have to tell the API
-which state we are interested in.
+The "Containing Geographies" column lets us know that we also have to tell the
+API which state we are interested in.
 The "Wildcard Option" column tells us that we can use "*" to say "all of the
 states."
 
@@ -296,9 +296,8 @@ wrangle_histories <- function(.raw_district_histories, .latest_districts){
     dplyr::inner_join(
         dplyr::select(
             .latest_districts,
-            "NAME",
-            UNIFIED_SCHOOL_DISTRICT
-        ),
+            tidyselect::all_of(c("NAME", UNIFIED_SCHOOL_DISTRICT))
+            ),
         by = UNIFIED_SCHOOL_DISTRICT
     ) |>
     dplyr::mutate(
@@ -362,7 +361,7 @@ plot_district_histories(big_district_histories)
 It looks like maybe a lot of people are moving from Cleveland to Columbus, and
 taking their kids with them.
     
-## So what?
+### Everything is reusable
 
 Now that you've seen the example with Ohio, you may be thinking "that question
 is not relevant to me."
@@ -396,6 +395,7 @@ You could do the same thing with any other state.
 That's the goal of this project: help define workflows for making reports from
 Census data so that they can be easily rerun for comparable places and times.
 
+   
 ## Set up your API key
 
 You should use an API key to identify yourself when you access data.census.gov.

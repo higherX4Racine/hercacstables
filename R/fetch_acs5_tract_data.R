@@ -13,14 +13,15 @@
 fetch_acs5_tract_data <- function(variables, state, county, years = 2009:2021L) {
     years |>
         purrr::map(
-            hercacstables::fetch_data,
-            variables = variables,
-            for_geo = "tract",
-            for_items = "*",
-            survey_type = "acs",
-            table_or_survey_code = "acs5",
-            other_geos = list(state = state,
-                              county = county)
+            \(.year) hercacstables::fetch_data(
+                variables = variables,
+                year = .year,
+                for_geo = "tract",
+                for_items = "*",
+                survey_type = "acs",
+                table_or_survey_code = "acs5",
+                state = state,
+                county = county)
         ) |>
         purrr::list_rbind() |>
         dplyr::mutate(

@@ -120,59 +120,23 @@ hercacstables::METADATA_ACS5 |>
     purrr::pluck("groups") |>
     dplyr::filter(stringr::str_detect(.data$Universe, "Household"),
                   stringr::str_detect(.data$Description, "Hispanic|Ethnic")) |>
-    gt::gt(rowname_col = "Group")
+    knitr::kable()
 ```
 
-<div id="echstzaiwx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id=""></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Description">Description</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Universe">Universe</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><th id="stub_1_1" scope="row" class="gt_row gt_left gt_stub">B11001H</th>
-<td headers="stub_1_1 Description" class="gt_row gt_left">Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino)</td>
-<td headers="stub_1_1 Universe" class="gt_row gt_left">Households with a householder who is White alone, not Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_2" scope="row" class="gt_row gt_left gt_stub">B11001I</th>
-<td headers="stub_1_2 Description" class="gt_row gt_left">Household Type (Including Living Alone) (Hispanic or Latino)</td>
-<td headers="stub_1_2 Universe" class="gt_row gt_left">Households with a householder who is Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_3" scope="row" class="gt_row gt_left gt_stub">B19001H</th>
-<td headers="stub_1_3 Description" class="gt_row gt_left">Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)</td>
-<td headers="stub_1_3 Universe" class="gt_row gt_left">Households with a householder who is White alone, not Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_4" scope="row" class="gt_row gt_left gt_stub">B19001I</th>
-<td headers="stub_1_4 Description" class="gt_row gt_left">Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
-<td headers="stub_1_4 Universe" class="gt_row gt_left">Households with a householder who is Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_5" scope="row" class="gt_row gt_left gt_stub">B19013H</th>
-<td headers="stub_1_5 Description" class="gt_row gt_left">Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)</td>
-<td headers="stub_1_5 Universe" class="gt_row gt_left">Households with a householder who is White alone, not Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_6" scope="row" class="gt_row gt_left gt_stub">B19013I</th>
-<td headers="stub_1_6 Description" class="gt_row gt_left">Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
-<td headers="stub_1_6 Universe" class="gt_row gt_left">Households with a householder who is Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_7" scope="row" class="gt_row gt_left gt_stub">B19025H</th>
-<td headers="stub_1_7 Description" class="gt_row gt_left">Aggregate Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)</td>
-<td headers="stub_1_7 Universe" class="gt_row gt_left">Households with a householder who is White alone, not Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_8" scope="row" class="gt_row gt_left gt_stub">B19025I</th>
-<td headers="stub_1_8 Description" class="gt_row gt_left">Aggregate Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
-<td headers="stub_1_8 Universe" class="gt_row gt_left">Households with a householder who is Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_9" scope="row" class="gt_row gt_left gt_stub">B19037H</th>
-<td headers="stub_1_9 Description" class="gt_row gt_left">Age of Householder by Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)</td>
-<td headers="stub_1_9 Universe" class="gt_row gt_left">Households with a householder who is White alone, not Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_10" scope="row" class="gt_row gt_left gt_stub">B19037I</th>
-<td headers="stub_1_10 Description" class="gt_row gt_left">Age of Householder by Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
-<td headers="stub_1_10 Universe" class="gt_row gt_left">Households with a householder who is Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_11" scope="row" class="gt_row gt_left gt_stub">B22005H</th>
-<td headers="stub_1_11 Description" class="gt_row gt_left">Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino)</td>
-<td headers="stub_1_11 Universe" class="gt_row gt_left">Households with a householder who is White alone, not Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_12" scope="row" class="gt_row gt_left gt_stub">B22005I</th>
-<td headers="stub_1_12 Description" class="gt_row gt_left">Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino)</td>
-<td headers="stub_1_12 Universe" class="gt_row gt_left">Households with a householder who is Hispanic or Latino</td></tr>
-  </tbody>
-  &#10;  
-</table>
-</div>
+| Group   | Description                                                                                                                                         | Universe                                                                 |
+|:--------|:----------------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------|
+| B11001H | Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino)                                                                       | Households with a householder who is White alone, not Hispanic or Latino |
+| B11001I | Household Type (Including Living Alone) (Hispanic or Latino)                                                                                        | Households with a householder who is Hispanic or Latino                  |
+| B19001H | Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)                       | Households with a householder who is White alone, not Hispanic or Latino |
+| B19001I | Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)                                        | Households with a householder who is Hispanic or Latino                  |
+| B19013H | Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)                | Households with a householder who is White alone, not Hispanic or Latino |
+| B19013I | Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)                                 | Households with a householder who is Hispanic or Latino                  |
+| B19025H | Aggregate Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)             | Households with a householder who is White alone, not Hispanic or Latino |
+| B19025I | Aggregate Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)                              | Households with a householder who is Hispanic or Latino                  |
+| B19037H | Age of Householder by Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder) | Households with a householder who is White alone, not Hispanic or Latino |
+| B19037I | Age of Householder by Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)                  | Households with a householder who is Hispanic or Latino                  |
+| B22005H | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino)                                      | Households with a householder who is White alone, not Hispanic or Latino |
+| B22005I | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino)                                                       | Households with a householder who is Hispanic or Latino                  |
 
 It looks like our best bet is group “B11001I.” It is likely that group
 “B11001” contains counts of households of any race. The first row of
@@ -195,37 +159,14 @@ household_variables <- hercacstables::METADATA_ACS5 |>
     ) |>
     dplyr::select("Group", "Index", "Variable", "Ethnicity")
 
-household_variables |>
-    gt::gt(rowname_col = "Group") |>
-    gt::cols_align(
-        "right",
-        columns = tidyselect::where(is.numeric)
-    )
+knitr::kable(household_variables,
+             align = c("lrll"))
 ```
 
-<div id="xddychpurs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id=""></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Index">Index</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Variable">Variable</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Ethnicity">Ethnicity</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><th id="stub_1_1" scope="row" class="gt_row gt_left gt_stub">B11001I</th>
-<td headers="stub_1_1 Index" class="gt_row gt_right">1</td>
-<td headers="stub_1_1 Variable" class="gt_row gt_left">B11001I_001E</td>
-<td headers="stub_1_1 Ethnicity" class="gt_row gt_left">Hispanic or Latino</td></tr>
-    <tr><th id="stub_1_2" scope="row" class="gt_row gt_left gt_stub">B11001</th>
-<td headers="stub_1_2 Index" class="gt_row gt_right">1</td>
-<td headers="stub_1_2 Variable" class="gt_row gt_left">B11001_001E</td>
-<td headers="stub_1_2 Ethnicity" class="gt_row gt_left">All</td></tr>
-  </tbody>
-  &#10;  
-</table>
-</div>
+| Group   | Index | Variable     | Ethnicity          |
+|:--------|------:|:-------------|:-------------------|
+| B11001I |     1 | B11001I_001E | Hispanic or Latino |
+| B11001  |     1 | B11001_001E  | All                |
 
 ### find the **geographic levels** and **geographic area**
 
@@ -252,7 +193,16 @@ geography_definitions <- tibble::tribble(
     MANCHESTER_NH,   "Manchester",
     NASHUA_NH,       "Nashua"
 )
+
+geography_definitions |>
+    knitr::kable()
 ```
+
+| FIPS  | Location    |
+|:------|:------------|
+| 011   | County-wide |
+| 45140 | Manchester  |
+| 50260 | Nashua      |
 
 ### find the **time interval**
 
@@ -327,74 +277,23 @@ raw_households <- YEARS_INCLUDED |>
 ``` r
 raw_households |>
     dplyr::filter(.data$Year == 2022) |>
-    gt::gt() |>
-    gt::fmt_integer(columns = "Value") |>
-    gt::cols_align(
-        "right",
-        columns = tidyselect::where(is.numeric)
+    dplyr::mutate(
+        dplyr::across(c("Value"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "lllrrrl"
     )
 ```
 
-<div id="tlihfpykpp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="state">state</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="county">county</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Group">Group</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Index">Index</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Value">Value</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Year">Year</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="county subdivision">county subdivision</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="state" class="gt_row gt_right">33</td>
-<td headers="county" class="gt_row gt_right">011</td>
-<td headers="Group" class="gt_row gt_left">B11001I</td>
-<td headers="Index" class="gt_row gt_right">1</td>
-<td headers="Value" class="gt_row gt_right">10,250</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="county subdivision" class="gt_row gt_right">NA</td></tr>
-    <tr><td headers="state" class="gt_row gt_right">33</td>
-<td headers="county" class="gt_row gt_right">011</td>
-<td headers="Group" class="gt_row gt_left">B11001</td>
-<td headers="Index" class="gt_row gt_right">1</td>
-<td headers="Value" class="gt_row gt_right">167,816</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="county subdivision" class="gt_row gt_right">NA</td></tr>
-    <tr><td headers="state" class="gt_row gt_right">33</td>
-<td headers="county" class="gt_row gt_right">011</td>
-<td headers="Group" class="gt_row gt_left">B11001I</td>
-<td headers="Index" class="gt_row gt_right">1</td>
-<td headers="Value" class="gt_row gt_right">4,251</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="county subdivision" class="gt_row gt_right">45140</td></tr>
-    <tr><td headers="state" class="gt_row gt_right">33</td>
-<td headers="county" class="gt_row gt_right">011</td>
-<td headers="Group" class="gt_row gt_left">B11001</td>
-<td headers="Index" class="gt_row gt_right">1</td>
-<td headers="Value" class="gt_row gt_right">48,068</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="county subdivision" class="gt_row gt_right">45140</td></tr>
-    <tr><td headers="state" class="gt_row gt_right">33</td>
-<td headers="county" class="gt_row gt_right">011</td>
-<td headers="Group" class="gt_row gt_left">B11001I</td>
-<td headers="Index" class="gt_row gt_right">1</td>
-<td headers="Value" class="gt_row gt_right">4,155</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="county subdivision" class="gt_row gt_right">50260</td></tr>
-    <tr><td headers="state" class="gt_row gt_right">33</td>
-<td headers="county" class="gt_row gt_right">011</td>
-<td headers="Group" class="gt_row gt_left">B11001</td>
-<td headers="Index" class="gt_row gt_right">1</td>
-<td headers="Value" class="gt_row gt_right">38,017</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="county subdivision" class="gt_row gt_right">50260</td></tr>
-  </tbody>
-  &#10;  
-</table>
-</div>
+| state | county | Group   | Index |   Value | Year | county subdivision |
+|:------|:-------|:--------|------:|--------:|-----:|:-------------------|
+| 33    | 011    | B11001I |     1 |  10,250 | 2022 | NA                 |
+| 33    | 011    | B11001  |     1 | 167,816 | 2022 | NA                 |
+| 33    | 011    | B11001I |     1 |   4,251 | 2022 | 45140              |
+| 33    | 011    | B11001  |     1 |  48,068 | 2022 | 45140              |
+| 33    | 011    | B11001I |     1 |   4,155 | 2022 | 50260              |
+| 33    | 011    | B11001  |     1 |  38,017 | 2022 | 50260              |
 
 ### wrangle the data
 
@@ -432,53 +331,23 @@ households <- raw_households |>
 
 households |>
     dplyr::filter(.data$Year == 2022) |>
-    gt::gt() |>
-    gt::fmt_integer(columns = "Households") |>
-    gt::cols_align(
-        "right",
-        columns = tidyselect::where(is.numeric)
+    dplyr::mutate(
+        dplyr::across(c("Households"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "rllr"
     )
 ```
 
-<div id="udukjaziph" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Location">Location</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Year">Year</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Ethnicity">Ethnicity</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Households">Households</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="Location" class="gt_row gt_left">County-wide</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Ethnicity" class="gt_row gt_left">Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">10,250</td></tr>
-    <tr><td headers="Location" class="gt_row gt_left">County-wide</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Ethnicity" class="gt_row gt_left">All</td>
-<td headers="Households" class="gt_row gt_right">167,816</td></tr>
-    <tr><td headers="Location" class="gt_row gt_left">Manchester</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Ethnicity" class="gt_row gt_left">Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">4,251</td></tr>
-    <tr><td headers="Location" class="gt_row gt_left">Manchester</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Ethnicity" class="gt_row gt_left">All</td>
-<td headers="Households" class="gt_row gt_right">48,068</td></tr>
-    <tr><td headers="Location" class="gt_row gt_left">Nashua</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Ethnicity" class="gt_row gt_left">Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">4,155</td></tr>
-    <tr><td headers="Location" class="gt_row gt_left">Nashua</td>
-<td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Ethnicity" class="gt_row gt_left">All</td>
-<td headers="Households" class="gt_row gt_right">38,017</td></tr>
-  </tbody>
-  &#10;  
-</table>
-</div>
+|    Location | Year | Ethnicity          | Households |
+|------------:|:-----|:-------------------|-----------:|
+| County-wide | 2022 | Hispanic or Latino |     10,250 |
+| County-wide | 2022 | All                |    167,816 |
+|  Manchester | 2022 | Hispanic or Latino |      4,251 |
+|  Manchester | 2022 | All                |     48,068 |
+|      Nashua | 2022 | Hispanic or Latino |      4,155 |
+|      Nashua | 2022 | All                |     38,017 |
 
 #### compute implicit values
 
@@ -517,50 +386,23 @@ households <- households |>
 
 households |>
     dplyr::filter(.data$Year == 2022) |>
-    gt::gt() |>
-    gt::fmt_integer(columns = "Households")
+    dplyr::mutate(
+        dplyr::across(c("Households"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "rllr"
+    )
 ```
 
-<div id="ngohnsunmk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Year">Year</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Location">Location</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Ethnicity">Ethnicity</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Households">Households</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Location" class="gt_row gt_left">Manchester</td>
-<td headers="Ethnicity" class="gt_row gt_left">Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">4,251</td></tr>
-    <tr><td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Location" class="gt_row gt_left">Manchester</td>
-<td headers="Ethnicity" class="gt_row gt_left">Not Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">43,817</td></tr>
-    <tr><td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Location" class="gt_row gt_left">Nashua</td>
-<td headers="Ethnicity" class="gt_row gt_left">Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">4,155</td></tr>
-    <tr><td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Location" class="gt_row gt_left">Nashua</td>
-<td headers="Ethnicity" class="gt_row gt_left">Not Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">33,862</td></tr>
-    <tr><td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Location" class="gt_row gt_left">Suburbs</td>
-<td headers="Ethnicity" class="gt_row gt_left">Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">1,844</td></tr>
-    <tr><td headers="Year" class="gt_row gt_right">2022</td>
-<td headers="Location" class="gt_row gt_left">Suburbs</td>
-<td headers="Ethnicity" class="gt_row gt_left">Not Hispanic or Latino</td>
-<td headers="Households" class="gt_row gt_right">79,887</td></tr>
-  </tbody>
-  &#10;  
-</table>
-</div>
+| Year | Location   | Ethnicity              | Households |
+|-----:|:-----------|:-----------------------|-----------:|
+| 2022 | Manchester | Hispanic or Latino     |      4,251 |
+| 2022 | Manchester | Not Hispanic or Latino |     43,817 |
+| 2022 | Nashua     | Hispanic or Latino     |      4,155 |
+| 2022 | Nashua     | Not Hispanic or Latino |     33,862 |
+| 2022 | Suburbs    | Hispanic or Latino     |      1,844 |
+| 2022 | Suburbs    | Not Hispanic or Latino |     79,887 |
 
 ### Answer the question
 
@@ -650,87 +492,30 @@ view before I try to interpret specific parameters.
 household_model |>
     anova() |>
     broom::tidy() |>
-    gt::gt() |>
-    gt::fmt_engineering(columns = c("sumsq",
-                                    "meansq")) |>
-    gt::fmt_number(columns = "statistic",
-                   n_sigfig = 4) |>
-    gt::fmt_number(columns = "p.value",
-                   decimals = 4) |>
-    gt::cols_align(
-        "right",
-        columns = tidyselect::where(is.numeric)
+    dplyr::mutate(
+        dplyr::across(c("sumsq",
+                        "meansq"),
+                      scales::label_comma(accuracy = 1)),
+        dplyr::across("statistic",
+                      \(.) signif(., 4)),
+        dplyr::across("p.value",
+                      \(.) round(., 4))
     ) |>
-    gt::cols_align_decimal(
-        "p.value"
+    knitr::kable(
+        align = "lrrrrr"
     )
 ```
 
-<div id="qtbjupwykc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="term">term</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="df">df</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="sumsq">sumsq</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="meansq">meansq</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="statistic">statistic</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="p.value">p.value</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="term" class="gt_row gt_left">Year</td>
-<td headers="df" class="gt_row gt_right">1</td>
-<td headers="sumsq" class="gt_row gt_right">42.87&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="meansq" class="gt_row gt_right">42.87&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="statistic" class="gt_row gt_right">83.89</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Ethnicity</td>
-<td headers="df" class="gt_row gt_right">1</td>
-<td headers="sumsq" class="gt_row gt_right">32.10&nbsp;×&nbsp;10<sup style='font-size: 65%;'>9</sup></td>
-<td headers="meansq" class="gt_row gt_right">32.10&nbsp;×&nbsp;10<sup style='font-size: 65%;'>9</sup></td>
-<td headers="statistic" class="gt_row gt_right">62,820</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Location</td>
-<td headers="df" class="gt_row gt_right">2</td>
-<td headers="sumsq" class="gt_row gt_right">4.38&nbsp;×&nbsp;10<sup style='font-size: 65%;'>9</sup></td>
-<td headers="meansq" class="gt_row gt_right">2.19&nbsp;×&nbsp;10<sup style='font-size: 65%;'>9</sup></td>
-<td headers="statistic" class="gt_row gt_right">4,281</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year:Ethnicity</td>
-<td headers="df" class="gt_row gt_right">1</td>
-<td headers="sumsq" class="gt_row gt_right">13.47&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="meansq" class="gt_row gt_right">13.47&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="statistic" class="gt_row gt_right">26.36</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year:Location</td>
-<td headers="df" class="gt_row gt_right">2</td>
-<td headers="sumsq" class="gt_row gt_right">4.04&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="meansq" class="gt_row gt_right">2.02&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="statistic" class="gt_row gt_right">3.948</td>
-<td headers="p.value" class="gt_row gt_right">0.0265</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Ethnicity:Location</td>
-<td headers="df" class="gt_row gt_right">2</td>
-<td headers="sumsq" class="gt_row gt_right">5.27&nbsp;×&nbsp;10<sup style='font-size: 65%;'>9</sup></td>
-<td headers="meansq" class="gt_row gt_right">2.64&nbsp;×&nbsp;10<sup style='font-size: 65%;'>9</sup></td>
-<td headers="statistic" class="gt_row gt_right">5,157</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year:Ethnicity:Location</td>
-<td headers="df" class="gt_row gt_right">2</td>
-<td headers="sumsq" class="gt_row gt_right">7.72&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="meansq" class="gt_row gt_right">3.86&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="statistic" class="gt_row gt_right">7.551</td>
-<td headers="p.value" class="gt_row gt_right">0.0015</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Residuals</td>
-<td headers="df" class="gt_row gt_right">44</td>
-<td headers="sumsq" class="gt_row gt_right">22.49&nbsp;×&nbsp;10<sup style='font-size: 65%;'>6</sup></td>
-<td headers="meansq" class="gt_row gt_right">511.04&nbsp;×&nbsp;10<sup style='font-size: 65%;'>3</sup></td>
-<td headers="statistic" class="gt_row gt_right">NA</td>
-<td headers="p.value" class="gt_row gt_right">NA</td></tr>
-  </tbody>
-  &#10;  
-</table>
-</div>
+| term                    |  df |          sumsq |         meansq | statistic | p.value |
+|:------------------------|----:|---------------:|---------------:|----------:|--------:|
+| Year                    |   1 |     42,871,954 |     42,871,954 |    83.890 |  0.0000 |
+| Ethnicity               |   1 | 32,103,588,465 | 32,103,588,465 | 62820.000 |  0.0000 |
+| Location                |   2 |  4,375,353,354 |  2,187,676,677 |  4281.000 |  0.0000 |
+| Year:Ethnicity          |   1 |     13,470,367 |     13,470,367 |    26.360 |  0.0000 |
+| Year:Location           |   2 |      4,035,620 |      2,017,810 |     3.948 |  0.0265 |
+| Ethnicity:Location      |   2 |  5,270,922,505 |  2,635,461,253 |  5157.000 |  0.0000 |
+| Year:Ethnicity:Location |   2 |      7,717,340 |      3,858,670 |     7.551 |  0.0015 |
+| Residuals               |  44 |     22,485,689 |        511,038 |        NA |      NA |
 
 It looks like EVERYTHING is significant, so let’s look at all of the
 parameters that were in the near-significant range.
@@ -741,102 +526,33 @@ household_model |>
     dplyr::filter(
         .data$`p.value` < 0.1
     ) |>
-    gt::gt() |>
-    gt::fmt_number(
-        columns = c("estimate",
-                    "std.error",
-                    "statistic"),
-        n_sigfig = 4
+    dplyr::mutate(
+        dplyr::across(c("estimate",
+                        "std.error",
+                        "statistic"),
+                      \(.) signif(., 4)),
+        dplyr::across("p.value",
+                      \(.) round(., 4))
     ) |>
-    gt::fmt_number(
-        columns = "p.value",
-        decimals = 4
-    ) |>
-    gt::cols_align(
-        "right",
-        columns = tidyselect::where(is.numeric)
-    ) |>
-    gt::cols_align_decimal(
-        "p.value"
+    knitr::kable(
+        align = "lrrrr"
     )
 ```
 
-<div id="cuapmjhdmh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="term">term</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="estimate">estimate</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="std.error">std.error</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="statistic">statistic</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="p.value">p.value</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="term" class="gt_row gt_left">(Intercept)</td>
-<td headers="estimate" class="gt_row gt_right">73,790</td>
-<td headers="std.error" class="gt_row gt_right">442.3</td>
-<td headers="statistic" class="gt_row gt_right">166.8</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year</td>
-<td headers="estimate" class="gt_row gt_right">632.6</td>
-<td headers="std.error" class="gt_row gt_right">74.53</td>
-<td headers="statistic" class="gt_row gt_right">8.488</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">EthnicityHispanic or Latino</td>
-<td headers="estimate" class="gt_row gt_right">−72,830</td>
-<td headers="std.error" class="gt_row gt_right">625.5</td>
-<td headers="statistic" class="gt_row gt_right">−116.4</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">LocationManchester</td>
-<td headers="estimate" class="gt_row gt_right">−32,160</td>
-<td headers="std.error" class="gt_row gt_right">599.6</td>
-<td headers="statistic" class="gt_row gt_right">−53.63</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">LocationNashua</td>
-<td headers="estimate" class="gt_row gt_right">−41,770</td>
-<td headers="std.error" class="gt_row gt_right">625.5</td>
-<td headers="statistic" class="gt_row gt_right">−66.77</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year:EthnicityHispanic or Latino</td>
-<td headers="estimate" class="gt_row gt_right">−550.1</td>
-<td headers="std.error" class="gt_row gt_right">105.4</td>
-<td headers="statistic" class="gt_row gt_right">−5.219</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year:LocationManchester</td>
-<td headers="estimate" class="gt_row gt_right">−449.6</td>
-<td headers="std.error" class="gt_row gt_right">103.2</td>
-<td headers="statistic" class="gt_row gt_right">−4.355</td>
-<td headers="p.value" class="gt_row gt_right">0.0001</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year:LocationNashua</td>
-<td headers="estimate" class="gt_row gt_right">−402.7</td>
-<td headers="std.error" class="gt_row gt_right">105.4</td>
-<td headers="statistic" class="gt_row gt_right">−3.821</td>
-<td headers="p.value" class="gt_row gt_right">0.0004</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">EthnicityHispanic or Latino:LocationManchester</td>
-<td headers="estimate" class="gt_row gt_right">33,920</td>
-<td headers="std.error" class="gt_row gt_right">848.0</td>
-<td headers="statistic" class="gt_row gt_right">40.00</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">EthnicityHispanic or Latino:LocationNashua</td>
-<td headers="estimate" class="gt_row gt_right">43,220</td>
-<td headers="std.error" class="gt_row gt_right">884.6</td>
-<td headers="statistic" class="gt_row gt_right">48.85</td>
-<td headers="p.value" class="gt_row gt_right">0.0000</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year:EthnicityHispanic or Latino:LocationManchester</td>
-<td headers="estimate" class="gt_row gt_right">521.9</td>
-<td headers="std.error" class="gt_row gt_right">146.0</td>
-<td headers="statistic" class="gt_row gt_right">3.575</td>
-<td headers="p.value" class="gt_row gt_right">0.0009</td></tr>
-    <tr><td headers="term" class="gt_row gt_left">Year:EthnicityHispanic or Latino:LocationNashua</td>
-<td headers="estimate" class="gt_row gt_right">467.4</td>
-<td headers="std.error" class="gt_row gt_right">149.1</td>
-<td headers="statistic" class="gt_row gt_right">3.135</td>
-<td headers="p.value" class="gt_row gt_right">0.0031</td></tr>
-  </tbody>
-  &#10;  
-</table>
-</div>
+| term                                                | estimate | std.error | statistic | p.value |
+|:----------------------------------------------------|---------:|----------:|----------:|--------:|
+| (Intercept)                                         |  73790.0 |    442.30 |   166.800 |  0.0000 |
+| Year                                                |    632.6 |     74.53 |     8.488 |  0.0000 |
+| EthnicityHispanic or Latino                         | -72830.0 |    625.50 |  -116.400 |  0.0000 |
+| LocationManchester                                  | -32160.0 |    599.60 |   -53.630 |  0.0000 |
+| LocationNashua                                      | -41770.0 |    625.50 |   -66.770 |  0.0000 |
+| Year:EthnicityHispanic or Latino                    |   -550.1 |    105.40 |    -5.219 |  0.0000 |
+| Year:LocationManchester                             |   -449.6 |    103.20 |    -4.355 |  0.0001 |
+| Year:LocationNashua                                 |   -402.7 |    105.40 |    -3.821 |  0.0004 |
+| EthnicityHispanic or Latino:LocationManchester      |  33920.0 |    848.00 |    40.000 |  0.0000 |
+| EthnicityHispanic or Latino:LocationNashua          |  43220.0 |    884.60 |    48.850 |  0.0000 |
+| Year:EthnicityHispanic or Latino:LocationManchester |    521.9 |    146.00 |     3.575 |  0.0009 |
+| Year:EthnicityHispanic or Latino:LocationNashua     |    467.4 |    149.10 |     3.135 |  0.0031 |
 
 #### summarize
 

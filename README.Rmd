@@ -134,7 +134,7 @@ hercacstables::METADATA_ACS5 |>
     purrr::pluck("groups") |>
     dplyr::filter(stringr::str_detect(.data$Universe, "Household"),
                   stringr::str_detect(.data$Description, "Hispanic|Ethnic")) |>
-    gt::gt()
+    gt::gt(rowname_col = "Group")
 ```
 
 It looks like our best bet is group "B11001I."
@@ -160,12 +160,11 @@ household_variables <- hercacstables::METADATA_ACS5 |>
     dplyr::select("Group", "Index", "Variable", "Ethnicity")
 
 household_variables |>
-    gt::gt() |>
+    gt::gt(rowname_col = "Group") |>
     gt::cols_align(
         "right",
         columns = tidyselect::where(is.numeric)
     )
-
 ```
 
 ### find the **geographic levels** and **geographic area**
@@ -284,7 +283,6 @@ raw_households |>
         "right",
         columns = tidyselect::where(is.numeric)
     )
-
 ```
 
 ### wrangle the data
@@ -331,7 +329,6 @@ households |>
         "right",
         columns = tidyselect::where(is.numeric)
     )
-
 ```
 
 
@@ -377,7 +374,6 @@ households |>
     dplyr::filter(.data$Year == 2022) |>
     gt::gt() |>
     gt::fmt_integer(columns = "Households")
-
 ```
 
 ### Answer the question
@@ -490,7 +486,6 @@ household_model |>
     gt::cols_align_decimal(
         "p.value"
     )
-
 ```
 
 It looks like EVERYTHING is significant, so let's look at all of the parameters
@@ -504,12 +499,16 @@ household_model |>
         .data$`p.value` < 0.1
     ) |>
     gt::gt() |>
-    gt::fmt_number(columns = c("estimate",
-                               "std.error",
-                               "statistic"),
-                   n_sigfig = 4) |>
-    gt::fmt_number(columns = "p.value",
-                   decimals = 4) |>
+    gt::fmt_number(
+        columns = c("estimate",
+                    "std.error",
+                    "statistic"),
+        n_sigfig = 4
+    ) |>
+    gt::fmt_number(
+        columns = "p.value",
+        decimals = 4
+    ) |>
     gt::cols_align(
         "right",
         columns = tidyselect::where(is.numeric)
@@ -517,7 +516,6 @@ household_model |>
     gt::cols_align_decimal(
         "p.value"
     )
-
 ```
 
 #### summarize

@@ -245,7 +245,7 @@ different kinds of school district geographic levels.</p>
 </table>
 <p>It looks like the specific geographic level that we should ask about
 is “school districts (unified)”.</p>
-<p>The “Required Geographies” column lets us know that we also have to
+<p>The “Containing Geographies” column lets us know that we also have to
 tell the API which state we are interested in. The “Wildcard Option”
 column tells us that we can use “*” to say “all of the states.”</p>
 <p>We just want Ohio, so we must supply its FIPS code. If you don’t know
@@ -530,9 +530,8 @@ names for each district.</p>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
 <span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
 <span>            <span class="va">.latest_districts</span>,</span>
-<span>            <span class="st">"NAME"</span>,</span>
-<span>            <span class="va">UNIFIED_SCHOOL_DISTRICT</span></span>
-<span>        <span class="op">)</span>,</span>
+<span>            <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">all_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NAME"</span>, <span class="va">UNIFIED_SCHOOL_DISTRICT</span><span class="op">)</span><span class="op">)</span></span>
+<span>            <span class="op">)</span>,</span>
 <span>        by <span class="op">=</span> <span class="va">UNIFIED_SCHOOL_DISTRICT</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -547,19 +546,7 @@ names for each district.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">big_district_histories</span> <span class="op">&lt;-</span> <span class="fu">wrangle_histories</span><span class="op">(</span><span class="va">big_district_histories_raw</span>,</span>
-<span>                                            <span class="va">latest_school_districts</span><span class="op">)</span> </span>
-<span><span class="co">#&gt; Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `all_of()` or `any_of()` instead.</span></span>
-<span><span class="co">#&gt;   # Was:</span></span>
-<span><span class="co">#&gt;   data %&gt;% select(UNIFIED_SCHOOL_DISTRICT)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   # Now:</span></span>
-<span><span class="co">#&gt;   data %&gt;% select(all_of(UNIFIED_SCHOOL_DISTRICT))</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span></code></pre></div>
+<span>                                            <span class="va">latest_school_districts</span><span class="op">)</span> </span></code></pre></div>
 <p>Finally, we can plot the results.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_district_histories</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.district_histories</span><span class="op">)</span><span class="op">{</span></span>
@@ -602,10 +589,9 @@ names for each district.</p>
 <p>It looks like maybe a lot of people are moving from Cleveland to
 Columbus, and taking their kids with them.</p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="so-what">So what?<a class="anchor" aria-label="anchor" href="#so-what"></a>
-</h2>
+<div class="section level3">
+<h3 id="everything-is-reusable">Everything is reusable<a class="anchor" aria-label="anchor" href="#everything-is-reusable"></a>
+</h3>
 <p>Now that you’ve seen the example with Ohio, you may be thinking “that
 question is not relevant to me.” However! You could rerun all of the
 code, changing just the <code>STATE_FIPS</code> to your state’s FIPS
@@ -632,6 +618,7 @@ districts in Delaware.</p>
 <p>You could do the same thing with any other state. That’s the goal of
 this project: help define workflows for making reports from Census data
 so that they can be easily rerun for comparable places and times.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="set-up-your-api-key">Set up your API key<a class="anchor" aria-label="anchor" href="#set-up-your-api-key"></a>

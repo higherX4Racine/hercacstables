@@ -6,3 +6,5 @@
 inst/doc
 *_cache
 docs
+/doc/
+/Meta/

@@ -1,17 +1,13 @@
 ## code to prepare `STANDARD_OF_LIVING_METADATA` dataset goes here
 
 .STANDARD_OF_LIVING_TABLE <- "B17026"
-STANDARD_OF_LIVING_METADATA <- hercacstables::METADATA_ACS5 |>
-    purrr::pluck(
-        "variables"
-    ) |>
+STANDARD_OF_LIVING_METADATA <- hercacstables::ACS_VARIABLE_METADATA |>
     dplyr::filter(
-        .data$group == .STANDARD_OF_LIVING_TABLE
+        .data$Group == .STANDARD_OF_LIVING_TABLE
     ) |>
     tidyr::separate_wider_regex(
-        "label",
-        patterns = c("Estimate!!Total:!*",
-                     Lower = "\\d*\\.?\\d*",
+        "Details",
+        patterns = c(Lower = "\\d*\\.?\\d*",
                      "[^\\.\\d]*",
                      Upper = "\\d*\\.?\\d*")
     ) |>
@@ -27,13 +23,13 @@ STANDARD_OF_LIVING_METADATA <- hercacstables::METADATA_ACS5 |>
             .data$Upper < 3 ~ "Unsustainable",
             .default = "Family-sustaining"
         ),
-        Index = .data$variable |>
+        Index = .data$Variable |>
             stringr::str_extract("(?<=_)\\d+(?=E)") |>
             as.integer()
     ) |>
     dplyr::select(
-        Group = "group",
-        Variable = "variable",
+        "Group",
+        "Variable",
         "Index",
         "Least Poverty Ratio" = "Lower",
         "Greatest Poverty Ratio" = "Upper",

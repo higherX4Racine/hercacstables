@@ -10,12 +10,14 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: FALSE
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   cache = FALSE
 )
-library(hercacstables)
+
+LATEST_YEAR <- as.POSIXlt(Sys.Date())$year + 1900L
 ```
 
 ## Preface
@@ -80,8 +82,7 @@ Nevertheless, it occurs throughout the American Community Survey.
 #| label: find-subtables-with-ethnicity
 #| echo: false
 
-broad_subtables <- METADATA_ACS5 |>
-    purrr::pluck("groups") |>
+broad_subtables <- hercacstables::ACS_GROUP_METADATA |>
     dplyr::filter(stringr::str_detect(.data$Group, "I$")) |>
     dplyr::select("Group", "Description") |>
     dplyr::mutate(
@@ -100,14 +101,15 @@ In other words, all of the values from a table with one of these suffixes in its
 name will pertain to people of just one racial/ethnic category.
 
 Since the case is so common, `hercacstables` describes it with the metadata
-table `RACE_ETHNICITY_SUBTABLE_METADATA`.
+table `hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA`.
 It maps from the suffix in a table's name to the racial/ethnic category the
 table describes.
 
 ```{r}
 #| label: show-race-ethnicity-subtable-metadata
 #| echo: false
-RACE_ETHNICITY_SUBTABLE_METADATA |>
+
+hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::select(
         "Census Race",
         "Suffix"
@@ -120,7 +122,8 @@ RACE_ETHNICITY_SUBTABLE_METADATA |>
 ```{r}
 #| label: find-race-in-table-descriptions
 #| echo: false
-tables_that_name_race <- METADATA_ACS5$groups |>
+
+tables_that_name_race <- hercacstables::ACS_GROUP_METADATA |>
     dplyr::filter(
         stringr::str_detect(.data$Group, "\\d$"),
         stringr::str_detect(.data$Description, "RACE")
@@ -129,7 +132,7 @@ tables_that_name_race <- METADATA_ACS5$groups |>
         "Group", "Description"
     ) |>
     dplyr::left_join(
-        dplyr::count(METADATA_ACS5$variables,
+        dplyr::count(hercacstables::ACS_VARIABLE_METADATA,
                      .data$Group,
                      name = "rows"),
         by = "Group"
@@ -143,6 +146,7 @@ in their description.
 ```{r}
 #| label: show-the-tables-that-name-race
 #| echo: false
+
 knitr::kable(tables_that_name_race)
 ```
 
@@ -198,9 +202,9 @@ convenience_check_variables <- tibble::tribble(
 ) |>
     dplyr::mutate(
         Group = paste0(.data$Table, .data$Suffix),
-        Variable = build_api_variable(group_code = .data$Table,
-                                      race_code = .data$Suffix,
-                                      item_number = .data$Index),
+        Variable = hercacstables::build_api_variable(group_code = .data$Table,
+                                                     race_code = .data$Suffix,
+                                                     item_number = .data$Index),
         `Table Type` = dplyr::if_else(nchar(.data$Suffix) > 0,
                                       "Subtable",
                                       "Convenience")
@@ -220,9 +224,9 @@ isolate them and run them as few times as possible.
 ```{r, cache=TRUE}
 #| label: check-values-for-convenience-tables
 
-convenience_check_values_raw <- fetch_data(
+convenience_check_values_raw <- hercacstables::fetch_data(
     convenience_check_variables$Variable,
-    year = 2022,                  # the most recent one available at the time of writing
+    year = LATEST_YEAR - 2L,      # the most recent one available at the time of writing
     for_geo = "us",               # the entire nation
     for_items = "*",              # all nation-level geographies
     survey_type = "acs",          # as opposed to, e.g. "dec," for Decennial survey data
@@ -287,7 +291,8 @@ I just hid them before because it would have been confusing.
 ```{r}
 #| label: show-inclusive-columns-too
 #| echo: false
-RACE_ETHNICITY_SUBTABLE_METADATA |>
+
+hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::select(
         "Census Race",
         "Suffix",
@@ -304,7 +309,8 @@ We can use `hercacstables` to check this, too.
 
 ```{r}
 #| label: inclusive-exclusive-population-variables
-incl_excl_pop_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
+
+incl_excl_pop_variables <- hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::filter(
         nchar(.data$`Inclusive Group`) > 0
     ) |>
@@ -322,7 +328,7 @@ incl_excl_pop_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
         values_to = "Group"
     ) |>
     dplyr::mutate(
-        Variable = build_api_variable(.data$Group, 1)
+        Variable = hercacstables::build_api_variable(.data$Group, 1)
     )
 
 knitr::kable(incl_excl_pop_variables)
@@ -330,9 +336,11 @@ knitr::kable(incl_excl_pop_variables)
 
 ##### Raw inclusive and exclusive counts
 
-```{r, cache=TRUE}
+```{r}
 #| label: fetch-inclusive-exclusive-populations
-incl_excl_pop_values_raw <- fetch_data(
+#| cache: true
+
+incl_excl_pop_values_raw <- hercacstables::fetch_data(
     variables = incl_excl_pop_variables$Variable,
     year = 2022,
     for_geo = "us",
@@ -346,6 +354,7 @@ incl_excl_pop_values_raw <- fetch_data(
 
 ```{r}
 #| label: wrangle-inclusive-exclusive-populations
+
 incl_excl_pop_values <- incl_excl_pop_values_raw |>
     dplyr::inner_join(
         incl_excl_pop_variables,
@@ -396,15 +405,16 @@ Rows 10, 11, 20, and 21 contain subgroupings that distinguish between people who
 identify as biracial and those who identify as multiracial.
 
 That means that we can take rows one through eight of
-`RACE_ETHNICITY_SUBTABLE_METADATA` and map them onto rows in `B03002`.
+`hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA` and map them onto rows in
+`B03002`.
 In fact, this is so useful that it is also included in
-`RACE_ETHNICITY_SUBTABLE_METADATA`.
+`hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA`.
 
 ```{r}
 #| label: hispanic-and-broad-race-variables
 #| echo: false
 
-RACE_ETHNICITY_SUBTABLE_METADATA |>
+hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::filter(
         nchar(.data$`non-Hispanic`) > 0
     ) |>
@@ -422,9 +432,9 @@ percentages of Hispanic ethnicity.
 First, we will define our metadata table.
 
 ```{r}
-#| label: define-hispanic-and-broad-race-variables
+#| label: define-hispanic-and-broad-race-variable
 
-hispanic_and_broad_race_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
+hispanic_and_broad_race_variables <- hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::filter(
         nchar(.data$`non-Hispanic`) > 0
     ) |>
@@ -441,8 +451,7 @@ hispanic_and_broad_race_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
     tidyr::separate_wider_position(
         cols = "Variable",
         widths = c(Group = 6, 1,
-                   Index = 3,
-                   1),
+                   Index = 3, 1),
         cols_remove = FALSE
     ) |>
     dplyr::mutate(
@@ -452,14 +461,14 @@ hispanic_and_broad_race_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
 knitr::kable(hispanic_and_broad_race_variables)
 ```
 
-Next, we pull 13 years of ACS data.
+Next, we pull `r LATEST_YEAR - 2005 - 1` years of ACS data.
 
 ```{r, cache=TRUE}
 #| label: fetch-hispanic-and-broad-race-data
 
-hispanic_and_broad_race_raw <- c(2009:2019, 2021:2022) |>
+hispanic_and_broad_race_raw <- c(2009:2019, 2021:(LATEST_YEAR - 1)) |>
     purrr::map(
-        ~ fetch_data(
+        ~ hercacstables::fetch_data(
             hispanic_and_broad_race_variables$Variable,
             year = .,
             for_geo = "us",
@@ -474,6 +483,7 @@ Then, we put the data into a nice, tidy format.
 
 ```{r}
 #| label: tidy-hispanic-and-broad-race-data
+
 hispanic_and_broad_race <- hispanic_and_broad_race_raw |>
     purrr::list_rbind() |>
     dplyr::inner_join(
@@ -516,8 +526,8 @@ Finally, we plot it
 
 ```{r}
 #| label: plot-changes-in-hispanic-percentage
-#| fig-dim: !expr "c(6, 6)"
-#| dpi: 120
+#| fig-dim: !expr "c(8, 8)"
+#| dpi: 72
 
 hispanic_and_broad_race |>
     dplyr::mutate(
@@ -576,6 +586,7 @@ We can skip those.
 ```{r}
 #| label: show-broad-subtables
 #| echo: false
+
 knitr::kable(broad_subtables)
 ```
 
@@ -720,7 +731,7 @@ raw_racine_races <- racine_race_ethnicity_variables |>
     dplyr::pull(
         "Variable"
     ) |>
-    fetch_data(
+    hercacstables::fetch_data(
         year = 2022,
         for_geo = "tract",
         for_items = "*",

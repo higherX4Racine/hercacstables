@@ -1,5 +1,3 @@
-## code to prepare `GEOGRAPHY_HIERARCHY_METADATA` dataset goes here
-
 GEOGRAPHY_HIERARCHY_METADATA <- tibble::tribble(
     ~ Label,                   ~ Code, ~ Geography,                 ~ `Parent Geos`,
     "Block",                  "100",  "block",                     c("state", "county", "tract"),

@@ -7,7 +7,7 @@
 hoist_table_metadata(.metadata, .group, .fields)
 }
 \arguments{
-\item{.metadata}{\if{html}{\out{<data-frame>}} a table of metadata about Census API variables, e.g. \code{hercacstables::METADATA_ACS5$variables}}
+\item{.metadata}{\if{html}{\out{<data-frame>}} a table of metadata about Census API variables, e.g. \link{ACS_VARIABLE_METADATA}}
 
 \item{.group}{\if{html}{\out{<chr>}} the code for the group, e.g. "B01001"}
 
@@ -20,6 +20,6 @@ a new data frame with more columns
 Hoist details about a Census data group from a list of strings to separate columns
 }
 \examples{
-hoist_table_metadata(METADATA_ACS5$variables, "B06002", c("Median age", "Place of birth"))
+hoist_table_metadata(ACS_VARIABLE_METADATA, "B06002", c("Median age", "Place of birth"))
 }
 \concept{metadata}

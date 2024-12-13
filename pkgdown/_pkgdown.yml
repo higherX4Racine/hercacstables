@@ -19,9 +19,12 @@ reference:
     Census tables store which information.
   contents:
   - build_info_url
+  - latest_acs_metadata
   - fetch_metadata_table
   - hoist_table_metadata
-  - METADATA_ACS5
+  - ACS_GROUP_METADATA
+  - ACS_VARIABLE_METADATA
+  - ACS_GEOGRAPHY_METADATA
   - DECENNIAL_POPULATION_FIELDS
   - GEOGRAPHY_HIERARCHY_METADATA
   - RACE_ETHNICITY_SUBTABLE_METADATA

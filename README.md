@@ -6,6 +6,13 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+## For the newest R users:
+
+You may be new to R, but not data science, in which case I suggest
+checking out [R for Data Science](https://r4ds.hadley.nz/intro.html). If
+you’re not coming from a data science perspective, I have heard good
+things about [this book](https://datascienceineducation.com/).
+
 ## Installation
 
 You can install the development version from
@@ -65,13 +72,17 @@ counties.
 ## The workflow
 
 1.  Identify the groups and rows that contain the data you need
-    - Use `hercacstables::METADATA_ACS5` for this!
+    - Find potential groups by searching the `Universe` and
+      `Description` fields of `hercacstables::ACS_GROUP_METADATA`.
+    - Identify specific variables with
+      `hercacstables::ACS_VARIABLE_METADATA`: filter by the `Group`
+      field and examine the `Details` field.
     - Create a lookup table that maps from the Census variable name to
       your variables.
       - You may need several if you are pulling data from several
         groups.
 2.  Define the geographies that you will use
-    - Use `hercacstables::METADATA_ACS5` for this, too!
+    - Use `hercacstables::ACS_GEOGRAPHY_METADATA` for this, too!
     - You need to know at least two levels of geography:
       - The one that you want to pull data for, your level of interest
         - This is often small, like tract or county subdivision.
@@ -79,7 +90,7 @@ counties.
         - These will be larger, like state or county.
     - Create a lookup table that maps from geographic ids to meaningful
       names.
-3.  Write fetching functions that call `hercacstables::fetch_data`
+3.  Write fetching functions that call `hercacstables::fetch_data()`
     - they will often always use the same variables (from step 1)
     - they may need to be parameterized by geography if you’re pulling
       from multiple levels
@@ -87,16 +98,16 @@ counties.
       them
 4.  Write wrangling functions that for turning fetched tables into
     useful ones.
-    - These will probably involve using `dplyr::inner_join` between the
-      fetched data and your lookup tables.
+    - These will probably involve using `dplyr::inner_join()` between
+      the fetched data and your lookup tables.
     - You can also perform calculations like aggregating or finding
       remainders.
 5.  Run the workflow in two stages.
-    - Use `purrr::map` and `purrr::list_rbind` to download all of the
-      data into one data frame.
+    - Use `purrr::map()` and `purrr::list_rbind()` to download all of
+      the data into one data frame.
       - Cache that result because API calls are slow
     - Run the wrangling functions.
-      - Save these results with, e.g. `base::saveRDS`.
+      - Save these results with, e.g. `base::saveRDS()`.
 
 ## Example
 
@@ -109,34 +120,41 @@ Let’s say you want to ask this question:
 ### find the **measurement** and **demographic groups**
 
 First, find the variables that describe the numbers of households. One
-way to do this is to search `hercacstables::METADATA_ACS5` for groups
-whose “Universe” is “Households” and whose “Description” contains
-“Hispanic” or “Ethnicity.” A group’s “Universe” describes what it is
+way to do this is to search `hercacstables::ACS_GROUP_METADATA` for
+groups whose `Universe` is “Households” and whose `Description` contains
+“Hispanic” or “Ethnicity.” A group’s `Universe` describes what it is
 measuring, often telling you the units of whatever its values are. A
-group’s “Description” is a phrase that summarizes what it reports.
+group’s `Description` is a phrase that summarizes what it reports.
 
 ``` r
-hercacstables::METADATA_ACS5 |>
-    purrr::pluck("groups") |>
-    dplyr::filter(stringr::str_detect(.data$Universe, "Household"),
-                  stringr::str_detect(.data$Description, "Hispanic|Ethnic")) |>
+hercacstables::ACS_GROUP_METADATA |>
+    dplyr::filter(
+        .data$ACS5,
+        stringr::str_detect(.data$Universe, "Household"),
+        stringr::str_detect(.data$Description, "Hispanic|Ethnic")
+    ) |>
+    dplyr::select(
+        "Group",
+        "Universe",
+        "Description"
+    ) |>
     knitr::kable()
 ```
 
-| Group   | Description                                                                                                                                         | Universe                                                                 |
-|:--------|:----------------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------|
-| B11001H | Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino)                                                                       | Households with a householder who is White alone, not Hispanic or Latino |
-| B11001I | Household Type (Including Living Alone) (Hispanic or Latino)                                                                                        | Households with a householder who is Hispanic or Latino                  |
-| B19001H | Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)                       | Households with a householder who is White alone, not Hispanic or Latino |
-| B19001I | Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)                                        | Households with a householder who is Hispanic or Latino                  |
-| B19013H | Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)                | Households with a householder who is White alone, not Hispanic or Latino |
-| B19013I | Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)                                 | Households with a householder who is Hispanic or Latino                  |
-| B19025H | Aggregate Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)             | Households with a householder who is White alone, not Hispanic or Latino |
-| B19025I | Aggregate Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)                              | Households with a householder who is Hispanic or Latino                  |
-| B19037H | Age of Householder by Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder) | Households with a householder who is White alone, not Hispanic or Latino |
-| B19037I | Age of Householder by Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)                  | Households with a householder who is Hispanic or Latino                  |
-| B22005H | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino)                                      | Households with a householder who is White alone, not Hispanic or Latino |
-| B22005I | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino)                                                       | Households with a householder who is Hispanic or Latino                  |
+| Group | Universe | Description |
+|:---|:---|:---|
+| B11001H | Households with a householder who is White alone, not Hispanic or Latino | Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino) |
+| B11001I | Households with a householder who is Hispanic or Latino | Household Type (Including Living Alone) (Hispanic or Latino) |
+| B19001H | Households with a householder who is White alone, not Hispanic or Latino | Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
+| B19001I | Households with a householder who is Hispanic or Latino | Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19013H | Households with a householder who is White alone, not Hispanic or Latino | Median Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
+| B19013I | Households with a householder who is Hispanic or Latino | Median Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19025H | Households with a householder who is White alone, not Hispanic or Latino | Aggregate Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
+| B19025I | Households with a householder who is Hispanic or Latino | Aggregate Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19037H | Households with a householder who is White alone, not Hispanic or Latino | Age of Householder by Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
+| B19037I | Households with a householder who is Hispanic or Latino | Age of Householder by Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B22005H | Households with a householder who is White alone, not Hispanic or Latino | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino) |
+| B22005I | Households with a householder who is Hispanic or Latino | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino) |
 
 It looks like our best bet is group “B11001I.” It is likely that group
 “B11001” contains counts of households of any race. The first row of
@@ -148,9 +166,10 @@ counted in each.
 
 ``` r
 HOUSEHOLD_GROUPS <- c("B11001", "B11001I")
-household_variables <- hercacstables::METADATA_ACS5 |>
-    purrr::pluck("variables") |>
-    dplyr::filter(.data$Group %in% HOUSEHOLD_GROUPS,
+household_variables <- hercacstables::ACS_VARIABLE_METADATA |>
+    dplyr::filter(
+        .data$Dataset == "ACS1",
+        .data$Group %in% HOUSEHOLD_GROUPS,
                   .data$Index == 1) |>
     dplyr::mutate(
         Ethnicity = dplyr::case_match(.data$Group,
@@ -206,15 +225,15 @@ geography_definitions |>
 
 ### find the **time interval**
 
-The last ten years available from the Census are, as of 2024-09-13, 2012
-through 2022. We can use 1-year estimates for our question because we
+The last ten years available from the Census are, as of 2024-12-12, 2013
+through 2023. We can use 1-year estimates for our question because we
 are dealing with geographic levels that have more than 50,000 people in
 them. That gives us more year-to-year precision, although it does mean
 that we have to exclude 2020. There are no 1-year ACS estimates for 2020
 because of the COVID-19 pandemic.
 
 ``` r
-YEARS_INCLUDED <- c(2012:2019, 2021:2022)
+YEARS_INCLUDED <- c(TEN_YEARS_AGO:2019, 2021:LATEST_YEAR)
 ```
 
 ### define functions that use the API
@@ -276,7 +295,7 @@ raw_households <- YEARS_INCLUDED |>
 
 ``` r
 raw_households |>
-    dplyr::filter(.data$Year == 2022) |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
     dplyr::mutate(
         dplyr::across(c("Value"),
                       scales::label_comma(accuracy = 1))
@@ -288,12 +307,12 @@ raw_households |>
 
 | state | county | Group   | Index |   Value | Year | county subdivision |
 |:------|:-------|:--------|------:|--------:|-----:|:-------------------|
-| 33    | 011    | B11001I |     1 |  10,250 | 2022 | NA                 |
-| 33    | 011    | B11001  |     1 | 167,816 | 2022 | NA                 |
-| 33    | 011    | B11001I |     1 |   4,251 | 2022 | 45140              |
-| 33    | 011    | B11001  |     1 |  48,068 | 2022 | 45140              |
-| 33    | 011    | B11001I |     1 |   4,155 | 2022 | 50260              |
-| 33    | 011    | B11001  |     1 |  38,017 | 2022 | 50260              |
+| 33    | 011    | B11001I |     1 |  11,255 | 2023 | NA                 |
+| 33    | 011    | B11001  |     1 | 170,761 | 2023 | NA                 |
+| 33    | 011    | B11001I |     1 |   4,511 | 2023 | 45140              |
+| 33    | 011    | B11001  |     1 |  50,053 | 2023 | 45140              |
+| 33    | 011    | B11001I |     1 |   4,770 | 2023 | 50260              |
+| 33    | 011    | B11001  |     1 |  36,451 | 2023 | 50260              |
 
 ### wrangle the data
 
@@ -330,7 +349,7 @@ households <- raw_households |>
     )
 
 households |>
-    dplyr::filter(.data$Year == 2022) |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
     dplyr::mutate(
         dplyr::across(c("Households"),
                       scales::label_comma(accuracy = 1))
@@ -342,12 +361,12 @@ households |>
 
 |    Location | Year | Ethnicity          | Households |
 |------------:|:-----|:-------------------|-----------:|
-| County-wide | 2022 | Hispanic or Latino |     10,250 |
-| County-wide | 2022 | All                |    167,816 |
-|  Manchester | 2022 | Hispanic or Latino |      4,251 |
-|  Manchester | 2022 | All                |     48,068 |
-|      Nashua | 2022 | Hispanic or Latino |      4,155 |
-|      Nashua | 2022 | All                |     38,017 |
+| County-wide | 2023 | Hispanic or Latino |     11,255 |
+| County-wide | 2023 | All                |    170,761 |
+|  Manchester | 2023 | Hispanic or Latino |      4,511 |
+|  Manchester | 2023 | All                |     50,053 |
+|      Nashua | 2023 | Hispanic or Latino |      4,770 |
+|      Nashua | 2023 | All                |     36,451 |
 
 #### compute implicit values
 
@@ -357,7 +376,7 @@ either the cities’ households from the county’s, or the number of
 Hispanic households from the total number of households. This task turns
 up very frequently when dealing with Census data, so the package
 includes a helper function to do it for you:
-`hercacstables::subtract_parts_from_whole`. That function does not
+`hercacstables::subtract_parts_from_whole()`. That function does not
 remove the rows that contain the all-groups category. In our case, we
 must remove them so all of the calculations come out correctly.
 
@@ -385,24 +404,24 @@ households <- households |>
     )
 
 households |>
-    dplyr::filter(.data$Year == 2022) |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
     dplyr::mutate(
         dplyr::across(c("Households"),
                       scales::label_comma(accuracy = 1))
     ) |>
     knitr::kable(
-        align = "rllr"
+        align = "lrlr"
     )
 ```
 
-| Year | Location   | Ethnicity              | Households |
-|-----:|:-----------|:-----------------------|-----------:|
-| 2022 | Manchester | Hispanic or Latino     |      4,251 |
-| 2022 | Manchester | Not Hispanic or Latino |     43,817 |
-| 2022 | Nashua     | Hispanic or Latino     |      4,155 |
-| 2022 | Nashua     | Not Hispanic or Latino |     33,862 |
-| 2022 | Suburbs    | Hispanic or Latino     |      1,844 |
-| 2022 | Suburbs    | Not Hispanic or Latino |     79,887 |
+| Year |   Location | Ethnicity              | Households |
+|:-----|-----------:|:-----------------------|-----------:|
+| 2023 | Manchester | Hispanic or Latino     |      4,511 |
+| 2023 | Manchester | Not Hispanic or Latino |     45,542 |
+| 2023 |     Nashua | Hispanic or Latino     |      4,770 |
+| 2023 |     Nashua | Not Hispanic or Latino |     31,681 |
+| 2023 |    Suburbs | Hispanic or Latino     |      1,974 |
+| 2023 |    Suburbs | Not Hispanic or Latino |     82,283 |
 
 ### Answer the question
 
@@ -466,13 +485,13 @@ in the cities.
 
 #### analyze
 
-Let’s test this with an ANCOVA. We’ll subtract 2012 from the year so
-that the intercept estimate gives us the value in 2012, not AD 0.
+Let’s test this with an ANCOVA. We’ll subtract 2013 from the year so
+that the intercept estimate gives us the value in 2013, not AD 0.
 
 ``` r
 household_model <- households |>
     dplyr::mutate(
-        Year = .data$Year - 2012,
+        Year = .data$Year - TEN_YEARS_AGO,
         Location = factor(.data$Location,
                           levels = c("Suburbs",
                                      "Manchester",
@@ -481,8 +500,10 @@ household_model <- households |>
                            levels = c("Not Hispanic or Latino",
                                       "Hispanic or Latino"))
     ) |>
-    lm(Households ~ Year * Ethnicity * Location,
-       data = _)
+    lm(
+        Households ~ Year * Ethnicity * Location,
+        data = _
+    )
 ```
 
 I always like to look at the ANOVA table first to get a 10,000 meter
@@ -508,14 +529,14 @@ household_model |>
 
 | term                    |  df |          sumsq |         meansq | statistic | p.value |
 |:------------------------|----:|---------------:|---------------:|----------:|--------:|
-| Year                    |   1 |     42,871,954 |     42,871,954 |    83.890 |  0.0000 |
-| Ethnicity               |   1 | 32,103,588,465 | 32,103,588,465 | 62820.000 |  0.0000 |
-| Location                |   2 |  4,375,353,354 |  2,187,676,677 |  4281.000 |  0.0000 |
-| Year:Ethnicity          |   1 |     13,470,367 |     13,470,367 |    26.360 |  0.0000 |
-| Year:Location           |   2 |      4,035,620 |      2,017,810 |     3.948 |  0.0265 |
-| Ethnicity:Location      |   2 |  5,270,922,505 |  2,635,461,253 |  5157.000 |  0.0000 |
-| Year:Ethnicity:Location |   2 |      7,717,340 |      3,858,670 |     7.551 |  0.0015 |
-| Residuals               |  44 |     22,485,689 |        511,038 |        NA |      NA |
+| Year                    |   1 |     60,931,207 |     60,931,207 |    94.270 |  0.0000 |
+| Ethnicity               |   1 | 35,763,474,535 | 35,763,474,535 | 55330.000 |  0.0000 |
+| Location                |   2 |  4,974,084,103 |  2,487,042,052 |  3848.000 |  0.0000 |
+| Year:Ethnicity          |   1 |     16,522,903 |     16,522,903 |    25.560 |  0.0000 |
+| Year:Location           |   2 |      8,405,692 |      4,202,846 |     6.503 |  0.0031 |
+| Ethnicity:Location      |   2 |  6,022,394,783 |  3,011,197,392 |  4659.000 |  0.0000 |
+| Year:Ethnicity:Location |   2 |     15,834,332 |      7,917,166 |    12.250 |  0.0000 |
+| Residuals               |  50 |     32,316,192 |        646,324 |        NA |      NA |
 
 It looks like EVERYTHING is significant, so let’s look at all of the
 parameters that were in the near-significant range.
@@ -539,25 +560,25 @@ household_model |>
     )
 ```
 
-| term                                                | estimate | std.error | statistic | p.value |
-|:----------------------------------------------------|---------:|----------:|----------:|--------:|
-| (Intercept)                                         |  73790.0 |    442.30 |   166.800 |  0.0000 |
-| Year                                                |    632.6 |     74.53 |     8.488 |  0.0000 |
-| EthnicityHispanic or Latino                         | -72830.0 |    625.50 |  -116.400 |  0.0000 |
-| LocationManchester                                  | -32160.0 |    599.60 |   -53.630 |  0.0000 |
-| LocationNashua                                      | -41770.0 |    625.50 |   -66.770 |  0.0000 |
-| Year:EthnicityHispanic or Latino                    |   -550.1 |    105.40 |    -5.219 |  0.0000 |
-| Year:LocationManchester                             |   -449.6 |    103.20 |    -4.355 |  0.0001 |
-| Year:LocationNashua                                 |   -402.7 |    105.40 |    -3.821 |  0.0004 |
-| EthnicityHispanic or Latino:LocationManchester      |  33920.0 |    848.00 |    40.000 |  0.0000 |
-| EthnicityHispanic or Latino:LocationNashua          |  43220.0 |    884.60 |    48.850 |  0.0000 |
-| Year:EthnicityHispanic or Latino:LocationManchester |    521.9 |    146.00 |     3.575 |  0.0009 |
-| Year:EthnicityHispanic or Latino:LocationNashua     |    467.4 |    149.10 |     3.135 |  0.0031 |
+| term | estimate | std.error | statistic | p.value |
+|:---|---:|---:|---:|---:|
+| (Intercept) | 74270.0 | 417.80 | 177.800 | 0e+00 |
+| Year | 699.2 | 72.08 | 9.701 | 0e+00 |
+| EthnicityHispanic or Latino | -73240.0 | 590.90 | -123.900 | 0e+00 |
+| LocationManchester | -32620.0 | 565.70 | -57.670 | 0e+00 |
+| LocationNashua | -41730.0 | 590.90 | -70.620 | 0e+00 |
+| Year:EthnicityHispanic or Latino | -612.2 | 101.90 | -6.006 | 0e+00 |
+| Year:LocationManchester | -436.5 | 99.71 | -4.378 | 1e-04 |
+| Year:LocationNashua | -594.0 | 101.90 | -5.827 | 0e+00 |
+| EthnicityHispanic or Latino:LocationManchester | 34460.0 | 800.00 | 43.080 | 0e+00 |
+| EthnicityHispanic or Latino:LocationNashua | 43180.0 | 835.60 | 51.680 | 0e+00 |
+| Year:EthnicityHispanic or Latino:LocationManchester | 507.8 | 141.00 | 3.601 | 7e-04 |
+| Year:EthnicityHispanic or Latino:LocationNashua | 686.1 | 144.20 | 4.759 | 0e+00 |
 
 #### summarize
 
 The number of households in Hillsborough county overall grew from
-2012-2022. The number of Hispanic households was much higher in the two
+2013-2023. The number of Hispanic households was much higher in the two
 cities than in the suburban parts of the county. This difference became
 more pronounced over the decade, for two reasons. The number of Hispanic
 households grew more quickly in Nashua and Manchester than in the

@@ -13,12 +13,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 6,
-  dpi = 100
+  dpi = 72
 )
-```
-
-```{r setup}
-library(hercacstables)
 ```
 
 ## Welcome
@@ -73,8 +69,8 @@ This will help us identify the
 [variables](https://api.census.gov/data/2022/acs/acs5/variables.html)
 that we will specifically ask for.
 
-All of thosee groups and values can be accessed offline with
-`hercacstables::METADATA_ACS5`.
+All of those groups and values can be accessed offline with
+`hercacstables::ACS_GROUP_METADATA` and `hercacstables::ACS_VARIABLE_METADATA`.
 
 We want to know about populations in school districts.
 It makes sense then to only look at school-aged children, say 5-18.
@@ -108,8 +104,8 @@ The Census API can provide information at many
 [levels of geographical detail](https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html).
 Some questions might pertain to entire states.
 Others might involve comparisons among all of the tracts in a metropolitan area.
-The "geography" table of `hercacstables::METADATA_ACS5` provides a list of
-geographic levels.
+You can find details about the different geographic levels in
+`hercacstables::ACS_GEOGRAPHY_METADATA`.
 If you know the real-world name of a place, but not the numeric code that the
 Census uses for it, then you can look it up
 [here](https://www.census.gov/library/reference/code-lists/ansi.html).
@@ -120,8 +116,7 @@ There are actually three different kinds of school district geographic levels.
 
 ```{r}
 #| label: school-district-geographies
-school_district_geographies <- hercacstables::METADATA_ACS5 |>
-    purrr::pluck("geography") |>
+school_district_geographies <- hercacstables::ACS_GEOGRAPHY_METADATA |>
     dplyr::filter(stringr::str_detect(.data$`Geographic Level`, "school"))
 
 school_district_geographies |>
@@ -177,7 +172,7 @@ That is 2005 to 2022, except for 2020, which does not have 1-year ACS data.
 
 ```{r}
 #| label: years-for-acs
-YEARS_FOR_ACS <- c(2005:2019, 2021:2022)
+YEARS_FOR_ACS <- c(2005:2019, 2021:2023)
 ```
 
 #### **What?** Describe the steps to answer our question
@@ -188,7 +183,7 @@ question.
 The final aspect is the "four largest" parts.
 It will take three steps to find the four largest school districts in Ohio.
 
-The first step is to use the `hercacstables::fetch_data()` function to pull
+The first step is to use the [hercacstables::fetch_data()] function to pull
 data from the Census API.
 We need the number of children that live in each school district in Ohio in the
 most recent year available.
@@ -208,7 +203,7 @@ fetch_district_children <- function(.state_fips, .year, .district_geoids = "*") 
     )
 }
 
-latest_school_districts_raw <- fetch_district_children(STATE_FIPS, 2022)
+latest_school_districts_raw <- fetch_district_children(STATE_FIPS, 2023)
 
 latest_school_districts_raw |>
     dplyr::slice_sample(n = 8) |>
@@ -378,7 +373,7 @@ Delaware.
 STATE_FIPS <- 10
 
 latest_de_districts <- STATE_FIPS |>
-    fetch_district_children(2022) |>
+    fetch_district_children(2023) |>
     wrangle_latest_kids()
 
 de_district_geoids <- latest_de_districts |>

@@ -11,12 +11,22 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+LATEST_YEAR <- as.POSIXlt(Sys.Date())$year + 1900L - 1L
+TEN_YEARS_AGO <- LATEST_YEAR - 10L
 ```
 
 # hercacstables
 
 <!-- badges: start -->
 <!-- badges: end -->
+
+## For the newest R users:
+
+You may be new to R, but not data science, in which case I suggest checking out
+[R for Data Science](https://r4ds.hadley.nz/intro.html).
+If you're not coming from a data science perspective, I have heard good things
+about [this book](https://datascienceineducation.com/).
 
 ## Installation
 
@@ -82,33 +92,36 @@ counties.
 ## The workflow
 
 1. Identify the groups and rows that contain the data you need
-   * Use `hercacstables::METADATA_ACS5` for this!
+   * Find potential groups by searching the `Universe` and `Description` fields
+     of `hercacstables::ACS_GROUP_METADATA`.
+   * Identify specific variables with `hercacstables::ACS_VARIABLE_METADATA`:
+     filter by the `Group` field and examine the `Details` field.
    * Create a lookup table that maps from the Census variable name to your
      variables.
      * You may need several if you are pulling data from several groups.
 2. Define the geographies that you will use
-   * Use `hercacstables::METADATA_ACS5` for this, too!
+   * Use `hercacstables::ACS_GEOGRAPHY_METADATA` for this, too!
    * You need to know at least two levels of geography:
      * The one that you want to pull data for, your level of interest
        * This is often small, like tract or county subdivision.
      * Any and all levels that contain your level of interest
        * These will be larger, like state or county.
    * Create a lookup table that maps from geographic ids to meaningful names.
-3. Write fetching functions that call `hercacstables::fetch_data`
+3. Write fetching functions that call `hercacstables::fetch_data()`
    * they will often always use the same variables (from step 1)
    * they may need to be parameterized by geography if you're pulling from
      multiple levels
    * they should always be parameterized by year so that you can reuse them
 4. Write wrangling functions that for turning fetched tables into useful ones.
-   * These will probably involve using `dplyr::inner_join` between the fetched
+   * These will probably involve using `dplyr::inner_join()` between the fetched
      data and your lookup tables.
    * You can also perform calculations like aggregating or finding remainders.
 5. Run the workflow in two stages.
-   * Use `purrr::map` and `purrr::list_rbind` to download all of the data into
+   * Use `purrr::map()` and `purrr::list_rbind()` to download all of the data into
    one data frame.
      * Cache that result because API calls are slow
    * Run the wrangling functions.
-     * Save these results with, e.g. `base::saveRDS`.
+     * Save these results with, e.g. `base::saveRDS()`.
 
 ## Example
 
@@ -121,19 +134,27 @@ County, NH] during [the last 10 years]?
 ### find the **measurement** and **demographic groups**
 
 First, find the variables that describe the numbers of households.
-One way to do this is to search `hercacstables::METADATA_ACS5` for groups whose
-"Universe" is "Households" and whose "Description" contains "Hispanic" or
+One way to do this is to search `hercacstables::ACS_GROUP_METADATA` for groups
+whose `Universe` is "Households" and whose `Description` contains "Hispanic" or
 "Ethnicity."
-A group's "Universe" describes what it is measuring, often telling you the units
+A group's `Universe` describes what it is measuring, often telling you the units
 of whatever its values are.
-A group's "Description" is a phrase that summarizes what it reports.
+A group's `Description` is a phrase that summarizes what it reports.
 
 ```{r}
 #| label: search-for-relevant-groups
-hercacstables::METADATA_ACS5 |>
-    purrr::pluck("groups") |>
-    dplyr::filter(stringr::str_detect(.data$Universe, "Household"),
-                  stringr::str_detect(.data$Description, "Hispanic|Ethnic")) |>
+
+hercacstables::ACS_GROUP_METADATA |>
+    dplyr::filter(
+        .data$ACS5,
+        stringr::str_detect(.data$Universe, "Household"),
+        stringr::str_detect(.data$Description, "Hispanic|Ethnic")
+    ) |>
+    dplyr::select(
+        "Group",
+        "Universe",
+        "Description"
+    ) |>
     knitr::kable()
 ```
 
@@ -147,10 +168,12 @@ This gives us a good opportunity to document the ethnicities counted in each.
 
 ```{r}
 #| label: show-relevant-variables
+
 HOUSEHOLD_GROUPS <- c("B11001", "B11001I")
-household_variables <- hercacstables::METADATA_ACS5 |>
-    purrr::pluck("variables") |>
-    dplyr::filter(.data$Group %in% HOUSEHOLD_GROUPS,
+household_variables <- hercacstables::ACS_VARIABLE_METADATA |>
+    dplyr::filter(
+        .data$Dataset == "ACS1",
+        .data$Group %in% HOUSEHOLD_GROUPS,
                   .data$Index == 1) |>
     dplyr::mutate(
         Ethnicity = dplyr::case_match(.data$Group,
@@ -176,6 +199,7 @@ FIPS codes for the different geographies to a human-readable name.
 
 ```{r}
 #| label: define-geographic-codes
+
 NEW_HAMPSHIRE <- "33"
 COUNTY_LEVEL <- "county"
 HILLSBOROUGH_CO <- "011"
@@ -197,7 +221,7 @@ geography_definitions |>
 ### find the **time interval**
 
 The last ten years available from the Census are, as of `r Sys.Date()`,
-2012 through 2022.
+`r TEN_YEARS_AGO` through `r LATEST_YEAR`.
 We can use 1-year estimates for our question because we are dealing with
 geographic levels that have more than 50,000 people in them.
 That gives us more year-to-year precision, although it does mean that we have to
@@ -206,7 +230,8 @@ There are no 1-year ACS estimates for 2020 because of the COVID-19 pandemic.
 
 ```{r}
 #| label: define-years
-YEARS_INCLUDED <- c(2012:2019, 2021:2022)
+
+YEARS_INCLUDED <- c(TEN_YEARS_AGO:2019, 2021:LATEST_YEAR)
 ```
 
 ### define functions that use the API
@@ -267,6 +292,7 @@ you just need to update once a year.
 ```{r}
 #| label: actually-fetch-data
 #| cache: true
+
 raw_households <- YEARS_INCLUDED |>
     purrr::map(fetch_example_data) |>
     purrr::list_rbind()
@@ -274,8 +300,9 @@ raw_households <- YEARS_INCLUDED |>
 
 ```{r}
 #| label: show-the-raw-data
+
 raw_households |>
-    dplyr::filter(.data$Year == 2022) |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
     dplyr::mutate(
         dplyr::across(c("Value"),
                       scales::label_comma(accuracy = 1))
@@ -322,7 +349,7 @@ households <- raw_households |>
     )
 
 households |>
-    dplyr::filter(.data$Year == 2022) |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
     dplyr::mutate(
         dplyr::across(c("Households"),
                       scales::label_comma(accuracy = 1))
@@ -342,7 +369,7 @@ county's, or the number of Hispanic households from the total number of
 households.
 This task turns up very frequently when dealing with Census data, so the
 package includes a helper function to do it for you:
-`hercacstables::subtract_parts_from_whole`.
+`hercacstables::subtract_parts_from_whole()`.
 That function does not remove the rows that contain the all-groups category.
 In our case, we must remove them so all of the calculations come out correctly.
 
@@ -372,13 +399,13 @@ households <- households |>
     )
 
 households |>
-    dplyr::filter(.data$Year == 2022) |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
     dplyr::mutate(
         dplyr::across(c("Households"),
                       scales::label_comma(accuracy = 1))
     ) |>
     knitr::kable(
-        align = "rllr"
+        align = "lrlr"
     )
 ```
 
@@ -405,7 +432,7 @@ designate location with the color of points and lines.
 #| label: plot-the-results
 #| fig-width: 7
 #| fig-height: 6
-#| dpi: 100
+#| dpi: 72
 #| warning: false
 
 households |>
@@ -449,15 +476,15 @@ increasing in the suburbs and Hispanic households increasing in the cities.
 #### analyze
 
 Let's test this with an ANCOVA.
-We'll subtract 2012 from the year so that the intercept estimate gives us the
-value in 2012, not AD 0.
+We'll subtract `r TEN_YEARS_AGO` from the year so that the intercept estimate gives us the
+value in `r TEN_YEARS_AGO`, not AD 0.
 
 ```{r}
 #| label: statistical-model
 
 household_model <- households |>
     dplyr::mutate(
-        Year = .data$Year - 2012,
+        Year = .data$Year - TEN_YEARS_AGO,
         Location = factor(.data$Location,
                           levels = c("Suburbs",
                                      "Manchester",
@@ -466,8 +493,10 @@ household_model <- households |>
                            levels = c("Not Hispanic or Latino",
                                       "Hispanic or Latino"))
     ) |>
-    lm(Households ~ Year * Ethnicity * Location,
-       data = _)
+    lm(
+        Households ~ Year * Ethnicity * Location,
+        data = _
+    )
 ```
 
 I always like to look at the ANOVA table first to get a 10,000 meter view before
@@ -517,7 +546,8 @@ household_model |>
 
 #### summarize
 
-The number of households in Hillsborough county overall grew from 2012-2022.
+The number of households in Hillsborough county overall grew from
+`r TEN_YEARS_AGO`-`r LATEST_YEAR`.
 The number of Hispanic households was much higher in the two cities than in the
 suburban parts of the county.
 This difference became more pronounced over the decade, for two reasons.

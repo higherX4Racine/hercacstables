@@ -90,34 +90,16 @@
 
       <dl><dt>
 
-          <code><a href="build_info_url.html">build_info_url()</a></code>
-
-        </dt>
-        <dd>Get the URL for JSON metadata about one table of ACS data</dd>
-      </dl><dl><dt>
-
-          <code><a href="latest_acs_metadata.html">latest_acs_metadata()</a></code>
-
-        </dt>
-        <dd>Download metadata about the most recent versions of the 1- and 5-year ACS</dd>
-      </dl><dl><dt>
-
-          <code><a href="fetch_metadata_table.html">fetch_metadata_table()</a></code>
-
-        </dt>
-        <dd>Fetch metadata about a specific ACS data set from the Census API.</dd>
-      </dl><dl><dt>
-
-          <code><a href="hoist_table_metadata.html">hoist_table_metadata()</a></code>
-
-        </dt>
-        <dd>Hoist details about a Census data group from a list of strings to separate columns</dd>
-      </dl><dl><dt>
-
           <code><a href="ACS_GROUP_METADATA.html">ACS_GROUP_METADATA</a></code>
 
         </dt>
         <dd>Details about the groups in the most recent American Community Series</dd>
+      </dl><dl><dt>
+
+          <code><a href="unpack_group_details.html">unpack_group_details()</a></code>
+
+        </dt>
+        <dd>Pull apart the lists of details for one group of ACS data</dd>
       </dl><dl><dt>
 
           <code><a href="ACS_VARIABLE_METADATA.html">ACS_VARIABLE_METADATA</a></code>
@@ -321,6 +303,41 @@
 
         </dt>
         <dd>Computes a remainder values from measures of some subgroups and one all-group</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="gathering-metadata">Gathering Metadata<a class="anchor" aria-label="anchor" href="#gathering-metadata"></a></h3>
+      <div class="section-desc"><p>Functions for updating the metadata tables, generally functions that only the package maintainers should run when the Census updates the ACS. The logic of these functions might be helpful to someone who is looking to better understand how the API works, though.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="build_info_url.html">build_info_url()</a></code>
+
+        </dt>
+        <dd>Get the URL for JSON metadata about one table of ACS data</dd>
+      </dl><dl><dt>
+
+          <code><a href="latest_acs_metadata.html">latest_acs_metadata()</a></code>
+
+        </dt>
+        <dd>Download metadata about the most recent versions of the 1- and 5-year ACS</dd>
+      </dl><dl><dt>
+
+          <code><a href="fetch_metadata_table.html">fetch_metadata_table()</a></code>
+
+        </dt>
+        <dd>Fetch metadata about a specific ACS data set from the Census API.</dd>
+      </dl><dl><dt>
+
+          <code><a href="hoist_table_metadata.html">hoist_table_metadata()</a></code>
+
+        </dt>
+        <dd>Hoist details about a Census data group from a list of strings to separate columns</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

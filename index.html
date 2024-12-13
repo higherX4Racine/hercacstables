@@ -8,8 +8,8 @@
 <title>Work with American Community Survey Tables through the US Census API • hercacstables</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Work with American Community Survey Tables through the US Census API">
 <meta name="description" content="The American Community Survey (ACS) from the US Census's website returns data in a weirdly idiosyncratic way. There are many subtotals in each table. Grouping variables are organized in a tree-like, rather than tabular fashion. This package is intended to make it easy to access and use the ACS data with R.">
 <meta property="og:description" content="The American Community Survey (ACS) from the US Census's website returns data in a weirdly idiosyncratic way. There are many subtotals in each table. Grouping variables are organized in a tree-like, rather than tabular fashion. This package is intended to make it easy to access and use the ACS data with R.">
@@ -59,6 +59,11 @@
 <!-- badges: start -->
 <!-- badges: end -->
 <div class="section level2">
+<h2 id="for-the-newest-r-users">For the newest R users:<a class="anchor" aria-label="anchor" href="#for-the-newest-r-users"></a>
+</h2>
+<p>You may be new to R, but not data science, in which case I suggest checking out <a href="https://r4ds.hadley.nz/intro.html" class="external-link">R for Data Science</a>. If you’re not coming from a data science perspective, I have heard good things about <a href="https://datascienceineducation.com/" class="external-link">this book</a>.</p>
+</div>
+<div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
@@ -85,7 +90,8 @@
 <ol style="list-style-type: decimal">
 <li>Identify the groups and rows that contain the data you need
 <ul>
-<li>Use <code><a href="reference/METADATA_ACS5.html">hercacstables::METADATA_ACS5</a></code> for this!</li>
+<li>Find potential groups by searching the <code>Universe</code> and <code>Description</code> fields of <code><a href="reference/ACS_GROUP_METADATA.html">hercacstables::ACS_GROUP_METADATA</a></code>.</li>
+<li>Identify specific variables with <code><a href="reference/ACS_VARIABLE_METADATA.html">hercacstables::ACS_VARIABLE_METADATA</a></code>: filter by the <code>Group</code> field and examine the <code>Details</code> field.</li>
 <li>Create a lookup table that maps from the Census variable name to your variables.
 <ul>
 <li>You may need several if you are pulling data from several groups.</li>
@@ -95,7 +101,7 @@
 </li>
 <li>Define the geographies that you will use
 <ul>
-<li>Use <code><a href="reference/METADATA_ACS5.html">hercacstables::METADATA_ACS5</a></code> for this, too!</li>
+<li>Use <code><a href="reference/ACS_GEOGRAPHY_METADATA.html">hercacstables::ACS_GEOGRAPHY_METADATA</a></code> for this, too!</li>
 <li>You need to know at least two levels of geography:
 <ul>
 <li>The one that you want to pull data for, your level of interest
@@ -113,7 +119,7 @@
 <li>Create a lookup table that maps from geographic ids to meaningful names.</li>
 </ul>
 </li>
-<li>Write fetching functions that call <code><a href="reference/fetch_data.html">hercacstables::fetch_data</a></code>
+<li>Write fetching functions that call <code><a href="reference/fetch_data.html">hercacstables::fetch_data()</a></code>
 <ul>
 <li>they will often always use the same variables (from step 1)</li>
 <li>they may need to be parameterized by geography if you’re pulling from multiple levels</li>
@@ -122,20 +128,20 @@
 </li>
 <li>Write wrangling functions that for turning fetched tables into useful ones.
 <ul>
-<li>These will probably involve using <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join</a></code> between the fetched data and your lookup tables.</li>
+<li>These will probably involve using <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join()</a></code> between the fetched data and your lookup tables.</li>
 <li>You can also perform calculations like aggregating or finding remainders.</li>
 </ul>
 </li>
 <li>Run the workflow in two stages.
 <ul>
-<li>Use <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::map</a></code> and <code><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">purrr::list_rbind</a></code> to download all of the data into one data frame.
+<li>Use <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::map()</a></code> and <code><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">purrr::list_rbind()</a></code> to download all of the data into one data frame.
 <ul>
 <li>Cache that result because API calls are slow</li>
 </ul>
 </li>
 <li>Run the wrangling functions.
 <ul>
-<li>Save these results with, e.g. <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">base::saveRDS</a></code>.</li>
+<li>Save these results with, e.g. <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">base::saveRDS()</a></code>.</li>
 </ul>
 </li>
 </ul>
@@ -153,93 +159,101 @@
 <h3 id="find-the-measurement-and-demographic-groups">find the <strong>measurement</strong> and <strong>demographic groups</strong>
 <a class="anchor" aria-label="anchor" href="#find-the-measurement-and-demographic-groups"></a>
 </h3>
-<p>First, find the variables that describe the numbers of households. One way to do this is to search <code><a href="reference/METADATA_ACS5.html">hercacstables::METADATA_ACS5</a></code> for groups whose “Universe” is “Households” and whose “Description” contains “Hispanic” or “Ethnicity.” A group’s “Universe” describes what it is measuring, often telling you the units of whatever its values are. A group’s “Description” is a phrase that summarizes what it reports.</p>
+<p>First, find the variables that describe the numbers of households. One way to do this is to search <code><a href="reference/ACS_GROUP_METADATA.html">hercacstables::ACS_GROUP_METADATA</a></code> for groups whose <code>Universe</code> is “Households” and whose <code>Description</code> contains “Hispanic” or “Ethnicity.” A group’s <code>Universe</code> describes what it is measuring, often telling you the units of whatever its values are. A group’s <code>Description</code> is a phrase that summarizes what it reports.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/METADATA_ACS5.html">METADATA_ACS5</a></span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="st">"groups"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Universe</span>, <span class="st">"Household"</span><span class="op">)</span>,</span>
-<span>                  <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Description</span>, <span class="st">"Hispanic|Ethnic"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/ACS_GROUP_METADATA.html">ACS_GROUP_METADATA</a></span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">ACS5</span>,</span>
+<span>        <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Universe</span>, <span class="st">"Household"</span><span class="op">)</span>,</span>
+<span>        <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Description</span>, <span class="st">"Hispanic|Ethnic"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
+<span>        <span class="st">"Group"</span>,</span>
+<span>        <span class="st">"Universe"</span>,</span>
+<span>        <span class="st">"Description"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="3%">
-<col width="64%">
-<col width="31%">
+<col width="33%">
+<col width="33%">
+<col width="33%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Group</th>
-<th align="left">Description</th>
 <th align="left">Universe</th>
+<th align="left">Description</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">B11001H</td>
-<td align="left">Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino)</td>
 <td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
+<td align="left">Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B11001I</td>
-<td align="left">Household Type (Including Living Alone) (Hispanic or Latino)</td>
 <td align="left">Households with a householder who is Hispanic or Latino</td>
+<td align="left">Household Type (Including Living Alone) (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19001H</td>
-<td align="left">Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)</td>
 <td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
+<td align="left">Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B19001I</td>
-<td align="left">Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 <td align="left">Households with a householder who is Hispanic or Latino</td>
+<td align="left">Household Income in the Past 12 Months (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19013H</td>
-<td align="left">Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)</td>
 <td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
+<td align="left">Median Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B19013I</td>
-<td align="left">Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 <td align="left">Households with a householder who is Hispanic or Latino</td>
+<td align="left">Median Household Income in the Past 12 Months (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19025H</td>
-<td align="left">Aggregate Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)</td>
 <td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
+<td align="left">Aggregate Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B19025I</td>
-<td align="left">Aggregate Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 <td align="left">Households with a householder who is Hispanic or Latino</td>
+<td align="left">Aggregate Household Income in the Past 12 Months (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="odd">
 <td align="left">B19037H</td>
-<td align="left">Age of Householder by Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (White Alone, Not Hispanic or Latino Householder)</td>
 <td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
+<td align="left">Age of Householder by Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder)</td>
 </tr>
 <tr class="even">
 <td align="left">B19037I</td>
-<td align="left">Age of Householder by Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
 <td align="left">Households with a householder who is Hispanic or Latino</td>
+<td align="left">Age of Householder by Household Income in the Past 12 Months (Hispanic or Latino Householder)</td>
 </tr>
 <tr class="odd">
 <td align="left">B22005H</td>
-<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino)</td>
 <td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
+<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B22005I</td>
-<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino)</td>
 <td align="left">Households with a householder who is Hispanic or Latino</td>
+<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino)</td>
 </tr>
 </tbody>
 </table>
 <p>It looks like our best bet is group “B11001I.” It is likely that group “B11001” contains counts of households of any race. The first row of most groups is the total value across any demographic subset that it keeps track of. Since our question does not ask about different household types, we probably just need row one from groups “B11001” and “B11001I.” This gives us a good opportunity to document the ethnicities counted in each.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HOUSEHOLD_GROUPS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B11001"</span>, <span class="st">"B11001I"</span><span class="op">)</span></span>
-<span><span class="va">household_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/METADATA_ACS5.html">METADATA_ACS5</a></span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="st">"variables"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">HOUSEHOLD_GROUPS</span>,</span>
+<span><span class="va">household_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/ACS_VARIABLE_METADATA.html">ACS_VARIABLE_METADATA</a></span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Dataset</span> <span class="op">==</span> <span class="st">"ACS1"</span>,</span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">HOUSEHOLD_GROUPS</span>,</span>
 <span>                  <span class="va">.data</span><span class="op">$</span><span class="va">Index</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        Ethnicity <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_match.html" class="external-link">case_match</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Group</span>,</span>
@@ -320,9 +334,9 @@
 <h3 id="find-the-time-interval">find the <strong>time interval</strong>
 <a class="anchor" aria-label="anchor" href="#find-the-time-interval"></a>
 </h3>
-<p>The last ten years available from the Census are, as of 2024-09-13, 2012 through 2022. We can use 1-year estimates for our question because we are dealing with geographic levels that have more than 50,000 people in them. That gives us more year-to-year precision, although it does mean that we have to exclude 2020. There are no 1-year ACS estimates for 2020 because of the COVID-19 pandemic.</p>
+<p>The last ten years available from the Census are, as of 2024-12-12, 2013 through 2023. We can use 1-year estimates for our question because we are dealing with geographic levels that have more than 50,000 people in them. That gives us more year-to-year precision, although it does mean that we have to exclude 2020. There are no 1-year ACS estimates for 2020 because of the COVID-19 pandemic.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">YEARS_INCLUDED</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2012</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="fl">2022</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">YEARS_INCLUDED</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">TEN_YEARS_AGO</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="define-functions-that-use-the-api">define functions that use the API<a class="anchor" aria-label="anchor" href="#define-functions-that-use-the-api"></a>
@@ -373,7 +387,7 @@
 <span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">list_rbind</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">raw_households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="fl">2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Value"</span><span class="op">)</span>,</span>
 <span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
@@ -406,8 +420,8 @@
 <td align="left">011</td>
 <td align="left">B11001I</td>
 <td align="right">1</td>
-<td align="right">10,250</td>
-<td align="right">2022</td>
+<td align="right">11,255</td>
+<td align="right">2023</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
@@ -415,8 +429,8 @@
 <td align="left">011</td>
 <td align="left">B11001</td>
 <td align="right">1</td>
-<td align="right">167,816</td>
-<td align="right">2022</td>
+<td align="right">170,761</td>
+<td align="right">2023</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
@@ -424,8 +438,8 @@
 <td align="left">011</td>
 <td align="left">B11001I</td>
 <td align="right">1</td>
-<td align="right">4,251</td>
-<td align="right">2022</td>
+<td align="right">4,511</td>
+<td align="right">2023</td>
 <td align="left">45140</td>
 </tr>
 <tr class="even">
@@ -433,8 +447,8 @@
 <td align="left">011</td>
 <td align="left">B11001</td>
 <td align="right">1</td>
-<td align="right">48,068</td>
-<td align="right">2022</td>
+<td align="right">50,053</td>
+<td align="right">2023</td>
 <td align="left">45140</td>
 </tr>
 <tr class="odd">
@@ -442,8 +456,8 @@
 <td align="left">011</td>
 <td align="left">B11001I</td>
 <td align="right">1</td>
-<td align="right">4,155</td>
-<td align="right">2022</td>
+<td align="right">4,770</td>
+<td align="right">2023</td>
 <td align="left">50260</td>
 </tr>
 <tr class="even">
@@ -451,8 +465,8 @@
 <td align="left">011</td>
 <td align="left">B11001</td>
 <td align="right">1</td>
-<td align="right">38,017</td>
-<td align="right">2022</td>
+<td align="right">36,451</td>
+<td align="right">2023</td>
 <td align="left">50260</td>
 </tr>
 </tbody>
@@ -488,7 +502,7 @@
 <span>    <span class="op">)</span></span>
 <span></span>
 <span><span class="va">households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="fl">2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Households"</span><span class="op">)</span>,</span>
 <span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
@@ -506,39 +520,39 @@
 <tbody>
 <tr class="odd">
 <td align="right">County-wide</td>
-<td align="left">2022</td>
+<td align="left">2023</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">10,250</td>
+<td align="right">11,255</td>
 </tr>
 <tr class="even">
 <td align="right">County-wide</td>
-<td align="left">2022</td>
+<td align="left">2023</td>
 <td align="left">All</td>
-<td align="right">167,816</td>
+<td align="right">170,761</td>
 </tr>
 <tr class="odd">
 <td align="right">Manchester</td>
-<td align="left">2022</td>
+<td align="left">2023</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">4,251</td>
+<td align="right">4,511</td>
 </tr>
 <tr class="even">
 <td align="right">Manchester</td>
-<td align="left">2022</td>
+<td align="left">2023</td>
 <td align="left">All</td>
-<td align="right">48,068</td>
+<td align="right">50,053</td>
 </tr>
 <tr class="odd">
 <td align="right">Nashua</td>
-<td align="left">2022</td>
+<td align="left">2023</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">4,155</td>
+<td align="right">4,770</td>
 </tr>
 <tr class="even">
 <td align="right">Nashua</td>
-<td align="left">2022</td>
+<td align="left">2023</td>
 <td align="left">All</td>
-<td align="right">38,017</td>
+<td align="right">36,451</td>
 </tr>
 </tbody>
 </table>
@@ -546,7 +560,7 @@
 <div class="section level4">
 <h4 id="compute-implicit-values">compute implicit values<a class="anchor" aria-label="anchor" href="#compute-implicit-values"></a>
 </h4>
-<p>Now that the columns are human-readable, we can compute the values that we are actually interested in. That computation involves subtracting either the cities’ households from the county’s, or the number of Hispanic households from the total number of households. This task turns up very frequently when dealing with Census data, so the package includes a helper function to do it for you: <code><a href="reference/subtract_parts_from_whole.html">hercacstables::subtract_parts_from_whole</a></code>. That function does not remove the rows that contain the all-groups category. In our case, we must remove them so all of the calculations come out correctly.</p>
+<p>Now that the columns are human-readable, we can compute the values that we are actually interested in. That computation involves subtracting either the cities’ households from the county’s, or the number of Hispanic households from the total number of households. This task turns up very frequently when dealing with Census data, so the package includes a helper function to do it for you: <code><a href="reference/subtract_parts_from_whole.html">hercacstables::subtract_parts_from_whole()</a></code>. That function does not remove the rows that contain the all-groups category. In our case, we must remove them so all of the calculations come out correctly.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">households</span> <span class="op">&lt;-</span> <span class="va">households</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/subtract_parts_from_whole.html">subtract_parts_from_whole</a></span><span class="op">(</span></span>
@@ -571,57 +585,57 @@
 <span>    <span class="op">)</span></span>
 <span></span>
 <span><span class="va">households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="fl">2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Households"</span><span class="op">)</span>,</span>
 <span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>        align <span class="op">=</span> <span class="st">"rllr"</span></span>
+<span>        align <span class="op">=</span> <span class="st">"lrlr"</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
-<th align="right">Year</th>
-<th align="left">Location</th>
+<th align="left">Year</th>
+<th align="right">Location</th>
 <th align="left">Ethnicity</th>
 <th align="right">Households</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">2022</td>
-<td align="left">Manchester</td>
+<td align="left">2023</td>
+<td align="right">Manchester</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">4,251</td>
+<td align="right">4,511</td>
 </tr>
 <tr class="even">
-<td align="right">2022</td>
-<td align="left">Manchester</td>
+<td align="left">2023</td>
+<td align="right">Manchester</td>
 <td align="left">Not Hispanic or Latino</td>
-<td align="right">43,817</td>
+<td align="right">45,542</td>
 </tr>
 <tr class="odd">
-<td align="right">2022</td>
-<td align="left">Nashua</td>
+<td align="left">2023</td>
+<td align="right">Nashua</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">4,155</td>
+<td align="right">4,770</td>
 </tr>
 <tr class="even">
-<td align="right">2022</td>
-<td align="left">Nashua</td>
+<td align="left">2023</td>
+<td align="right">Nashua</td>
 <td align="left">Not Hispanic or Latino</td>
-<td align="right">33,862</td>
+<td align="right">31,681</td>
 </tr>
 <tr class="odd">
-<td align="right">2022</td>
-<td align="left">Suburbs</td>
+<td align="left">2023</td>
+<td align="right">Suburbs</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">1,844</td>
+<td align="right">1,974</td>
 </tr>
 <tr class="even">
-<td align="right">2022</td>
-<td align="left">Suburbs</td>
+<td align="left">2023</td>
+<td align="right">Suburbs</td>
 <td align="left">Not Hispanic or Latino</td>
-<td align="right">79,887</td>
+<td align="right">82,283</td>
 </tr>
 </tbody>
 </table>
@@ -675,11 +689,11 @@
 <div class="section level4">
 <h4 id="analyze">analyze<a class="anchor" aria-label="anchor" href="#analyze"></a>
 </h4>
-<p>Let’s test this with an ANCOVA. We’ll subtract 2012 from the year so that the intercept estimate gives us the value in 2012, not AD 0.</p>
+<p>Let’s test this with an ANCOVA. We’ll subtract 2013 from the year so that the intercept estimate gives us the value in 2013, not AD 0.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">&lt;-</span> <span class="va">households</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        Year <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="fl">2012</span>,</span>
+<span>        Year <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="va">TEN_YEARS_AGO</span>,</span>
 <span>        Location <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Location</span>,</span>
 <span>                          levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Suburbs"</span>,</span>
 <span>                                     <span class="st">"Manchester"</span>,</span>
@@ -688,8 +702,10 @@
 <span>                           levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Not Hispanic or Latino"</span>,</span>
 <span>                                      <span class="st">"Hispanic or Latino"</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Households</span> <span class="op">~</span> <span class="va">Year</span> <span class="op">*</span> <span class="va">Ethnicity</span> <span class="op">*</span> <span class="va">Location</span>,</span>
-<span>       data <span class="op">=</span> <span class="va">_</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span></span>
+<span>        <span class="va">Households</span> <span class="op">~</span> <span class="va">Year</span> <span class="op">*</span> <span class="va">Ethnicity</span> <span class="op">*</span> <span class="va">Location</span>,</span>
+<span>        data <span class="op">=</span> <span class="va">_</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
 <p>I always like to look at the ANOVA table first to get a 10,000 meter view before I try to interpret specific parameters.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">|&gt;</span></span>
@@ -728,64 +744,64 @@
 <tr class="odd">
 <td align="left">Year</td>
 <td align="right">1</td>
-<td align="right">42,871,954</td>
-<td align="right">42,871,954</td>
-<td align="right">83.890</td>
+<td align="right">60,931,207</td>
+<td align="right">60,931,207</td>
+<td align="right">94.270</td>
 <td align="right">0.0000</td>
 </tr>
 <tr class="even">
 <td align="left">Ethnicity</td>
 <td align="right">1</td>
-<td align="right">32,103,588,465</td>
-<td align="right">32,103,588,465</td>
-<td align="right">62820.000</td>
+<td align="right">35,763,474,535</td>
+<td align="right">35,763,474,535</td>
+<td align="right">55330.000</td>
 <td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">Location</td>
 <td align="right">2</td>
-<td align="right">4,375,353,354</td>
-<td align="right">2,187,676,677</td>
-<td align="right">4281.000</td>
+<td align="right">4,974,084,103</td>
+<td align="right">2,487,042,052</td>
+<td align="right">3848.000</td>
 <td align="right">0.0000</td>
 </tr>
 <tr class="even">
 <td align="left">Year:Ethnicity</td>
 <td align="right">1</td>
-<td align="right">13,470,367</td>
-<td align="right">13,470,367</td>
-<td align="right">26.360</td>
+<td align="right">16,522,903</td>
+<td align="right">16,522,903</td>
+<td align="right">25.560</td>
 <td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">Year:Location</td>
 <td align="right">2</td>
-<td align="right">4,035,620</td>
-<td align="right">2,017,810</td>
-<td align="right">3.948</td>
-<td align="right">0.0265</td>
+<td align="right">8,405,692</td>
+<td align="right">4,202,846</td>
+<td align="right">6.503</td>
+<td align="right">0.0031</td>
 </tr>
 <tr class="even">
 <td align="left">Ethnicity:Location</td>
 <td align="right">2</td>
-<td align="right">5,270,922,505</td>
-<td align="right">2,635,461,253</td>
-<td align="right">5157.000</td>
+<td align="right">6,022,394,783</td>
+<td align="right">3,011,197,392</td>
+<td align="right">4659.000</td>
 <td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">Year:Ethnicity:Location</td>
 <td align="right">2</td>
-<td align="right">7,717,340</td>
-<td align="right">3,858,670</td>
-<td align="right">7.551</td>
-<td align="right">0.0015</td>
+<td align="right">15,834,332</td>
+<td align="right">7,917,166</td>
+<td align="right">12.250</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="even">
 <td align="left">Residuals</td>
-<td align="right">44</td>
-<td align="right">22,485,689</td>
-<td align="right">511,038</td>
+<td align="right">50</td>
+<td align="right">32,316,192</td>
+<td align="right">646,324</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 </tr>
@@ -811,11 +827,11 @@
 <span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="56%">
-<col width="10%">
-<col width="11%">
-<col width="11%">
-<col width="9%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">term</th>
@@ -827,87 +843,87 @@
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">73790.0</td>
-<td align="right">442.30</td>
-<td align="right">166.800</td>
-<td align="right">0.0000</td>
+<td align="right">74270.0</td>
+<td align="right">417.80</td>
+<td align="right">177.800</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="even">
 <td align="left">Year</td>
-<td align="right">632.6</td>
-<td align="right">74.53</td>
-<td align="right">8.488</td>
-<td align="right">0.0000</td>
+<td align="right">699.2</td>
+<td align="right">72.08</td>
+<td align="right">9.701</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="odd">
 <td align="left">EthnicityHispanic or Latino</td>
-<td align="right">-72830.0</td>
-<td align="right">625.50</td>
-<td align="right">-116.400</td>
-<td align="right">0.0000</td>
+<td align="right">-73240.0</td>
+<td align="right">590.90</td>
+<td align="right">-123.900</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="even">
 <td align="left">LocationManchester</td>
-<td align="right">-32160.0</td>
-<td align="right">599.60</td>
-<td align="right">-53.630</td>
-<td align="right">0.0000</td>
+<td align="right">-32620.0</td>
+<td align="right">565.70</td>
+<td align="right">-57.670</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="odd">
 <td align="left">LocationNashua</td>
-<td align="right">-41770.0</td>
-<td align="right">625.50</td>
-<td align="right">-66.770</td>
-<td align="right">0.0000</td>
+<td align="right">-41730.0</td>
+<td align="right">590.90</td>
+<td align="right">-70.620</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="even">
 <td align="left">Year:EthnicityHispanic or Latino</td>
-<td align="right">-550.1</td>
-<td align="right">105.40</td>
-<td align="right">-5.219</td>
-<td align="right">0.0000</td>
+<td align="right">-612.2</td>
+<td align="right">101.90</td>
+<td align="right">-6.006</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="odd">
 <td align="left">Year:LocationManchester</td>
-<td align="right">-449.6</td>
-<td align="right">103.20</td>
-<td align="right">-4.355</td>
-<td align="right">0.0001</td>
+<td align="right">-436.5</td>
+<td align="right">99.71</td>
+<td align="right">-4.378</td>
+<td align="right">1e-04</td>
 </tr>
 <tr class="even">
 <td align="left">Year:LocationNashua</td>
-<td align="right">-402.7</td>
-<td align="right">105.40</td>
-<td align="right">-3.821</td>
-<td align="right">0.0004</td>
+<td align="right">-594.0</td>
+<td align="right">101.90</td>
+<td align="right">-5.827</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="odd">
 <td align="left">EthnicityHispanic or Latino:LocationManchester</td>
-<td align="right">33920.0</td>
-<td align="right">848.00</td>
-<td align="right">40.000</td>
-<td align="right">0.0000</td>
+<td align="right">34460.0</td>
+<td align="right">800.00</td>
+<td align="right">43.080</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="even">
 <td align="left">EthnicityHispanic or Latino:LocationNashua</td>
-<td align="right">43220.0</td>
-<td align="right">884.60</td>
-<td align="right">48.850</td>
-<td align="right">0.0000</td>
+<td align="right">43180.0</td>
+<td align="right">835.60</td>
+<td align="right">51.680</td>
+<td align="right">0e+00</td>
 </tr>
 <tr class="odd">
 <td align="left">Year:EthnicityHispanic or Latino:LocationManchester</td>
-<td align="right">521.9</td>
-<td align="right">146.00</td>
-<td align="right">3.575</td>
-<td align="right">0.0009</td>
+<td align="right">507.8</td>
+<td align="right">141.00</td>
+<td align="right">3.601</td>
+<td align="right">7e-04</td>
 </tr>
 <tr class="even">
 <td align="left">Year:EthnicityHispanic or Latino:LocationNashua</td>
-<td align="right">467.4</td>
-<td align="right">149.10</td>
-<td align="right">3.135</td>
-<td align="right">0.0031</td>
+<td align="right">686.1</td>
+<td align="right">144.20</td>
+<td align="right">4.759</td>
+<td align="right">0e+00</td>
 </tr>
 </tbody>
 </table>
@@ -915,7 +931,7 @@
 <div class="section level4">
 <h4 id="summarize">summarize<a class="anchor" aria-label="anchor" href="#summarize"></a>
 </h4>
-<p>The number of households in Hillsborough county overall grew from 2012-2022. The number of Hispanic households was much higher in the two cities than in the suburban parts of the county. This difference became more pronounced over the decade, for two reasons. The number of Hispanic households grew more quickly in Nashua and Manchester than in the suburban areas. The number of non-Hispanic households grew more quickly in the suburbs than in the cities. Isn’t it nice when the visual patterns are corroborated by significant statistics?</p>
+<p>The number of households in Hillsborough county overall grew from 2013-2023. The number of Hispanic households was much higher in the two cities than in the suburban parts of the county. This difference became more pronounced over the decade, for two reasons. The number of Hispanic households grew more quickly in Nashua and Manchester than in the suburban areas. The number of non-Hispanic households grew more quickly in the suburbs than in the cities. Isn’t it nice when the visual patterns are corroborated by significant statistics?</p>
 </div>
 </div>
 </div>
@@ -954,7 +970,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

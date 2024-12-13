@@ -8,8 +8,8 @@
 <title>hercacstables • hercacstables</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="hercacstables">
 </head>
 <body>
@@ -66,8 +66,6 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://higherx4racine.github.io/hercacstables/">hercacstables</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="welcome">Welcome<a class="anchor" aria-label="anchor" href="#welcome"></a>
 </h2>
@@ -115,13 +113,14 @@ down into four component questions.</p>
 will help us identify the <a href="https://api.census.gov/data/2022/acs/acs5/groups.html" class="external-link">groups</a>
 and <a href="https://api.census.gov/data/2022/acs/acs5/variables.html" class="external-link">variables</a>
 that we will specifically ask for.</p>
-<p>All of thosee groups and values can be accessed offline with
-<code><a href="../reference/METADATA_ACS5.html">hercacstables::METADATA_ACS5</a></code>.</p>
+<p>All of those groups and values can be accessed offline with
+<code><a href="../reference/ACS_GROUP_METADATA.html">hercacstables::ACS_GROUP_METADATA</a></code> and
+<code><a href="../reference/ACS_VARIABLE_METADATA.html">hercacstables::ACS_VARIABLE_METADATA</a></code>.</p>
 <p>We want to know about populations in school districts. It makes sense
 then to only look at school-aged children, say 5-18. Our requests should
 only ask for data about kids in that age range. We can do this with the
 built-in table <code><a href="../reference/AGE_AND_SEX_METADATA.html">hercacstables::AGE_AND_SEX_METADATA</a></code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">school_children_metadata</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/AGE_AND_SEX_METADATA.html">AGE_AND_SEX_METADATA</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>        <span class="va">.data</span><span class="op">$</span><span class="va">`Lower Age`</span> <span class="op">&gt;=</span> <span class="fl">5</span>,</span>
@@ -191,7 +190,7 @@ built-in table <code><a href="../reference/AGE_AND_SEX_METADATA.html">hercacstab
 </table>
 <p>From this table we can see that we will need to include six variables
 in our API query.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SCHOOL_CHILDREN_VARIABLES</span> <span class="op">&lt;-</span> <span class="va">school_children_metadata</span><span class="op">$</span><span class="va">variable</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">SCHOOL_CHILDREN_VARIABLES</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "B01001_004E" "B01001_005E" "B01001_006E" "B01001_028E" "B01001_029E"</span></span>
@@ -205,41 +204,55 @@ in our API query.</p>
 The Census API can provide information at many <a href="https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html" class="external-link">levels
 of geographical detail</a>. Some questions might pertain to entire
 states. Others might involve comparisons among all of the tracts in a
-metropolitan area. The “geography” table of
-<code><a href="../reference/METADATA_ACS5.html">hercacstables::METADATA_ACS5</a></code> provides a list of geographic
-levels. If you know the real-world name of a place, but not the numeric
-code that the Census uses for it, then you can look it up <a href="https://www.census.gov/library/reference/code-lists/ansi.html" class="external-link">here</a>.</p>
+metropolitan area. You can find details about the different geographic
+levels in <code><a href="../reference/ACS_GEOGRAPHY_METADATA.html">hercacstables::ACS_GEOGRAPHY_METADATA</a></code>. If you
+know the real-world name of a place, but not the numeric code that the
+Census uses for it, then you can look it up <a href="https://www.census.gov/library/reference/code-lists/ansi.html" class="external-link">here</a>.</p>
 <p>For the question that we’re dealing with, we want to look at the
 geographic area served by a school district. There are actually three
 different kinds of school district geographic levels.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">school_district_geographies</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/METADATA_ACS5.html">METADATA_ACS5</a></span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="st">"geography"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">school_district_geographies</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/ACS_GEOGRAPHY_METADATA.html">ACS_GEOGRAPHY_METADATA</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Geographic Level`</span>, <span class="st">"school"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">school_district_geographies</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="32%">
+<col width="25%">
+<col width="17%">
+<col width="12%">
+<col width="12%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">Geographic Level</th>
-<th align="left">Required Geographies</th>
+<th align="left">Containing Geographies</th>
 <th align="left">Wildcard Option</th>
+<th align="left">ACS1</th>
+<th align="left">ACS5</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">school district (elementary)</td>
-<td align="left">state</td>
-<td align="left">state</td>
+<td align="left">{state}</td>
+<td align="left">{state}</td>
+<td align="left">2023-01-01</td>
+<td align="left">2022-01-01</td>
 </tr>
 <tr class="even">
 <td align="left">school district (secondary)</td>
-<td align="left">state</td>
-<td align="left">state</td>
+<td align="left">{state}</td>
+<td align="left">{state}</td>
+<td align="left">2023-01-01</td>
+<td align="left">2022-01-01</td>
 </tr>
 <tr class="odd">
 <td align="left">school district (unified)</td>
-<td align="left">state</td>
-<td align="left">state</td>
+<td align="left">{state}</td>
+<td align="left">{state}</td>
+<td align="left">2023-01-01</td>
+<td align="left">2022-01-01</td>
 </tr>
 </tbody>
 </table>
@@ -253,7 +266,7 @@ it off the top of your head, you can use a <a href="https://www.census.gov/libra
 on the Census’s website to search for the FIPS code of a specific
 geography.</p>
 <p>Ohio’s FIPS code is 39.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">UNIFIED_SCHOOL_DISTRICT</span> <span class="op">&lt;-</span> <span class="va">school_district_geographies</span><span class="op">$</span><span class="va">`Geographic Level`</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">UNIFIED_SCHOOL_DISTRICT</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "school district (unified)"</span></span>
@@ -281,8 +294,8 @@ but are only available for larger geographic levels.</p>
 include them. For our example, we will use every year of data available.
 That is 2005 to 2022, except for 2020, which does not have 1-year ACS
 data.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">YEARS_FOR_ACS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2005</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="fl">2022</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">YEARS_FOR_ACS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2005</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="fl">2023</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="what-describe-the-steps-to-answer-our-question">
@@ -294,11 +307,11 @@ question<a class="anchor" aria-label="anchor" href="#what-describe-the-steps-to-
 “changed” (when) aspects of our question. The final aspect is the “four
 largest” parts. It will take three steps to find the four largest school
 districts in Ohio.</p>
-<p>The first step is to use the <code><a href="../reference/fetch_data.html">hercacstables::fetch_data()</a></code>
-function to pull data from the Census API. We need the number of
-children that live in each school district in Ohio in the most recent
-year available.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p>The first step is to use the [hercacstables::fetch_data()] function
+to pull data from the Census API. We need the number of children that
+live in each school district in Ohio in the most recent year
+available.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fetch_district_children</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.state_fips</span>, <span class="va">.year</span>, <span class="va">.district_geoids</span> <span class="op">=</span> <span class="st">"*"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
 <span>        variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NAME"</span>, <span class="va">SCHOOL_CHILDREN_VARIABLES</span><span class="op">)</span>, <span class="co"># district names, too</span></span>
@@ -311,7 +324,7 @@ year available.</p>
 <span>    <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">latest_school_districts_raw</span> <span class="op">&lt;-</span> <span class="fu">fetch_district_children</span><span class="op">(</span><span class="va">STATE_FIPS</span>, <span class="fl">2022</span><span class="op">)</span></span>
+<span><span class="va">latest_school_districts_raw</span> <span class="op">&lt;-</span> <span class="fu">fetch_district_children</span><span class="op">(</span><span class="va">STATE_FIPS</span>, <span class="fl">2023</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">latest_school_districts_raw</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_sample</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">8</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -342,8 +355,8 @@ year available.</p>
 <td align="left">04490</td>
 <td align="left">B01001</td>
 <td align="right">6</td>
-<td align="right">3257</td>
-<td align="right">2022</td>
+<td align="right">3872</td>
+<td align="right">2023</td>
 </tr>
 <tr class="even">
 <td align="left">Columbus City School District, Ohio</td>
@@ -351,44 +364,26 @@ year available.</p>
 <td align="left">04380</td>
 <td align="left">B01001</td>
 <td align="right">29</td>
-<td align="right">14159</td>
-<td align="right">2022</td>
+<td align="right">14856</td>
+<td align="right">2023</td>
 </tr>
 <tr class="odd">
-<td align="left">Lakota Local School District (Butler County), Ohio</td>
+<td align="left">West Clermont Local School District, Ohio</td>
 <td align="left">39</td>
-<td align="left">04611</td>
+<td align="left">04635</td>
 <td align="left">B01001</td>
 <td align="right">28</td>
-<td align="right">4182</td>
-<td align="right">2022</td>
+<td align="right">2916</td>
+<td align="right">2023</td>
 </tr>
 <tr class="even">
-<td align="left">Worthington City School District, Ohio</td>
+<td align="left">Fairfield City School District, Ohio</td>
 <td align="left">39</td>
-<td align="left">04513</td>
+<td align="left">04610</td>
 <td align="left">B01001</td>
 <td align="right">6</td>
-<td align="right">1068</td>
-<td align="right">2022</td>
-</tr>
-<tr class="odd">
-<td align="left">Dublin City School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04702</td>
-<td align="left">B01001</td>
-<td align="right">29</td>
-<td align="right">4402</td>
-<td align="right">2022</td>
-</tr>
-<tr class="even">
-<td align="left">Dublin City School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04702</td>
-<td align="left">B01001</td>
-<td align="right">30</td>
-<td align="right">1885</td>
-<td align="right">2022</td>
+<td align="right">1314</td>
+<td align="right">2023</td>
 </tr>
 <tr class="odd">
 <td align="left">Toledo City School District, Ohio</td>
@@ -396,8 +391,8 @@ year available.</p>
 <td align="left">04490</td>
 <td align="left">B01001</td>
 <td align="right">29</td>
-<td align="right">7805</td>
-<td align="right">2022</td>
+<td align="right">6601</td>
+<td align="right">2023</td>
 </tr>
 <tr class="even">
 <td align="left">Parma City School District, Ohio</td>
@@ -405,14 +400,32 @@ year available.</p>
 <td align="left">04463</td>
 <td align="left">B01001</td>
 <td align="right">4</td>
-<td align="right">3057</td>
-<td align="right">2022</td>
+<td align="right">2072</td>
+<td align="right">2023</td>
+</tr>
+<tr class="odd">
+<td align="left">Lakota Local School District (Butler County), Ohio</td>
+<td align="left">39</td>
+<td align="left">04611</td>
+<td align="left">B01001</td>
+<td align="right">5</td>
+<td align="right">3350</td>
+<td align="right">2023</td>
+</tr>
+<tr class="even">
+<td align="left">West Clermont Local School District, Ohio</td>
+<td align="left">39</td>
+<td align="left">04635</td>
+<td align="left">B01001</td>
+<td align="right">4</td>
+<td align="right">2016</td>
+<td align="right">2023</td>
 </tr>
 </tbody>
 </table>
 <p>The next step is to sum up the populations for each district and then
 sort them from biggest to smallest.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wrangle_latest_kids</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.raw_children</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">.raw_children</span> <span class="op">|&gt;</span></span>
 <span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span></span>
@@ -445,48 +458,48 @@ sort them from biggest to smallest.</p>
 <tr class="odd">
 <td align="left">Columbus City School District, Ohio</td>
 <td align="right">04380</td>
-<td align="right">80,465</td>
+<td align="right">79,141</td>
 </tr>
 <tr class="even">
 <td align="left">Cleveland Municipal School District, Ohio</td>
 <td align="right">04378</td>
-<td align="right">54,759</td>
+<td align="right">53,773</td>
 </tr>
 <tr class="odd">
 <td align="left">Cincinnati City School District, Ohio</td>
 <td align="right">04375</td>
-<td align="right">49,360</td>
+<td align="right">48,798</td>
 </tr>
 <tr class="even">
 <td align="left">Toledo City School District, Ohio</td>
 <td align="right">04490</td>
-<td align="right">34,461</td>
+<td align="right">31,622</td>
 </tr>
 <tr class="odd">
 <td align="left">Akron City School District, Ohio</td>
 <td align="right">04348</td>
-<td align="right">28,659</td>
+<td align="right">31,297</td>
 </tr>
 <tr class="even">
-<td align="left">Olentangy Local School District, Ohio</td>
-<td align="right">04676</td>
-<td align="right">24,580</td>
-</tr>
-<tr class="odd">
 <td align="left">South-Western City School District, Ohio</td>
 <td align="right">04480</td>
-<td align="right">21,729</td>
+<td align="right">24,636</td>
+</tr>
+<tr class="odd">
+<td align="left">Olentangy Local School District, Ohio</td>
+<td align="right">04676</td>
+<td align="right">22,083</td>
 </tr>
 <tr class="even">
-<td align="left">Hilliard City School District, Ohio</td>
-<td align="right">04701</td>
-<td align="right">21,474</td>
+<td align="left">Dayton City School District, Ohio</td>
+<td align="right">04384</td>
+<td align="right">21,972</td>
 </tr>
 </tbody>
 </table>
 <p>The last step is to pull the GEOIDs for each of the four biggest
 districts.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">top_district_geoids</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.districts</span>, <span class="va">n</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">.districts</span><span class="op">[[</span><span class="va">UNIFIED_SCHOOL_DISTRICT</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">]</span></span>
 <span><span class="op">}</span></span>
@@ -503,7 +516,7 @@ districts.</p>
 histories for the four biggest school districts in Ohio.</p>
 <p>First, we fetch the data. Notice that we can reuse the fetching
 function that we defined above!</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fetch_district_histories</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.state_fips</span>, <span class="va">.district_geoids</span> <span class="op">=</span> <span class="st">"*"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">YEARS_FOR_ACS</span> <span class="op">|&gt;</span></span>
 <span>        <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
@@ -518,7 +531,7 @@ function that we defined above!</p>
 <span>                                                       <span class="va">districts_for_query</span><span class="op">)</span></span></code></pre></div>
 <p>Next, we sum up the number of children and create human-readable
 names for each district.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wrangle_histories</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.raw_district_histories</span>, <span class="va">.latest_districts</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">.raw_district_histories</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span></span>
@@ -548,7 +561,7 @@ names for each district.</p>
 <span><span class="va">big_district_histories</span> <span class="op">&lt;-</span> <span class="fu">wrangle_histories</span><span class="op">(</span><span class="va">big_district_histories_raw</span>,</span>
 <span>                                            <span class="va">latest_school_districts</span><span class="op">)</span> </span></code></pre></div>
 <p>Finally, we can plot the results.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_district_histories</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.district_histories</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">.district_histories</span> <span class="op">|&gt;</span></span>
 <span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
@@ -585,7 +598,7 @@ names for each district.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu">plot_district_histories</span><span class="op">(</span><span class="va">big_district_histories</span><span class="op">)</span></span></code></pre></div>
-<p><img src="hercacstables_files/figure-html/plot-big-district-histories-1.png" width="700"></p>
+<p><img src="hercacstables_files/figure-html/plot-big-district-histories-1.png" width="504"></p>
 <p>It looks like maybe a lot of people are moving from Cleveland to
 Columbus, and taking their kids with them.</p>
 </div>
@@ -599,11 +612,11 @@ code, and get <em>the same analysis</em> for <strong>a different
 state</strong>.</p>
 <p>Let’s look at changes in population for the five largest school
 districts in Delaware.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">STATE_FIPS</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
 <span></span>
 <span><span class="va">latest_de_districts</span> <span class="op">&lt;-</span> <span class="va">STATE_FIPS</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">fetch_district_children</span><span class="op">(</span><span class="fl">2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">fetch_district_children</span><span class="op">(</span><span class="fl">2023</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">wrangle_latest_kids</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">de_district_geoids</span> <span class="op">&lt;-</span> <span class="va">latest_de_districts</span> <span class="op">|&gt;</span></span>
@@ -614,7 +627,7 @@ districts in Delaware.</p>
 <span>    <span class="fu">wrangle_histories</span><span class="op">(</span><span class="va">latest_de_districts</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">plot_district_histories</span><span class="op">(</span><span class="va">big_de_district_histories</span><span class="op">)</span></span></code></pre></div>
-<p><img src="hercacstables_files/figure-html/this-time-for-delaware-1.png" width="700"></p>
+<p><img src="hercacstables_files/figure-html/this-time-for-delaware-1.png" width="504"></p>
 <p>You could do the same thing with any other state. That’s the goal of
 this project: help define workflows for making reports from Census data
 so that they can be easily rerun for comparable places and times.</p>
@@ -635,7 +648,7 @@ function, <code><a href="../reference/api_key_setup.html">api_key_setup()</a></c
 sign-up page and then help you permanently save your key as a local
 environment variable. That variable is called “CENSUS_API_KEY” to be
 compatible with another popular package for accessing the Census API, <a href="https://walker-data.com/tidycensus/index.html" class="external-link">tidycensus</a>.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/api_key_setup.html">api_key_setup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -649,7 +662,7 @@ compatible with another popular package for accessing the Census API, <a href="h
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

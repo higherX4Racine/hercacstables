@@ -8,8 +8,8 @@
 <title>Race/Ethnicity Categories in ACS Tables • hercacstables</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Race/Ethnicity Categories in ACS Tables">
 </head>
 <body>
@@ -119,16 +119,17 @@ occurs throughout the American Community Survey.</p>
 <div class="section level3">
 <h3 id="subtable-categories-of-race-and-ethnicity">Subtable categories of race and ethnicity<a class="anchor" aria-label="anchor" href="#subtable-categories-of-race-and-ethnicity"></a>
 </h3>
-<p>There are 47 <a href="#subtables-of-race-and-ethnicity">separate sets
+<p>There are 57 <a href="#subtables-of-race-and-ethnicity">separate sets
 of tables</a> that subdivide their information according to this
 ten-category scheme. Each identity is designated by a suffix at the end
 of a table’s name. In other words, all of the values from a table with
 one of these suffixes in its name will pertain to people of just one
 racial/ethnic category.</p>
 <p>Since the case is so common, <code>hercacstables</code> describes it
-with the metadata table <code>RACE_ETHNICITY_SUBTABLE_METADATA</code>.
-It maps from the suffix in a table’s name to the racial/ethnic category
-the table describes.</p>
+with the metadata table
+<code><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA</a></code>. It maps
+from the suffix in a table’s name to the racial/ethnic category the
+table describes.</p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Census Race</th>
@@ -237,9 +238,9 @@ way that “maps” from the Census variable to the real-world meaning.</p>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        Group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Table</span>, <span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span><span class="op">)</span>,</span>
-<span>        Variable <span class="op">=</span> <span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span>group_code <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Table</span>,</span>
-<span>                                      race_code <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span>,</span>
-<span>                                      item_number <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Index</span><span class="op">)</span>,</span>
+<span>        Variable <span class="op">=</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span>group_code <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Table</span>,</span>
+<span>                                                     race_code <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span>,</span>
+<span>                                                     item_number <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Index</span><span class="op">)</span>,</span>
 <span>        `Table Type` <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>,</span>
 <span>                                      <span class="st">"Subtable"</span>,</span>
 <span>                                      <span class="st">"Convenience"</span><span class="op">)</span></span>
@@ -360,9 +361,9 @@ cache its results. API calls are much slower than local functions, so it
 is usually a good idea to isolate them and run them as few times as
 possible.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">convenience_check_values_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">convenience_check_values_raw</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
 <span>    <span class="va">convenience_check_variables</span><span class="op">$</span><span class="va">Variable</span>,</span>
-<span>    year <span class="op">=</span> <span class="fl">2022</span>,                  <span class="co"># the most recent one available at the time of writing</span></span>
+<span>    year <span class="op">=</span> <span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">2L</span>,      <span class="co"># the most recent one available at the time of writing</span></span>
 <span>    for_geo <span class="op">=</span> <span class="st">"us"</span>,               <span class="co"># the entire nation</span></span>
 <span>    for_items <span class="op">=</span> <span class="st">"*"</span>,              <span class="co"># all nation-level geographies</span></span>
 <span>    survey_type <span class="op">=</span> <span class="st">"acs"</span>,          <span class="co"># as opposed to, e.g. "dec," for Decennial survey data</span></span>
@@ -531,7 +532,7 @@ use <code>hercacstables</code> to check this, too.</p>
 <h5 id="census-variables-for-inclusive-and-exclusive-counts">Census variables for inclusive and exclusive counts<a class="anchor" aria-label="anchor" href="#census-variables-for-inclusive-and-exclusive-counts"></a>
 </h5>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">incl_excl_pop_variables</span> <span class="op">&lt;-</span> <span class="va">RACE_ETHNICITY_SUBTABLE_METADATA</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">incl_excl_pop_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">RACE_ETHNICITY_SUBTABLE_METADATA</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Inclusive Group`</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -549,7 +550,7 @@ use <code>hercacstables</code> to check this, too.</p>
 <span>        values_to <span class="op">=</span> <span class="st">"Group"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        Variable <span class="op">=</span> <span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Group</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>        Variable <span class="op">=</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Group</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">incl_excl_pop_variables</span><span class="op">)</span></span></code></pre></div>
@@ -646,7 +647,7 @@ use <code>hercacstables</code> to check this, too.</p>
 <h5 id="raw-inclusive-and-exclusive-counts">Raw inclusive and exclusive counts<a class="anchor" aria-label="anchor" href="#raw-inclusive-and-exclusive-counts"></a>
 </h5>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">incl_excl_pop_values_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">incl_excl_pop_values_raw</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
 <span>    variables <span class="op">=</span> <span class="va">incl_excl_pop_variables</span><span class="op">$</span><span class="va">Variable</span>,</span>
 <span>    year <span class="op">=</span> <span class="fl">2022</span>,</span>
 <span>    for_geo <span class="op">=</span> <span class="st">"us"</span>,</span>
@@ -768,9 +769,10 @@ of non-Hispanic and Hispanic people. Rows 10, 11, 20, and 21 contain
 subgroupings that distinguish between people who identify as biracial
 and those who identify as multiracial.</p>
 <p>That means that we can take rows one through eight of
-<code>RACE_ETHNICITY_SUBTABLE_METADATA</code> and map them onto rows in
-<code>B03002</code>. In fact, this is so useful that it is also included
-in <code>RACE_ETHNICITY_SUBTABLE_METADATA</code>.</p>
+<code><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA</a></code> and map
+them onto rows in <code>B03002</code>. In fact, this is so useful that
+it is also included in
+<code><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA</a></code>.</p>
 <table class="table">
 <colgroup>
 <col width="66%">
@@ -829,7 +831,7 @@ in <code>RACE_ETHNICITY_SUBTABLE_METADATA</code>.</p>
 in their percentages of Hispanic ethnicity.</p>
 <p>First, we will define our metadata table.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_variables</span> <span class="op">&lt;-</span> <span class="va">RACE_ETHNICITY_SUBTABLE_METADATA</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">RACE_ETHNICITY_SUBTABLE_METADATA</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`non-Hispanic`</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -846,8 +848,7 @@ in their percentages of Hispanic ethnicity.</p>
 <span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate_wider_delim.html" class="external-link">separate_wider_position</a></span><span class="op">(</span></span>
 <span>        cols <span class="op">=</span> <span class="st">"Variable"</span>,</span>
 <span>        widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Group <span class="op">=</span> <span class="fl">6</span>, <span class="fl">1</span>,</span>
-<span>                   Index <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                   <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                   Index <span class="op">=</span> <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>        cols_remove <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -985,11 +986,11 @@ in their percentages of Hispanic ethnicity.</p>
 </tr>
 </tbody>
 </table>
-<p>Next, we pull 13 years of ACS data.</p>
+<p>Next, we pull 18 years of ACS data.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2009</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="fl">2022</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2009</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="op">(</span><span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
-<span>        <span class="op">~</span> <span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
+<span>        <span class="op">~</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
 <span>            <span class="va">hispanic_and_broad_race_variables</span><span class="op">$</span><span class="va">Variable</span>,</span>
 <span>            year <span class="op">=</span> <span class="va">.</span>,</span>
 <span>            for_geo <span class="op">=</span> <span class="st">"us"</span>,</span>
@@ -1158,6 +1159,14 @@ in their percentages of Hispanic ethnicity.</p>
 <td align="right">19,696,980</td>
 <td align="right">1%</td>
 </tr>
+<tr class="even">
+<td align="left">ASIAN ALONE</td>
+<td align="right">2023</td>
+<td align="right">19,769,752</td>
+<td align="right">282,571</td>
+<td align="right">20,052,323</td>
+<td align="right">1%</td>
+</tr>
 </tbody>
 </table>
 <p>Finally, we plot it</p>
@@ -1201,7 +1210,7 @@ in their percentages of Hispanic ethnicity.</p>
 <span>        <span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="race_ethnicity_categories_files/figure-html/plot-changes-in-hispanic-percentage-1.png" width="720"></p>
+<p><img src="race_ethnicity_categories_files/figure-html/plot-changes-in-hispanic-percentage-1.png" width="576"></p>
 </div>
 <div class="section level4">
 <h4 id="methodological-detail-tables">Methodological detail tables<a class="anchor" aria-label="anchor" href="#methodological-detail-tables"></a>
@@ -1221,8 +1230,8 @@ identities. We can skip those.</p>
 </h3>
 <table class="table">
 <colgroup>
-<col width="3%">
-<col width="96%">
+<col width="4%">
+<col width="95%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Group</th>
@@ -1303,95 +1312,111 @@ Months by Marital Status (Hispanic or Latino)</td>
 Population 3 Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
+<td align="left">B15002</td>
+<td align="left">Sex by Educational Attainment for the Population 25
+Years and Over (Hispanic or Latino)</td>
+</tr>
+<tr class="odd">
 <td align="left">B16005</td>
 <td align="left">Nativity by Language Spoken at Home by Ability to Speak
 English for the Population 5 Years and Over (Hispanic or Latino)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">B17001</td>
 <td align="left">Poverty Status in the Past 12 Months by Sex by Age
 (Hispanic or Latino)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">B17010</td>
 <td align="left">Poverty Status in the Past 12 Months of Families by
 Family Type by Presence of Related Children Under 18 Years by Age of
 Related Children (Hispanic or Latino)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">B17020</td>
 <td align="left">Poverty Status in the Past 12 Months by Age (Hispanic
 or Latino)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">B18101</td>
 <td align="left">Age by Disability Status (Hispanic or Latino)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">B19001</td>
-<td align="left">Household Income in the Past 12 Months (in 2022
-Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
-</tr>
-<tr class="even">
-<td align="left">B19013</td>
-<td align="left">Median Household Income in the Past 12 Months (in 2022
-Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
+<td align="left">Household Income in the Past 12 Months (Hispanic or
+Latino Householder)</td>
 </tr>
 <tr class="odd">
-<td align="left">B19025</td>
-<td align="left">Aggregate Household Income in the Past 12 Months (in
-2022 Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
+<td align="left">B19013</td>
+<td align="left">Median Household Income in the Past 12 Months (Hispanic
+or Latino Householder)</td>
 </tr>
 <tr class="even">
+<td align="left">B19025</td>
+<td align="left">Aggregate Household Income in the Past 12 Months
+(Hispanic or Latino Householder)</td>
+</tr>
+<tr class="odd">
 <td align="left">B19037</td>
 <td align="left">Age of Householder by Household Income in the Past 12
-Months (in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino
+Months (Hispanic or Latino Householder)</td>
+</tr>
+<tr class="even">
+<td align="left">B19101</td>
+<td align="left">Family Income in the Past 12 Months (Hispanic or Latino
 Householder)</td>
 </tr>
 <tr class="odd">
-<td align="left">B19101</td>
-<td align="left">Family Income in the Past 12 Months (in 2022
-Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
+<td align="left">B19113</td>
+<td align="left">Median Family Income in the Past 12 Months (Hispanic or
+Latino Householder)</td>
 </tr>
 <tr class="even">
-<td align="left">B19113</td>
-<td align="left">Median Family Income in the Past 12 Months (in 2022
-Inflation-Adjusted Dollars) (Hispanic or Latino Householder)</td>
-</tr>
-<tr class="odd">
 <td align="left">B19202</td>
 <td align="left">Median Nonfamily Household Income in the Past 12 Months
-(in 2022 Inflation-Adjusted Dollars) (Hispanic or Latino
-Householder)</td>
-</tr>
-<tr class="even">
-<td align="left">B19301</td>
-<td align="left">Per Capita Income in the Past 12 Months (in 2022
-Inflation-Adjusted Dollars) (Hispanic or Latino)</td>
+(Hispanic or Latino Householder)</td>
 </tr>
 <tr class="odd">
+<td align="left">B19301</td>
+<td align="left">Per Capita Income in the Past 12 Months (Hispanic or
+Latino)</td>
+</tr>
+<tr class="even">
 <td align="left">B19313</td>
-<td align="left">Aggregate Income in the Past 12 Months (in 2022
-Inflation-Adjusted Dollars) for the Population 15 Years and Over
+<td align="left">Aggregate Income in the Past 12 Months for the
+Population 15 Years and Over (Hispanic or Latino)</td>
+</tr>
+<tr class="odd">
+<td align="left">B20005</td>
+<td align="left">Sex by Work Experience in the Past 12 Months by
+Earnings in the Past 12 Months for the Population 16 Years and Over
 (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
-<td align="left">B20005</td>
-<td align="left">Sex by Work Experience in the Past 12 Months by
-Earnings in the Past 12 Months (in 2022 Inflation-Adjusted Dollars) for
-the Population 16 Years and Over (Hispanic or Latino)</td>
+<td align="left">B20017</td>
+<td align="left">Median Earnings in the Past 12 Months by Sex by Work
+Experience in the Past 12 Months for the Population 16 Years and Over
+With Earnings (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
-<td align="left">B20017</td>
-<td align="left">Median Earnings in the Past 12 Months (in 2022
-Inflation-Adjusted Dollars) by Sex by Work Experience in the Past 12
-Months for the Population 16 Years and Over With Earnings (Hispanic or
-Latino)</td>
+<td align="left">B21001</td>
+<td align="left">Sex by Age by Veteran Status for the Civilian
+Population 18 Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">B22005</td>
 <td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by
 Race of Householder (Hispanic or Latino)</td>
+</tr>
+<tr class="odd">
+<td align="left">B23002</td>
+<td align="left">Sex by Age by Employment Status for the Population 16
+Years and Over (Hispanic or Latino)</td>
+</tr>
+<tr class="even">
+<td align="left">B24010</td>
+<td align="left">Sex by Occupation for the Civilian Employed Population
+16 Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B25003</td>
@@ -1423,17 +1448,36 @@ Householder)</td>
 Householder)</td>
 </tr>
 <tr class="odd">
+<td align="left">B25140</td>
+<td align="left">Housing Costs as a Percentage of Household Income in
+the Past 12 Months (Hispanic or Latino Householder)</td>
+</tr>
+<tr class="even">
 <td align="left">B26103</td>
 <td align="left">Group Quarters Type (3 Types) (Hispanic or Latino)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">B26203</td>
 <td align="left">Group Quarters Type (5 Types) (Hispanic or Latino)</td>
+</tr>
+<tr class="even">
+<td align="left">B27001</td>
+<td align="left">Health Insurance Coverage Status by Age (Hispanic or
+Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">B28009</td>
 <td align="left">Presence of a Computer and Type of Internet
 Subscription in Household (Hispanic or Latino)</td>
+</tr>
+<tr class="even">
+<td align="left">C01001</td>
+<td align="left">Sex by Age (Hispanic or Latino)</td>
+</tr>
+<tr class="odd">
+<td align="left">C14007</td>
+<td align="left">School Enrollment by Detailed Level of School for the
+Population 3 Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">C15002</td>
@@ -1442,8 +1486,19 @@ Years and Over (Hispanic or Latino)</td>
 </tr>
 <tr class="odd">
 <td align="left">C15010</td>
-<td align="left">Field of Bachelor’s Degree for First Major the
+<td align="left">Field of Bachelor’s Degree for First Major for the
 Population 25 Years and Over (Hispanic or Latino)</td>
+</tr>
+<tr class="even">
+<td align="left">C17001</td>
+<td align="left">Poverty Status in the Past 12 Months by Sex by Age
+(Hispanic or Latino)</td>
+</tr>
+<tr class="odd">
+<td align="left">C17010</td>
+<td align="left">Poverty Status in the Past 12 Months of Families by
+Family Type by Presence of Related Children Under 18 Years (Hispanic or
+Latino)</td>
 </tr>
 <tr class="even">
 <td align="left">C21001</td>
@@ -1582,7 +1637,7 @@ There is another table that gives the breakdown in more detail, though:
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

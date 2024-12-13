@@ -9,6 +9,9 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/race_ethnicity_categories.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/authors.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/index.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/ACS_GEOGRAPHY_METADATA.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/ACS_GROUP_METADATA.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/ACS_VARIABLE_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/AGE_AND_SEX_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/CHILDREN_IN_POVERTY_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/CHILDREN_PER_FAMILY_METADATA.html</loc></url>
@@ -18,7 +21,6 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/EMPLOYMENT_STATUS_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/FAMILIES_WITH_CHILDREN_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/GEOGRAPHY_HIERARCHY_METADATA.html</loc></url>
-<url><loc>https://higherx4racine.github.io/hercacstables/reference/METADATA_ACS5.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/RACE_ETHNICITY_SUBTABLE_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/STANDARD_OF_LIVING_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/api_key_is_set.html</loc></url>
@@ -39,6 +41,7 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/hoist_table_metadata.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/index.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/json_list_to_frame.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/latest_acs_metadata.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/margins_by_demography_and_place.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/pivot_and_separate.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/safe_api_query.html</loc></url>

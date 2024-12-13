@@ -18,11 +18,8 @@ reference:
     These functions and tables will help you to look up information about which
     Census tables store which information.
   contents:
-  - build_info_url
-  - latest_acs_metadata
-  - fetch_metadata_table
-  - hoist_table_metadata
   - ACS_GROUP_METADATA
+  - unpack_group_details
   - ACS_VARIABLE_METADATA
   - ACS_GEOGRAPHY_METADATA
   - DECENNIAL_POPULATION_FIELDS
@@ -68,3 +65,15 @@ reference:
   contents:
   - margins_by_demography_and_place
   - subtract_parts_from_whole
+- subtitle: Gathering Metadata
+  desc: >
+    Functions for updating the metadata tables, generally functions that only
+    the package maintainers should run when the Census updates the ACS. The
+    logic of these functions might be helpful to someone who is looking to
+    better understand how the API works, though.
+  contents:
+  - build_info_url
+  - latest_acs_metadata
+  - fetch_metadata_table
+  - hoist_table_metadata
+

@@ -20,6 +20,7 @@ Here's a map:
 ```{r}
 #| label: map-of-nashville-blocks
 #| fig-dim: !expr "c(8, 5)"
+#| dpi: 72
 #| echo: false
 
 ggplot2::ggplot() +
@@ -208,6 +209,7 @@ We will aggregate the families into "Children Present" and "No Children."
 ```{r}
 #| label: wrangle-families-with-children
 #| echo: false
+
 FAMILIES_WITH_CHILDREN <- RAW_FAMILIES_WITH_CHILDREN |>
     dplyr::inner_join(
         hercacstables::FAMILIES_WITH_CHILDREN_METADATA,
@@ -262,6 +264,7 @@ the variables in that table map to parental place of birth and kid poverty.
 ```{r}
 #| label: show-children-in-poverty-metadata
 #| echo: false
+
 hercacstables::CHILDREN_IN_POVERTY_METADATA |>
     dplyr::select(
         !c("Group", "Index")
@@ -299,6 +302,7 @@ calling "Sustainable."
 ```{r}
 #| label: wrangle-children-in-poverty
 #| echo: false
+
 CHILDREN_IN_POVERTY <- RAW_CHILDREN_IN_POVERTY |>
     dplyr::inner_join(
         hercacstables::CHILDREN_IN_POVERTY_METADATA,
@@ -357,6 +361,7 @@ This is what that table looks like:
 ```{r}
 #| label: show-joined-tables
 #| echo: false
+
 CHILDREN_BY_TRACT |>
     dplyr::mutate(
         dplyr::across(tidyselect::starts_with("Percent"),

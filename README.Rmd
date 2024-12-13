@@ -107,21 +107,21 @@ counties.
      * Any and all levels that contain your level of interest
        * These will be larger, like state or county.
    * Create a lookup table that maps from geographic ids to meaningful names.
-3. Write fetching functions that call `hercacstables::fetch_data`
+3. Write fetching functions that call `hercacstables::fetch_data()`
    * they will often always use the same variables (from step 1)
    * they may need to be parameterized by geography if you're pulling from
      multiple levels
    * they should always be parameterized by year so that you can reuse them
 4. Write wrangling functions that for turning fetched tables into useful ones.
-   * These will probably involve using `dplyr::inner_join` between the fetched
+   * These will probably involve using `dplyr::inner_join()` between the fetched
      data and your lookup tables.
    * You can also perform calculations like aggregating or finding remainders.
 5. Run the workflow in two stages.
-   * Use `purrr::map` and `purrr::list_rbind` to download all of the data into
+   * Use `purrr::map()` and `purrr::list_rbind()` to download all of the data into
    one data frame.
      * Cache that result because API calls are slow
    * Run the wrangling functions.
-     * Save these results with, e.g. `base::saveRDS`.
+     * Save these results with, e.g. `base::saveRDS()`.
 
 ## Example
 
@@ -143,9 +143,18 @@ A group's `Description` is a phrase that summarizes what it reports.
 
 ```{r}
 #| label: search-for-relevant-groups
+
 hercacstables::ACS_GROUP_METADATA |>
-    dplyr::filter(stringr::str_detect(.data$Universe, "Household"),
-                  stringr::str_detect(.data$Description, "Hispanic|Ethnic")) |>
+    dplyr::filter(
+        .data$ACS5,
+        stringr::str_detect(.data$Universe, "Household"),
+        stringr::str_detect(.data$Description, "Hispanic|Ethnic")
+    ) |>
+    dplyr::select(
+        "Group",
+        "Universe",
+        "Description"
+    ) |>
     knitr::kable()
 ```
 
@@ -159,6 +168,7 @@ This gives us a good opportunity to document the ethnicities counted in each.
 
 ```{r}
 #| label: show-relevant-variables
+
 HOUSEHOLD_GROUPS <- c("B11001", "B11001I")
 household_variables <- hercacstables::ACS_VARIABLE_METADATA |>
     dplyr::filter(
@@ -189,6 +199,7 @@ FIPS codes for the different geographies to a human-readable name.
 
 ```{r}
 #| label: define-geographic-codes
+
 NEW_HAMPSHIRE <- "33"
 COUNTY_LEVEL <- "county"
 HILLSBOROUGH_CO <- "011"
@@ -219,6 +230,7 @@ There are no 1-year ACS estimates for 2020 because of the COVID-19 pandemic.
 
 ```{r}
 #| label: define-years
+
 YEARS_INCLUDED <- c(TEN_YEARS_AGO:2019, 2021:LATEST_YEAR)
 ```
 
@@ -280,6 +292,7 @@ you just need to update once a year.
 ```{r}
 #| label: actually-fetch-data
 #| cache: true
+
 raw_households <- YEARS_INCLUDED |>
     purrr::map(fetch_example_data) |>
     purrr::list_rbind()
@@ -287,6 +300,7 @@ raw_households <- YEARS_INCLUDED |>
 
 ```{r}
 #| label: show-the-raw-data
+
 raw_households |>
     dplyr::filter(.data$Year == LATEST_YEAR) |>
     dplyr::mutate(
@@ -355,7 +369,7 @@ county's, or the number of Hispanic households from the total number of
 households.
 This task turns up very frequently when dealing with Census data, so the
 package includes a helper function to do it for you:
-`hercacstables::subtract_parts_from_whole`.
+`hercacstables::subtract_parts_from_whole()`.
 That function does not remove the rows that contain the all-groups category.
 In our case, we must remove them so all of the calculations come out correctly.
 
@@ -418,7 +432,7 @@ designate location with the color of points and lines.
 #| label: plot-the-results
 #| fig-width: 7
 #| fig-height: 6
-#| dpi: 100
+#| dpi: 72
 #| warning: false
 
 households |>

@@ -90,7 +90,7 @@ counties.
         - These will be larger, like state or county.
     - Create a lookup table that maps from geographic ids to meaningful
       names.
-3.  Write fetching functions that call `hercacstables::fetch_data`
+3.  Write fetching functions that call `hercacstables::fetch_data()`
     - they will often always use the same variables (from step 1)
     - they may need to be parameterized by geography if you’re pulling
       from multiple levels
@@ -98,16 +98,16 @@ counties.
       them
 4.  Write wrangling functions that for turning fetched tables into
     useful ones.
-    - These will probably involve using `dplyr::inner_join` between the
-      fetched data and your lookup tables.
+    - These will probably involve using `dplyr::inner_join()` between
+      the fetched data and your lookup tables.
     - You can also perform calculations like aggregating or finding
       remainders.
 5.  Run the workflow in two stages.
-    - Use `purrr::map` and `purrr::list_rbind` to download all of the
-      data into one data frame.
+    - Use `purrr::map()` and `purrr::list_rbind()` to download all of
+      the data into one data frame.
       - Cache that result because API calls are slow
     - Run the wrangling functions.
-      - Save these results with, e.g. `base::saveRDS`.
+      - Save these results with, e.g. `base::saveRDS()`.
 
 ## Example
 
@@ -128,25 +128,33 @@ group’s `Description` is a phrase that summarizes what it reports.
 
 ``` r
 hercacstables::ACS_GROUP_METADATA |>
-    dplyr::filter(stringr::str_detect(.data$Universe, "Household"),
-                  stringr::str_detect(.data$Description, "Hispanic|Ethnic")) |>
+    dplyr::filter(
+        .data$ACS5,
+        stringr::str_detect(.data$Universe, "Household"),
+        stringr::str_detect(.data$Description, "Hispanic|Ethnic")
+    ) |>
+    dplyr::select(
+        "Group",
+        "Universe",
+        "Description"
+    ) |>
     knitr::kable()
 ```
 
-| Group | Universe | Description | ACS1 | ACS5 |
-|:---|:---|:---|:---|:---|
-| B11001H | Households with a householder who is White alone, not Hispanic or Latino | Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino) | TRUE | TRUE |
-| B11001I | Households with a householder who is Hispanic or Latino | Household Type (Including Living Alone) (Hispanic or Latino) | TRUE | TRUE |
-| B19001H | Households with a householder who is White alone, not Hispanic or Latino | Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) | TRUE | TRUE |
-| B19001I | Households with a householder who is Hispanic or Latino | Household Income in the Past 12 Months (Hispanic or Latino Householder) | TRUE | TRUE |
-| B19013H | Households with a householder who is White alone, not Hispanic or Latino | Median Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) | TRUE | TRUE |
-| B19013I | Households with a householder who is Hispanic or Latino | Median Household Income in the Past 12 Months (Hispanic or Latino Householder) | TRUE | TRUE |
-| B19025H | Households with a householder who is White alone, not Hispanic or Latino | Aggregate Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) | TRUE | TRUE |
-| B19025I | Households with a householder who is Hispanic or Latino | Aggregate Household Income in the Past 12 Months (Hispanic or Latino Householder) | TRUE | TRUE |
-| B19037H | Households with a householder who is White alone, not Hispanic or Latino | Age of Householder by Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) | TRUE | TRUE |
-| B19037I | Households with a householder who is Hispanic or Latino | Age of Householder by Household Income in the Past 12 Months (Hispanic or Latino Householder) | TRUE | TRUE |
-| B22005H | Households with a householder who is White alone, not Hispanic or Latino | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino) | TRUE | TRUE |
-| B22005I | Households with a householder who is Hispanic or Latino | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino) | TRUE | TRUE |
+| Group | Universe | Description |
+|:---|:---|:---|
+| B11001H | Households with a householder who is White alone, not Hispanic or Latino | Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino) |
+| B11001I | Households with a householder who is Hispanic or Latino | Household Type (Including Living Alone) (Hispanic or Latino) |
+| B19001H | Households with a householder who is White alone, not Hispanic or Latino | Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
+| B19001I | Households with a householder who is Hispanic or Latino | Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19013H | Households with a householder who is White alone, not Hispanic or Latino | Median Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
+| B19013I | Households with a householder who is Hispanic or Latino | Median Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19025H | Households with a householder who is White alone, not Hispanic or Latino | Aggregate Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
+| B19025I | Households with a householder who is Hispanic or Latino | Aggregate Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19037H | Households with a householder who is White alone, not Hispanic or Latino | Age of Householder by Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
+| B19037I | Households with a householder who is Hispanic or Latino | Age of Householder by Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B22005H | Households with a householder who is White alone, not Hispanic or Latino | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino) |
+| B22005I | Households with a householder who is Hispanic or Latino | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino) |
 
 It looks like our best bet is group “B11001I.” It is likely that group
 “B11001” contains counts of households of any race. The first row of
@@ -368,7 +376,7 @@ either the cities’ households from the county’s, or the number of
 Hispanic households from the total number of households. This task turns
 up very frequently when dealing with Census data, so the package
 includes a helper function to do it for you:
-`hercacstables::subtract_parts_from_whole`. That function does not
+`hercacstables::subtract_parts_from_whole()`. That function does not
 remove the rows that contain the all-groups category. In our case, we
 must remove them so all of the calculations come out correctly.
 

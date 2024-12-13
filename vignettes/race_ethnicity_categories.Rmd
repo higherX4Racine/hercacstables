@@ -14,8 +14,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  cache = FALSE,
-  echo = FALSE
+  cache = FALSE
 )
 
 LATEST_YEAR <- as.POSIXlt(Sys.Date())$year + 1900L
@@ -81,6 +80,7 @@ Nevertheless, it occurs throughout the American Community Survey.
 
 ```{r}
 #| label: find-subtables-with-ethnicity
+#| echo: false
 
 broad_subtables <- hercacstables::ACS_GROUP_METADATA |>
     dplyr::filter(stringr::str_detect(.data$Group, "I$")) |>
@@ -107,6 +107,7 @@ table describes.
 
 ```{r}
 #| label: show-race-ethnicity-subtable-metadata
+#| echo: false
 
 hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::select(
@@ -120,6 +121,7 @@ hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
 
 ```{r}
 #| label: find-race-in-table-descriptions
+#| echo: false
 
 tables_that_name_race <- hercacstables::ACS_GROUP_METADATA |>
     dplyr::filter(
@@ -143,6 +145,7 @@ in their description.
 
 ```{r}
 #| label: show-the-tables-that-name-race
+#| echo: false
 
 knitr::kable(tables_that_name_race)
 ```
@@ -185,7 +188,6 @@ real-world meaning.
 
 ```{r}
 #| label: check-variables-for-convenience-tables
-#| echo: true
 
 convenience_check_variables <- tibble::tribble(
     ~ Table,  ~ Suffix,   ~ Index, ~ Population, ~ Race,
@@ -221,7 +223,6 @@ isolate them and run them as few times as possible.
 
 ```{r, cache=TRUE}
 #| label: check-values-for-convenience-tables
-#| echo: true
 
 convenience_check_values_raw <- hercacstables::fetch_data(
     convenience_check_variables$Variable,
@@ -240,7 +241,6 @@ convenience tables do, in fact, match up with the values from the subtables.
 
 ```{r}
 #| label: wrangle-convenience-check-data
-#| echo: true
 
 convenience_check_values <- convenience_check_values_raw |>
     dplyr::inner_join(
@@ -290,6 +290,7 @@ I just hid them before because it would have been confusing.
 
 ```{r}
 #| label: show-inclusive-columns-too
+#| echo: false
 
 hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::select(
@@ -308,7 +309,6 @@ We can use `hercacstables` to check this, too.
 
 ```{r}
 #| label: inclusive-exclusive-population-variables
-#| echo: true
 
 incl_excl_pop_variables <- hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::filter(
@@ -339,7 +339,6 @@ knitr::kable(incl_excl_pop_variables)
 ```{r}
 #| label: fetch-inclusive-exclusive-populations
 #| cache: true
-#| echo: true
 
 incl_excl_pop_values_raw <- hercacstables::fetch_data(
     variables = incl_excl_pop_variables$Variable,
@@ -355,7 +354,6 @@ incl_excl_pop_values_raw <- hercacstables::fetch_data(
 
 ```{r}
 #| label: wrangle-inclusive-exclusive-populations
-#| echo: true
 
 incl_excl_pop_values <- incl_excl_pop_values_raw |>
     dplyr::inner_join(
@@ -414,6 +412,7 @@ In fact, this is so useful that it is also included in
 
 ```{r}
 #| label: hispanic-and-broad-race-variables
+#| echo: false
 
 hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::filter(
@@ -434,7 +433,6 @@ First, we will define our metadata table.
 
 ```{r}
 #| label: define-hispanic-and-broad-race-variable
-#| echo: true
 
 hispanic_and_broad_race_variables <- hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     dplyr::filter(
@@ -467,7 +465,6 @@ Next, we pull `r LATEST_YEAR - 2005 - 1` years of ACS data.
 
 ```{r, cache=TRUE}
 #| label: fetch-hispanic-and-broad-race-data
-#| echo: true
 
 hispanic_and_broad_race_raw <- c(2009:2019, 2021:(LATEST_YEAR - 1)) |>
     purrr::map(
@@ -486,7 +483,6 @@ Then, we put the data into a nice, tidy format.
 
 ```{r}
 #| label: tidy-hispanic-and-broad-race-data
-#| echo: true
 
 hispanic_and_broad_race <- hispanic_and_broad_race_raw |>
     purrr::list_rbind() |>
@@ -530,9 +526,8 @@ Finally, we plot it
 
 ```{r}
 #| label: plot-changes-in-hispanic-percentage
-#| fig-dim: !expr "c(6, 6)"
-#| dpi: 120
-#| echo: true
+#| fig-dim: !expr "c(8, 8)"
+#| dpi: 72
 
 hispanic_and_broad_race |>
     dplyr::mutate(
@@ -590,6 +585,7 @@ We can skip those.
 
 ```{r}
 #| label: show-broad-subtables
+#| echo: false
 
 knitr::kable(broad_subtables)
 ```

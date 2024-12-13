@@ -73,8 +73,8 @@ This will help us identify the
 [variables](https://api.census.gov/data/2022/acs/acs5/variables.html)
 that we will specifically ask for.
 
-All of thosee groups and values can be accessed offline with
-`hercacstables::METADATA_ACS5`.
+All of those groups and values can be accessed offline with
+`hercacstables::ACS_GROUP_METADATA` and `hercacstables::ACS_VARIABLE_METADATA`.
 
 We want to know about populations in school districts.
 It makes sense then to only look at school-aged children, say 5-18.
@@ -108,8 +108,8 @@ The Census API can provide information at many
 [levels of geographical detail](https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html).
 Some questions might pertain to entire states.
 Others might involve comparisons among all of the tracts in a metropolitan area.
-The "geography" table of `hercacstables::METADATA_ACS5` provides a list of
-geographic levels.
+You can find details about the different geographic levels in
+`hercacstables::ACS_GEOGRAPHY_METADATA`.
 If you know the real-world name of a place, but not the numeric code that the
 Census uses for it, then you can look it up
 [here](https://www.census.gov/library/reference/code-lists/ansi.html).
@@ -120,8 +120,7 @@ There are actually three different kinds of school district geographic levels.
 
 ```{r}
 #| label: school-district-geographies
-school_district_geographies <- hercacstables::METADATA_ACS5 |>
-    purrr::pluck("geography") |>
+school_district_geographies <- hercacstables::ACS_GEOGRAPHY_METADATA |>
     dplyr::filter(stringr::str_detect(.data$`Geographic Level`, "school"))
 
 school_district_geographies |>

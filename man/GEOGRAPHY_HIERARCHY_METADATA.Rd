@@ -10,7 +10,7 @@ A tibble with four columns
 \item{Label}{A short, title-case description of a geographic level}
 \item{Code}{The three-digit code for a level}
 \item{Geography}{The lowercase term used to query the API for a level}
-\item{Parent Geos}{A character vector of other Geographies that must be specified to query for this level.}
+\item{Parent Geos}{A character vector of other Geographies that must be specified to query for this level, like \code{c("Female", "Under 5 years")} or \code{c("With cash rent", "$350 to $399")}.}
 }
 }
 \usage{

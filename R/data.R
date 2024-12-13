@@ -12,16 +12,66 @@
 #'   }
 "RACE_ETHNICITY_SUBTABLE_METADATA"
 
-#' Group, Variable, and Geography information for the latest 5-Year ACS
+#' Details about the groups in the most recent American Community Series
+#'
+#' In the context of ACS data, a "group" is what you would get from running a
+#' query about a specific topic. For example, group B01001B reports population
+#' numbers by sex and age, and group B25063 reports the number of housing units
+#' in different rent brackets.
 #'
 #' @format A list with three items
 #'   \describe{
-#'   \item{geography}{Available geographies and how to ask for them in the API.}
-#'   \item{groups}{Each group's ID, its Universe, and its Description.}
-#'   \item{variables}{Each variable's Group, its full code, and Details about what it encodes.}
+#'   \item{Group}{The code for the group, such as "B01001B" or "B25063"}
+#'   \item{Universe}{The population the data describe, such as "People who are Black or African American alone" or "Renter-occupied housing units"}
+#'   \item{Description}{Details about what the table actually reports, such as "Sex by Age (Black or African American Alone)" and "Gross Rent."}
+#'   \item{ACS1}{Whether this group is available in the most recent 1-year dataset.}
+#'   \item{ACS5}{Whether this group is available in the most recent 5-year dataset.}
 #'   }
 #' @concept metadata
-"METADATA_ACS5"
+"ACS_GROUP_METADATA"
+
+#' Details about variables in the most recent American Community Series
+#'
+#' In the context of ACS data, a "variable" is a single row of data from
+#' running a query about a specific topic. For example, group B010001 reports population
+#' numbers by sex and age, and group B25063 reports the number of housing units
+#' in different rent brackets. Technically, there are 4 variables for each row:
+#' the estimate, its margin of error, and annotations for each of those. In
+#' practice, we usually just want the estimate..
+#'
+#' @format A list with three items
+#'   \describe{
+#'   \item{Dataset}{Whether this variable pertains to the 1-year or 5-year dataset.}
+#'   \item{Group}{The code for the group, such as "B01001B" or "B25063"}
+#'   \item{Index}{The row number in the group for this variable, like 2 or 5.}
+#'   \item{Variable}{The full code for this variable, like "B01001B_002E" or "B25063_005E"}
+#'   \item{Details}{A vector of one or more strings describing what the variable actually represents.}
+#'   }
+#' @concept metadata
+"ACS_VARIABLE_METADATA"
+
+#' Details about levels of geographic detail in the most recent American Community Series
+#'
+#' In the context of ACS data, "geography" is a specific type of geographical
+#' area, such as a region, state, county, reservation, tract, or block. Some
+#' geographical levels, such as region or state, can be given by themselves.
+#' Others, such as county or place, must be queried within a specific containing
+#' geographic level (usually state). Very small geographic areas, like blocks,
+#' may require several levels of containing geographies, such as state, county,
+#' and tract. Some containing geographies may be given as wildcards. For
+#' example, you could ask for county-level data from every state all at once by
+#' specifying "*" instead of a FIPS code for the state.
+#'
+#' @format A tibble with five columns
+#' \describe{
+#'   \item{Geographic Level}{The verbatim text that you must pass to the API when referring to this geographic level.}
+#'   \item{Containing Geographies}{One or more sets of containing geographies that **must** be specified when querying for this level of geography}
+#'   \item{Wildcard Option}{Which containing geography, if any, can be set to a wildcard when pulling data for this geographical level.}
+#'   \item{ACS1}{A reference date if this level is available in the 1-year dataset, otherwise `NA`.}
+#'   \item{ACS5}{A reference date if this level is available in the 5-year dataset, otherwise `NA`.}
+#' }
+#' @concept metadata
+"ACS_GEOGRAPHY_METADATA"
 
 #' Variables from the Decennial censuses
 #'
@@ -42,7 +92,7 @@
 #'   \item{Label}{A short, title-case description of a geographic level}
 #'   \item{Code}{The three-digit code for a level}
 #'   \item{Geography}{The lowercase term used to query the API for a level}
-#'   \item{Parent Geos}{A character vector of other Geographies that must be specified to query for this level.}
+#'   \item{Parent Geos}{A character vector of other Geographies that must be specified to query for this level, like `c("Female", "Under 5 years")` or `c("With cash rent", "$350 to $399")`.}
 #' }
 "GEOGRAPHY_HIERARCHY_METADATA"
 

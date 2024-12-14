@@ -65,6 +65,7 @@ reference:
   contents:
   - margins_by_demography_and_place
   - subtract_parts_from_whole
+  - the_year_right_now
 - subtitle: Gathering Metadata
   desc: >
     Functions for updating the metadata tables, generally functions that only
@@ -73,7 +74,7 @@ reference:
     better understand how the API works, though.
   contents:
   - build_info_url
+  - most_recent_vintage
   - latest_acs_metadata
   - fetch_metadata_table
   - hoist_table_metadata
-

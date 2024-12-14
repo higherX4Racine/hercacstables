@@ -6,6 +6,13 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+If this is your first time using `hercacstables` then you probably want
+to register with the Census. The Census limits the number of anonymous
+API queries that it receives from any one IP address. Check out
+`vignette("set-up-your-api-key", package = "hercacstables")`.
+
+Otherwise, welcome back!
+
 ## For the newest R users:
 
 You may be new to R, but not data science, in which case I suggest
@@ -25,563 +32,264 @@ devtools::install_github("higherX4Racine/hercacstables")
 
 ## Motivation
 
-The American Community Survey (ACS) from the US Census’s website returns
-data in a weirdly idiosyncratic way. There are many subtotals in each
-table. Grouping variables are organized in a tree-like, rather than
-tabular fashion. This package is intended to make it easy to access and
-use the ACS data with R.
+The American Community Survey (ACS) from the US Census’s website
+provides a vast amount of useful data.
 
-Many questions that work with Census data follow a common pattern:
+<figure>
+<img src="man/figures/README-group-descriptions-wordcloud.png"
+alt="A wordcloud made from the Census’ descriptions of its ACS groups" />
+<figcaption aria-hidden="true">A wordcloud made from the Census’
+descriptions of its ACS groups</figcaption>
+</figure>
 
-> How did \[measurement\] differ among \[demographic groups\] and across
-> \[geographic levels\] in \[geographic area\] during \[span of time\]?
-
-A **Measurement** is any of the huge number of things that the Census
-keeps track of. Measurements are arranged in tables (called “groups”)
-and rows. If you were drawing maps, this would be what determines the
-color of each area. Examples include population size (table B01001 and
-others), median household income (table B19013 and others), types of
-computers in a household (table B28001), number of vehicles used while
-commuting (table B08015).
-
-A **Demographic Group** is a subset of the population that shares
-specific traits. Demographic groups can be represented either by groups
-(common when reporting by race or ethnicity) or rows (most other cases,
-like age, sex, or veteran status). If you were drawing maps, you would
-probably have a different version of each map for each demographic
-grouping. Examples include the number of Hispanic girls under 5 years
-old (table B01001I, row 18), the median income of Asian American
-households (table B19013D, row 1), the number of households with no
-computer (table B28001, row 11), the number of vehicles used by women
-while commuting (table B08015, row 3).
-
-A **Geographic Level** is a [Census-defined
-hierarchy](https://www.census.gov/programs-surveys/geography/guidance.html)
-from the whole country to small blocks. The level that you are
-interested in is determined by the scale of your question. If you were
-drawing maps, these would be the areas that appeared as different
-colors. Examples include congressional districts, incorporated cities,
-school districts, and Census tracts.
-
-A **Geographic Area** is a set of specific instances of one or more
-geographic levels. This is the full geographic scope of your question.
-If you were drawing maps, this would determine their scale. Examples
-include whole states, metropolitan areas, Census-designated places, and
-counties.
-
-## The workflow
-
-1.  Identify the groups and rows that contain the data you need
-    - Find potential groups by searching the `Universe` and
-      `Description` fields of `hercacstables::ACS_GROUP_METADATA`.
-    - Identify specific variables with
-      `hercacstables::ACS_VARIABLE_METADATA`: filter by the `Group`
-      field and examine the `Details` field.
-    - Create a lookup table that maps from the Census variable name to
-      your variables.
-      - You may need several if you are pulling data from several
-        groups.
-2.  Define the geographies that you will use
-    - Use `hercacstables::ACS_GEOGRAPHY_METADATA` for this, too!
-    - You need to know at least two levels of geography:
-      - The one that you want to pull data for, your level of interest
-        - This is often small, like tract or county subdivision.
-      - Any and all levels that contain your level of interest
-        - These will be larger, like state or county.
-    - Create a lookup table that maps from geographic ids to meaningful
-      names.
-3.  Write fetching functions that call `hercacstables::fetch_data()`
-    - they will often always use the same variables (from step 1)
-    - they may need to be parameterized by geography if you’re pulling
-      from multiple levels
-    - they should always be parameterized by year so that you can reuse
-      them
-4.  Write wrangling functions that for turning fetched tables into
-    useful ones.
-    - These will probably involve using `dplyr::inner_join()` between
-      the fetched data and your lookup tables.
-    - You can also perform calculations like aggregating or finding
-      remainders.
-5.  Run the workflow in two stages.
-    - Use `purrr::map()` and `purrr::list_rbind()` to download all of
-      the data into one data frame.
-      - Cache that result because API calls are slow
-    - Run the wrangling functions.
-      - Save these results with, e.g. `base::saveRDS()`.
+However, it returns those data in a weirdly idiosyncratic way. Even
+though the output seems tabular, the data are really organized in a
+tree-like fashion. This package is intended to make it easy to access
+and use the ACS data with R.
 
 ## Example
 
-Let’s say you want to ask this question:
+Let’s say that you are a data intern for a [wastewater
+agency](https://cityofracine.org/WasteWater/Commission/) in the
+southeastern part of Wisconsin. Your mentors have asked you to find
+insights from the American Community Survey.
 
-> How did \[the number of households\] differ between \[Hispanic and
-> non-Hispanic people\] and across \[Manchester, Nashua, and suburban
-> areas\] in \[Hillsborough County, NH\] during \[the last 10 years\]?
+### Specifying your community
 
-### find the **measurement** and **demographic groups**
+They tell you that the wastewater commission’s area of responsibility is
+essentially identical to the local school district’s, [Racine
+Unified](https://www.rusd.org).
 
-First, find the variables that describe the numbers of households. One
-way to do this is to search `hercacstables::ACS_GROUP_METADATA` for
-groups whose `Universe` is “Households” and whose `Description` contains
-“Hispanic” or “Ethnicity.” A group’s `Universe` describes what it is
-measuring, often telling you the units of whatever its values are. A
-group’s `Description` is a phrase that summarizes what it reports.
+You look for geographical levels related to schools in
+`hercacstables::ACS_GEOGRAPHY_METADATA`.
 
 ``` r
-hercacstables::ACS_GROUP_METADATA |>
-    dplyr::filter(
-        .data$ACS5,
-        stringr::str_detect(.data$Universe, "Household"),
-        stringr::str_detect(.data$Description, "Hispanic|Ethnic")
-    ) |>
-    dplyr::select(
-        "Group",
-        "Universe",
-        "Description"
-    ) |>
-    knitr::kable()
+SCHOOL_GEOGRAPHIES <- dplyr::filter(hercacstables::ACS_GEOGRAPHY_METADATA,
+                                    grepl("school", .data$`Geographic Level`))
 ```
 
-| Group | Universe | Description |
-|:---|:---|:---|
-| B11001H | Households with a householder who is White alone, not Hispanic or Latino | Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino) |
-| B11001I | Households with a householder who is Hispanic or Latino | Household Type (Including Living Alone) (Hispanic or Latino) |
-| B19001H | Households with a householder who is White alone, not Hispanic or Latino | Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
-| B19001I | Households with a householder who is Hispanic or Latino | Household Income in the Past 12 Months (Hispanic or Latino Householder) |
-| B19013H | Households with a householder who is White alone, not Hispanic or Latino | Median Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
-| B19013I | Households with a householder who is Hispanic or Latino | Median Household Income in the Past 12 Months (Hispanic or Latino Householder) |
-| B19025H | Households with a householder who is White alone, not Hispanic or Latino | Aggregate Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
-| B19025I | Households with a householder who is Hispanic or Latino | Aggregate Household Income in the Past 12 Months (Hispanic or Latino Householder) |
-| B19037H | Households with a householder who is White alone, not Hispanic or Latino | Age of Householder by Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder) |
-| B19037I | Households with a householder who is Hispanic or Latino | Age of Householder by Household Income in the Past 12 Months (Hispanic or Latino Householder) |
-| B22005H | Households with a householder who is White alone, not Hispanic or Latino | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino) |
-| B22005I | Households with a householder who is Hispanic or Latino | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino) |
-
-It looks like our best bet is group “B11001I.” It is likely that group
-“B11001” contains counts of households of any race. The first row of
-most groups is the total value across any demographic subset that it
-keeps track of. Since our question does not ask about different
-household types, we probably just need row one from groups “B11001” and
-“B11001I.” This gives us a good opportunity to document the ethnicities
-counted in each.
+This table tells us two things. First, he geographic level that you
+should examine is “school district (unified)”. Second, you also need to
+specify the state when you’re fetching data about it. With
+`hercacstables::fetch_data()`, and tools from the
+[tidyverse](https://www.tidyverse.org "The tidyverse"), you can find the
+FIPS codes for unified school districts in Wisconsin that have the word
+“Racine” in them.
 
 ``` r
-HOUSEHOLD_GROUPS <- c("B11001", "B11001I")
-household_variables <- hercacstables::ACS_VARIABLE_METADATA |>
-    dplyr::filter(
-        .data$Dataset == "ACS1",
-        .data$Group %in% HOUSEHOLD_GROUPS,
-                  .data$Index == 1) |>
-    dplyr::mutate(
-        Ethnicity = dplyr::case_match(.data$Group,
-                                      "B11001" ~ "All",
-                                      "B11001I" ~ "Hispanic or Latino")
-    ) |>
-    dplyr::select("Group", "Index", "Variable", "Ethnicity")
-
-knitr::kable(household_variables,
-             align = c("lrll"))
-```
-
-| Group   | Index | Variable     | Ethnicity          |
-|:--------|------:|:-------------|:-------------------|
-| B11001I |     1 | B11001I_001E | Hispanic or Latino |
-| B11001  |     1 | B11001_001E  | All                |
-
-### find the **geographic levels** and **geographic area**
-
-The next step is to [find the
-codes](https://www.census.gov/library/reference/code-lists/ansi.html)
-that are related to the geographic areas and levels. We need to know the
-FIPS code for the state, county, and two cities. We also need to know
-that the geographic level that we’re working with is “county
-subdivision.” As the last part of this step, we define a lookup table to
-translate from the FIPS codes for the different geographies to a
-human-readable name.
-
-``` r
-NEW_HAMPSHIRE <- "33"
-COUNTY_LEVEL <- "county"
-HILLSBOROUGH_CO <- "011"
-CITY_LEVEL <- "county subdivision"
-MANCHESTER_NH <- "45140"
-NASHUA_NH <- "50260"
-
-geography_definitions <- tibble::tribble(
-    ~ FIPS,          ~ Location,
-    HILLSBOROUGH_CO, "County-wide",
-    MANCHESTER_NH,   "Manchester",
-    NASHUA_NH,       "Nashua"
-)
-
-geography_definitions |>
-    knitr::kable()
-```
-
-| FIPS  | Location    |
-|:------|:------------|
-| 011   | County-wide |
-| 45140 | Manchester  |
-| 50260 | Nashua      |
-
-### find the **time interval**
-
-The last ten years available from the Census are, as of 2024-12-12, 2013
-through 2023. We can use 1-year estimates for our question because we
-are dealing with geographic levels that have more than 50,000 people in
-them. That gives us more year-to-year precision, although it does mean
-that we have to exclude 2020. There are no 1-year ACS estimates for 2020
-because of the COVID-19 pandemic.
-
-``` r
-YEARS_INCLUDED <- c(TEN_YEARS_AGO:2019, 2021:LATEST_YEAR)
-```
-
-### define functions that use the API
-
-We will need to make multiple calls to the API, so it makes sense to
-create some reusable functions. We need two calls per year. The first
-one will pull the county-wide household counts. The second one will pull
-the household counts for each city. Each function should have “year” as
-its argument so that we can reuse it.
-
-``` r
-generalized_fetch_data <- function(.year, .level, .areas, ...) {
+RACINE_DISTRICTS <- "NAME" |>
     hercacstables::fetch_data(
-        variables = household_variables$Variable,
-        year = .year,
-        survey_type = "acs",
-        table_or_survey_code = "acs1",
-        for_geo = .level,
-        for_items = .areas,
-        state = NEW_HAMPSHIRE,
-        ...
+        variables = _,
+        year = 2020,                           # the most recent decennial
+        for_geo = "school district (unified)", # see above
+        for_items = "*",                       # this wildcard gets every item
+        survey_type = "dec",                   # not actually the ACS *flex*
+        table_or_survey_code = "pl",           # this data set is similar to ACS
+        state = 55L                            # the Badger State
+    ) |>
+    dplyr::filter(
+        stringr::str_detect(.data$NAME, "Racine")
     )
-}
-
-fetch_county_households <- function(.year){
-    generalized_fetch_data(.year,
-                           "county",
-                           HILLSBOROUGH_CO)
-}
-
-fetch_city_households <- function(.year){
-    generalized_fetch_data(.year,
-                           CITY_LEVEL,
-                           c(MANCHESTER_NH,
-                             NASHUA_NH),
-                           county = HILLSBOROUGH_CO)
-}
-
-fetch_example_data <- function(.year) {
-    dplyr::bind_rows(
-        fetch_county_households(.year),
-        fetch_city_households(.year)
-    )
-}
 ```
 
-### fetch the data
+| NAME                              | state | school district (unified) | Year |
+|:----------------------------------|:------|:--------------------------|-----:|
+| Racine School District, Wisconsin | 55    | 12360                     | 2020 |
 
-This is where `hercacstables` starts to come into its own. We define the
-fetching process as few times as possible, just tweaking it for related
-cases. This leads to a lot of code reuse and efficiency, especially for
-reports that you just need to update once a year.
+### Finding relevant data
+
+The first thing that you could do is to check for data related to
+plumbing. If you were doing this without R, you might visit
+[](data.census.gov) and search for “ACS plumbing”.
+
+#### Groups with relevant data
+
+With `hercacstables`, you would search within its metadata about ACS
+groups:
 
 ``` r
-raw_households <- YEARS_INCLUDED |>
-    purrr::map(fetch_example_data) |>
+PLUMBING_GROUPS <- hercacstables::ACS_GROUP_METADATA |>
+    dplyr::filter(
+        grepl("plumbing",          # search for the term "plumbing"
+              .data$Description,  # within the "Description" column
+              ignore.case = TRUE) # ignore capitalization
+    )
+```
+
+| Group | Universe | Description | ACS1 | ACS5 |
+|:---|:---|:---|:---|:---|
+| B25016 | Occupied housing units | Tenure by Plumbing Facilities by Occupants per Room | TRUE | TRUE |
+| B25047 | Housing units | Plumbing Facilities for All Housing Units | TRUE | TRUE |
+| B25048 | Occupied housing units | Plumbing Facilities for Occupied Housing Units | TRUE | TRUE |
+| B25049 | Occupied housing units | Tenure by Plumbing Facilities | TRUE | TRUE |
+| B25050 | Occupied housing units | Plumbing Facilities by Occupants per Room by Year Structure Built | TRUE | TRUE |
+| B99259 | Housing units | Allocation of Plumbing Facilities | TRUE | TRUE |
+
+It appears that the keyword “plumbing” appears in 6 different ACS
+groups.
+
+### Specific variables about plumbing
+
+Let’s say that “Tenure[^1] by plumbing facilities” jumps out to you as
+potentially interesting.
+
+``` r
+GROUP <- "B25049"
+```
+
+There is metadata in `hercacstables` about variables, too. You can use
+search it to see what specific data is reported by group B25049.
+
+``` r
+PLUMBING_VARIABLES <- hercacstables::ACS_VARIABLE_METADATA |>
+    dplyr::filter(
+        .data$Dataset == "ACS1", # use the 1-year dataset only
+        .data$Group == GROUP     # pull all of the variables for this group
+    )
+```
+
+| Dataset | Group | Index | Variable | Details |
+|:---|:---|---:|:---|:---|
+| ACS1 | B25049 | 1 | B25049_001E |  |
+| ACS1 | B25049 | 2 | B25049_002E | Owner occupied |
+| ACS1 | B25049 | 3 | B25049_003E | Owner occupied , Complete plumbing facilities |
+| ACS1 | B25049 | 4 | B25049_004E | Owner occupied , Lacking plumbing facilities |
+| ACS1 | B25049 | 5 | B25049_005E | Renter occupied |
+| ACS1 | B25049 | 6 | B25049_006E | Renter occupied , Complete plumbing facilities |
+| ACS1 | B25049 | 7 | B25049_007E | Renter occupied , Lacking plumbing facilities |
+
+### Unpacking variable details
+
+You can see that group B25049 reports the number of households that
+have, or do not have, plumbing facilities. It further breaks those
+households down into renters and owner-occupants. The raw metadata from
+the Census, and in `hercacstables::ACS_VARIABLE_METADATA`, packs all of
+that information into the “Details” column.
+
+It would be more useful if we actually had separate columns for the
+types of tenure and plumbing facilities. We also don’t need row 1, which
+is the total number of households, or rows 2 and 5, which report
+subtotals by tenure. The unique data are in rows 2, 3, 6, and 7. The
+best way to do this is to use `hercacstables::unpack_group_details()` in
+combination with tools from the
+[tidyverse](https://www.tidyverse.org "The tidyverse")
+
+``` r
+PLUMBING_VARIABLES <- GROUP |>
+    hercacstables::unpack_group_details() |>
+    dplyr::filter(
+        .data$Dataset == "ACS1"
+    ) |>
+    dplyr::rename(
+        Tenure = "A",
+        Plumbing = "B"
+    ) |>
+    dplyr::filter(
+        dplyr::if_all(c("Tenure", "Plumbing"),
+                      \(.) (nchar(.) > 0))
+    )
+```
+
+| Dataset | Group  | Index | Variable    | Tenure          | Plumbing                     |
+|:--------|:-------|------:|:------------|:----------------|:-----------------------------|
+| ACS1    | B25049 |     3 | B25049_003E | Owner occupied  | Complete plumbing facilities |
+| ACS1    | B25049 |     4 | B25049_004E | Owner occupied  | Lacking plumbing facilities  |
+| ACS1    | B25049 |     6 | B25049_006E | Renter occupied | Complete plumbing facilities |
+| ACS1    | B25049 |     7 | B25049_007E | Renter occupied | Lacking plumbing facilities  |
+
+### Fetch data
+
+We are finally ready to pull a recent history of access to plumbing in
+eastern Racine County. Once again, we’ll use
+`hercacstables::fetch_data()` and the
+[tidyverse](https://www.tidyverse.org "The tidyverse").
+
+``` r
+RAW_RACINE_PLUMBING <- c(2005:2019, 2021:2023) |>
+    purrr::map(
+        \(.year) hercacstables::fetch_data(
+            variables = PLUMBING_VARIABLES$Variable,
+            year = .year,
+            for_geo = "school district (unified)",
+            for_items = "12360",
+            survey_type = "acs",
+            table_or_survey_code = "acs1",
+            state = 55L
+        )
+    ) |>
     purrr::list_rbind()
 ```
 
-``` r
-raw_households |>
-    dplyr::filter(.data$Year == LATEST_YEAR) |>
-    dplyr::mutate(
-        dplyr::across(c("Value"),
-                      scales::label_comma(accuracy = 1))
-    ) |>
-    knitr::kable(
-        align = "lllrrrl"
-    )
-```
+| state | school district (unified) | Group  | Index | Value | Year |
+|:------|:--------------------------|:-------|------:|------:|-----:|
+| 55    | 12360                     | B25049 |     4 |     0 | 2008 |
+| 55    | 12360                     | B25049 |     4 |     0 | 2015 |
+| 55    | 12360                     | B25049 |     4 |     0 | 2016 |
+| 55    | 12360                     | B25049 |     7 |     0 | 2010 |
 
-| state | county | Group   | Index |   Value | Year | county subdivision |
-|:------|:-------|:--------|------:|--------:|-----:|:-------------------|
-| 33    | 011    | B11001I |     1 |  11,255 | 2023 | NA                 |
-| 33    | 011    | B11001  |     1 | 170,761 | 2023 | NA                 |
-| 33    | 011    | B11001I |     1 |   4,511 | 2023 | 45140              |
-| 33    | 011    | B11001  |     1 |  50,053 | 2023 | 45140              |
-| 33    | 011    | B11001I |     1 |   4,770 | 2023 | 50260              |
-| 33    | 011    | B11001  |     1 |  36,451 | 2023 | 50260              |
-
-### wrangle the data
-
-The raw data are not very usable. Several of the columns still have
-codes, rather than human-readable values. The value column also does not
-explicitly state values for the suburban or for non-Hispanic folks. The
-“wrangling” process is where we addressing these drawbacks.
-
-#### map codes to words
-
-We should get rid of the columns that are Census database codes and
-create columns about location and demographics that have human-readable
-values.
+The data in `RAW_RACINE_PLUMBING` don’t make much sense without the
+information in `PLUMBING_VARIABLES`. Fortunately, we can use the
+[tidyverse](https://www.tidyverse.org "The tidyverse") to join the two
+tables together.
 
 ``` r
-households <- raw_households |>
-    dplyr::inner_join(
-        household_variables,
+RACINE_PLUMBING <- PLUMBING_VARIABLES |>
+    dplyr::left_join(
+        RAW_RACINE_PLUMBING,
         by = c("Group", "Index")
     ) |>
-    dplyr::mutate(
-        FIPS = dplyr::coalesce(.data$`county subdivision`,
-                               .data$county)
-    ) |>
-    dplyr::inner_join(
-        geography_definitions,
-        by = "FIPS"
-    ) |>
     dplyr::select(
-        "Location",
         "Year",
-        "Ethnicity",
+        "Tenure",
+        "Plumbing",
         Households = "Value"
     )
-
-households |>
-    dplyr::filter(.data$Year == LATEST_YEAR) |>
-    dplyr::mutate(
-        dplyr::across(c("Households"),
-                      scales::label_comma(accuracy = 1))
-    ) |>
-    knitr::kable(
-        align = "rllr"
-    )
 ```
 
-|    Location | Year | Ethnicity          | Households |
-|------------:|:-----|:-------------------|-----------:|
-| County-wide | 2023 | Hispanic or Latino |     11,255 |
-| County-wide | 2023 | All                |    170,761 |
-|  Manchester | 2023 | Hispanic or Latino |      4,511 |
-|  Manchester | 2023 | All                |     50,053 |
-|      Nashua | 2023 | Hispanic or Latino |      4,770 |
-|      Nashua | 2023 | All                |     36,451 |
-
-#### compute implicit values
-
-Now that the columns are human-readable, we can compute the values that
-we are actually interested in. That computation involves subtracting
-either the cities’ households from the county’s, or the number of
-Hispanic households from the total number of households. This task turns
-up very frequently when dealing with Census data, so the package
-includes a helper function to do it for you:
-`hercacstables::subtract_parts_from_whole()`. That function does not
-remove the rows that contain the all-groups category. In our case, we
-must remove them so all of the calculations come out correctly.
+`RACINE_PLUMBING` has 72 rows, which is too many to show in a README.
+Let’s just look at how the number of homes without plumbing has changed
+over the years of the ACS.
 
 ``` r
-households <- households |>
-    hercacstables::subtract_parts_from_whole(
-        grouping_column = "Location",
-        value_column = "Households",
-        whole_name = "County-wide",
-        part_names = c("Manchester", "Nashua"),
-        remainder_name = "Suburbs"
-    ) |>
-    dplyr::select(
-        !"County-wide"
-    ) |>
-    hercacstables::subtract_parts_from_whole(
-        grouping_column = "Ethnicity",
-        value_column = "Households",
-        whole_name = "All",
-        part_names = "Hispanic or Latino",
-        remainder_name = "Not Hispanic or Latino"
-    ) |>
-    dplyr::select(
-        !"All"
-    )
-
-households |>
-    dplyr::filter(.data$Year == LATEST_YEAR) |>
-    dplyr::mutate(
-        dplyr::across(c("Households"),
-                      scales::label_comma(accuracy = 1))
-    ) |>
-    knitr::kable(
-        align = "lrlr"
-    )
-```
-
-| Year |   Location | Ethnicity              | Households |
-|:-----|-----------:|:-----------------------|-----------:|
-| 2023 | Manchester | Hispanic or Latino     |      4,511 |
-| 2023 | Manchester | Not Hispanic or Latino |     45,542 |
-| 2023 |     Nashua | Hispanic or Latino     |      4,770 |
-| 2023 |     Nashua | Not Hispanic or Latino |     31,681 |
-| 2023 |    Suburbs | Hispanic or Latino     |      1,974 |
-| 2023 |    Suburbs | Not Hispanic or Latino |     82,283 |
-
-### Answer the question
-
-Now we can finally look at trends in number of households in
-Hillsborough County, NH, comparing between Hispanic and non-Hispanic
-households among Manchester, Nashua, and the suburbs.
-
-#### visualize
-
-The first step is to make some graphs. These data are 4-dimensional
-because they involve time, location, ethnicity, and number of
-households. That means we’ll need more than one graph. It looked from
-the tables above that the number of Hispanic households is much lower
-than non-Hispanic households in all three locations. Let’s make a
-two-panel graph, where each panel shows one ethnicity. That way they can
-have separate y axes. Both graphs will have time on the x-axis, number
-of households on the y, and designate location with the color of points
-and lines.
-
-``` r
-households |>
-    ggplot2::ggplot(
-        ggplot2::aes(
-            x = .data$Year,
-            y = .data$Households,
-            color = .data$Location,
-            group = .data$Location
-        )
-    ) +
-    ggplot2::geom_line(
-        linewidth = 2
-    ) +
-    ggplot2::geom_point(
-        size = 5
-    ) +
-    ggplot2::scale_x_continuous(
-        name = NULL,
-        breaks = scales::breaks_width(5),
-        minor_breaks = scales::breaks_width(1)
-    ) +
-    ggplot2::scale_y_continuous(
-        name = "Number of households",
-        limits = c(0, NA),
-        labels = scales::label_comma(accuracy = 1)
-    ) +
-    ggplot2::scale_color_viridis_d(
-        name = NULL,
-        guide = ggplot2::guide_legend(position = "top")
-    ) +
-    ggplot2::facet_grid(
-        rows = ggplot2::vars(.data$Ethnicity),
-        scales = "free_y"
-    )
-```
-
-<img src="man/figures/README-plot-the-results-1.png" width="100%" />
-
-It looks like the number of households is growing, with non-Hispanic
-households increasing in the suburbs and Hispanic households increasing
-in the cities.
-
-#### analyze
-
-Let’s test this with an ANCOVA. We’ll subtract 2013 from the year so
-that the intercept estimate gives us the value in 2013, not AD 0.
-
-``` r
-household_model <- households |>
-    dplyr::mutate(
-        Year = .data$Year - TEN_YEARS_AGO,
-        Location = factor(.data$Location,
-                          levels = c("Suburbs",
-                                     "Manchester",
-                                     "Nashua")),
-        Ethnicity = factor(.data$Ethnicity,
-                           levels = c("Not Hispanic or Latino",
-                                      "Hispanic or Latino"))
-    ) |>
-    lm(
-        Households ~ Year * Ethnicity * Location,
-        data = _
-    )
-```
-
-I always like to look at the ANOVA table first to get a 10,000 meter
-view before I try to interpret specific parameters.
-
-``` r
-household_model |>
-    anova() |>
-    broom::tidy() |>
-    dplyr::mutate(
-        dplyr::across(c("sumsq",
-                        "meansq"),
-                      scales::label_comma(accuracy = 1)),
-        dplyr::across("statistic",
-                      \(.) signif(., 4)),
-        dplyr::across("p.value",
-                      \(.) round(., 4))
-    ) |>
-    knitr::kable(
-        align = "lrrrrr"
-    )
-```
-
-| term                    |  df |          sumsq |         meansq | statistic | p.value |
-|:------------------------|----:|---------------:|---------------:|----------:|--------:|
-| Year                    |   1 |     60,931,207 |     60,931,207 |    94.270 |  0.0000 |
-| Ethnicity               |   1 | 35,763,474,535 | 35,763,474,535 | 55330.000 |  0.0000 |
-| Location                |   2 |  4,974,084,103 |  2,487,042,052 |  3848.000 |  0.0000 |
-| Year:Ethnicity          |   1 |     16,522,903 |     16,522,903 |    25.560 |  0.0000 |
-| Year:Location           |   2 |      8,405,692 |      4,202,846 |     6.503 |  0.0031 |
-| Ethnicity:Location      |   2 |  6,022,394,783 |  3,011,197,392 |  4659.000 |  0.0000 |
-| Year:Ethnicity:Location |   2 |     15,834,332 |      7,917,166 |    12.250 |  0.0000 |
-| Residuals               |  50 |     32,316,192 |        646,324 |        NA |      NA |
-
-It looks like EVERYTHING is significant, so let’s look at all of the
-parameters that were in the near-significant range.
-
-``` r
-household_model |>
-    broom::tidy() |>
+NO_PLUMBING <- RACINE_PLUMBING |>
     dplyr::filter(
-        .data$`p.value` < 0.1
+        .data$Plumbing == "Lacking plumbing facilities"
     ) |>
-    dplyr::mutate(
-        dplyr::across(c("estimate",
-                        "std.error",
-                        "statistic"),
-                      \(.) signif(., 4)),
-        dplyr::across("p.value",
-                      \(.) round(., 4))
+    dplyr::select(
+        "Year",
+        "Tenure",
+        "Households"
     ) |>
-    knitr::kable(
-        align = "lrrrr"
+    tidyr::pivot_wider(
+        names_from = "Tenure",
+        values_from = "Households",
+        values_fill = NA
     )
 ```
 
-| term | estimate | std.error | statistic | p.value |
-|:---|---:|---:|---:|---:|
-| (Intercept) | 74270.0 | 417.80 | 177.800 | 0e+00 |
-| Year | 699.2 | 72.08 | 9.701 | 0e+00 |
-| EthnicityHispanic or Latino | -73240.0 | 590.90 | -123.900 | 0e+00 |
-| LocationManchester | -32620.0 | 565.70 | -57.670 | 0e+00 |
-| LocationNashua | -41730.0 | 590.90 | -70.620 | 0e+00 |
-| Year:EthnicityHispanic or Latino | -612.2 | 101.90 | -6.006 | 0e+00 |
-| Year:LocationManchester | -436.5 | 99.71 | -4.378 | 1e-04 |
-| Year:LocationNashua | -594.0 | 101.90 | -5.827 | 0e+00 |
-| EthnicityHispanic or Latino:LocationManchester | 34460.0 | 800.00 | 43.080 | 0e+00 |
-| EthnicityHispanic or Latino:LocationNashua | 43180.0 | 835.60 | 51.680 | 0e+00 |
-| Year:EthnicityHispanic or Latino:LocationManchester | 507.8 | 141.00 | 3.601 | 7e-04 |
-| Year:EthnicityHispanic or Latino:LocationNashua | 686.1 | 144.20 | 4.759 | 0e+00 |
+``` r
+knitr::kable(NO_PLUMBING)
+```
 
-#### summarize
+| Year | Owner occupied | Renter occupied |
+|-----:|---------------:|----------------:|
+| 2005 |            111 |             131 |
+| 2006 |             49 |             127 |
+| 2007 |             50 |              24 |
+| 2008 |              0 |              59 |
+| 2009 |              0 |               0 |
+| 2010 |              0 |               0 |
+| 2011 |             74 |              72 |
+| 2012 |             35 |               0 |
+| 2013 |             92 |               0 |
+| 2014 |             82 |               0 |
+| 2015 |              0 |              37 |
+| 2016 |              0 |              36 |
+| 2017 |            273 |             109 |
+| 2018 |              0 |              78 |
+| 2019 |             48 |               0 |
+| 2021 |            117 |               0 |
+| 2022 |              0 |              85 |
+| 2023 |             59 |               0 |
 
-The number of households in Hillsborough county overall grew from
-2013-2023. The number of Hispanic households was much higher in the two
-cities than in the suburban parts of the county. This difference became
-more pronounced over the decade, for two reasons. The number of Hispanic
-households grew more quickly in Nashua and Manchester than in the
-suburban areas. The number of non-Hispanic households grew more quickly
-in the suburbs than in the cities. Isn’t it nice when the visual
-patterns are corroborated by significant statistics?
+[^1]:  Whether the occupants rent or own, not if they can’t be fired.

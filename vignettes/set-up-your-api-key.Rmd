@@ -1,0 +1,29 @@
+---
+title: "Set up your API key"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{set-up-your-api-key}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+You should use an API key to identify yourself when you access data.census.gov.
+Like many public APIs, the US Census Bureau's data portal allows anonymous
+users.
+However, it limits the number of requests that an anonymous user can send, both
+per second and per day.
+If you [register](http://api.census.gov/data/key_signup.html) with the site, it
+will send you a key.
+You can use the key to identify yourself when making future calls.
+Chances are that you will never come up against any kind of throttling.
+
+To make it easy for new users, `hercacstables` includes a function,
+`api_key_setup()`, that will take you to the sign-up page and then help you
+permanently save your key as a local environment variable.
+That variable is called "CENSUS_API_KEY" to be compatible with another popular
+package for accessing the Census API,
+[tidycensus](https://walker-data.com/tidycensus/index.html).
+
+``` r
+hercacstables::api_key_setup()
+```

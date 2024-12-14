@@ -5,8 +5,10 @@ articles:
   articles/average_tract_poverty_ratio: average_tract_poverty_ratio.html
   articles/children_in_poverty: children_in_poverty.html
   hercacstables: hercacstables.html
+  pop-changes-in-big-oh-districts: pop-changes-in-big-oh-districts.html
   race_ethnicity_categories: race_ethnicity_categories.html
-last_built: 2024-12-13T04:07Z
+  set-up-your-api-key: set-up-your-api-key.html
+last_built: 2024-12-14T07:18Z
 urls:
   reference: https://higherx4racine.github.io/hercacstables/reference
   article: https://higherx4racine.github.io/hercacstables/articles

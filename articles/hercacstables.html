@@ -36,7 +36,9 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/average_tract_poverty_ratio.html">Average Poverty Ratios by Tract in Racine County, WI</a></li>
     <li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
+    <li><a class="dropdown-item" href="../articles/pop-changes-in-big-oh-districts.html">pop-changes-in-big-oh-districts</a></li>
     <li><a class="dropdown-item" href="../articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
+    <li><a class="dropdown-item" href="../articles/set-up-your-api-key.html">Set up your API key</a></li>
   </ul>
 </li>
       </ul>
@@ -69,9 +71,6 @@
 <div class="section level2">
 <h2 id="welcome">Welcome<a class="anchor" aria-label="anchor" href="#welcome"></a>
 </h2>
-<p>If this is your first time using <code>hercacstables</code> then you
-probably want to <a href="#set-up-your-api-key">register with the
-Census</a>. Otherwise, welcome back!</p>
 <p>This package helps R users to access data from the United States
 Census Bureau, especially its American Community Survey.</p>
 <p>The database has an enormous amount of information, stored in a
@@ -92,564 +91,998 @@ people make repeated, efficient use of the Census’s API. There are
 <em>metadata</em> tables that explicitly connect real-world concepts to
 Census variables. You can then use database-style joins to connect the
 concepts to the values that you pull from the API.</p>
+<p>Many questions that work with Census data follow a common
+pattern:</p>
+<blockquote>
+<p>How did [measurement] differ among [demographic groups] and across
+[geographic levels] in [geographic area] during [span of time]?</p>
+</blockquote>
+<p>A <strong>Measurement</strong> is any of the huge number of things
+that the Census keeps track of. Measurements are arranged in tables
+(called “groups”) and rows. If you were drawing maps, this would be what
+determines the color of each area. Examples include population size
+(table B01001 and others), median household income (table B19013 and
+others), types of computers in a household (table B28001), number of
+vehicles used while commuting (table B08015).</p>
+<p>A <strong>Demographic Group</strong> is a subset of the population
+that shares specific traits. Demographic groups can be represented
+either by groups (common when reporting by race or ethnicity) or rows
+(most other cases, like age, sex, or veteran status). If you were
+drawing maps, you would probably have a different version of each map
+for each demographic grouping. Examples include the number of Hispanic
+girls under 5 years old (table B01001I, row 18), the median income of
+Asian American households (table B19013D, row 1), the number of
+households with no computer (table B28001, row 11), the number of
+vehicles used by women while commuting (table B08015, row 3).</p>
+<p>A <strong>Geographic Level</strong> is a <a href="https://www.census.gov/programs-surveys/geography/guidance.html" class="external-link">Census-defined
+hierarchy</a> from the whole country to small blocks. The level that you
+are interested in is determined by the scale of your question. If you
+were drawing maps, these would be the areas that appeared as different
+colors. Examples include congressional districts, incorporated cities,
+school districts, and Census tracts.</p>
+<p>A <strong>Geographic Area</strong> is a set of specific instances of
+one or more geographic levels. This is the full geographic scope of your
+question. If you were drawing maps, this would determine their scale.
+Examples include whole states, metropolitan areas, Census-designated
+places, and counties.</p>
 </div>
 <div class="section level2">
-<h2 id="worked-example">Worked example<a class="anchor" aria-label="anchor" href="#worked-example"></a>
+<h2 id="the-workflow">The workflow<a class="anchor" aria-label="anchor" href="#the-workflow"></a>
 </h2>
-<p>If you want to use the Census API then you probably have a real-world
-question that you think the data will help you to answer. For example,
-you might ask</p>
-<blockquote>
-<p><strong>How have populations changed in Ohio’s four largest school
-districts?</strong></p>
-</blockquote>
-<p>To answer this with <code>hercacstables</code>, you should break it
-down into four component questions.</p>
-<div class="section level4">
-<h4 id="who">
-<strong>Who?</strong><a class="anchor" aria-label="anchor" href="#who"></a>
-</h4>
-<p>What population or populations are you trying to understand? This
-will help us identify the <a href="https://api.census.gov/data/2022/acs/acs5/groups.html" class="external-link">groups</a>
-and <a href="https://api.census.gov/data/2022/acs/acs5/variables.html" class="external-link">variables</a>
-that we will specifically ask for.</p>
-<p>All of those groups and values can be accessed offline with
-<code><a href="../reference/ACS_GROUP_METADATA.html">hercacstables::ACS_GROUP_METADATA</a></code> and
-<code><a href="../reference/ACS_VARIABLE_METADATA.html">hercacstables::ACS_VARIABLE_METADATA</a></code>.</p>
-<p>We want to know about populations in school districts. It makes sense
-then to only look at school-aged children, say 5-18. Our requests should
-only ask for data about kids in that age range. We can do this with the
-built-in table <code><a href="../reference/AGE_AND_SEX_METADATA.html">hercacstables::AGE_AND_SEX_METADATA</a></code>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">school_children_metadata</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/AGE_AND_SEX_METADATA.html">AGE_AND_SEX_METADATA</a></span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>        <span class="va">.data</span><span class="op">$</span><span class="va">`Lower Age`</span> <span class="op">&gt;=</span> <span class="fl">5</span>,</span>
-<span>        <span class="va">.data</span><span class="op">$</span><span class="va">`Upper Age`</span> <span class="op">&lt;=</span> <span class="fl">18</span></span>
-<span>    <span class="op">)</span></span>
-<span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">school_children_metadata</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">group</th>
-<th align="right">index</th>
-<th align="left">variable</th>
-<th align="left">Sex</th>
-<th align="right">Lower Age</th>
-<th align="right">Upper Age</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">B01001</td>
-<td align="right">4</td>
-<td align="left">B01001_004E</td>
-<td align="left">Male</td>
-<td align="right">5</td>
-<td align="right">9</td>
-</tr>
-<tr class="even">
-<td align="left">B01001</td>
-<td align="right">5</td>
-<td align="left">B01001_005E</td>
-<td align="left">Male</td>
-<td align="right">10</td>
-<td align="right">14</td>
-</tr>
-<tr class="odd">
-<td align="left">B01001</td>
-<td align="right">6</td>
-<td align="left">B01001_006E</td>
-<td align="left">Male</td>
-<td align="right">15</td>
-<td align="right">17</td>
-</tr>
-<tr class="even">
-<td align="left">B01001</td>
-<td align="right">28</td>
-<td align="left">B01001_028E</td>
-<td align="left">Female</td>
-<td align="right">5</td>
-<td align="right">9</td>
-</tr>
-<tr class="odd">
-<td align="left">B01001</td>
-<td align="right">29</td>
-<td align="left">B01001_029E</td>
-<td align="left">Female</td>
-<td align="right">10</td>
-<td align="right">14</td>
-</tr>
-<tr class="even">
-<td align="left">B01001</td>
-<td align="right">30</td>
-<td align="left">B01001_030E</td>
-<td align="left">Female</td>
-<td align="right">15</td>
-<td align="right">17</td>
-</tr>
-</tbody>
-</table>
-<p>From this table we can see that we will need to include six variables
-in our API query.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">SCHOOL_CHILDREN_VARIABLES</span> <span class="op">&lt;-</span> <span class="va">school_children_metadata</span><span class="op">$</span><span class="va">variable</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">SCHOOL_CHILDREN_VARIABLES</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "B01001_004E" "B01001_005E" "B01001_006E" "B01001_028E" "B01001_029E"</span></span>
-<span><span class="co">#&gt; [6] "B01001_030E"</span></span></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>Identify the groups and rows that contain the data you need
+<ul>
+<li>Find potential groups by searching the <code>Universe</code> and
+<code>Description</code> fields of
+<code><a href="../reference/ACS_GROUP_METADATA.html">hercacstables::ACS_GROUP_METADATA</a></code>.</li>
+<li>Identify specific variables with
+<code><a href="../reference/ACS_VARIABLE_METADATA.html">hercacstables::ACS_VARIABLE_METADATA</a></code>: filter by the
+<code>Group</code> field and examine the <code>Details</code>
+field.</li>
+<li>Create a lookup table that maps from the Census variable name to
+your variables.
+<ul>
+<li>You may need several if you are pulling data from several
+groups.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Define the geographies that you will use
+<ul>
+<li>Use <code><a href="../reference/ACS_GEOGRAPHY_METADATA.html">hercacstables::ACS_GEOGRAPHY_METADATA</a></code> for this,
+too!</li>
+<li>You need to know at least two levels of geography:
+<ul>
+<li>The one that you want to pull data for, your level of interest
+<ul>
+<li>This is often small, like tract or county subdivision.</li>
+</ul>
+</li>
+<li>Any and all levels that contain your level of interest
+<ul>
+<li>These will be larger, like state or county.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Create a lookup table that maps from geographic ids to meaningful
+names.</li>
+</ul>
+</li>
+<li>Write fetching functions that call
+<code><a href="../reference/fetch_data.html">hercacstables::fetch_data()</a></code>
+<ul>
+<li>they will often always use the same variables (from step 1)</li>
+<li>they may need to be parameterized by geography if you’re pulling
+from multiple levels</li>
+<li>they should always be parameterized by year so that you can reuse
+them</li>
+</ul>
+</li>
+<li>Write wrangling functions that for turning fetched tables into
+useful ones.
+<ul>
+<li>These will probably involve using <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join()</a></code>
+between the fetched data and your lookup tables.</li>
+<li>You can also perform calculations like aggregating or finding
+remainders.</li>
+</ul>
+</li>
+<li>Run the workflow in two stages.
+<ul>
+<li>Use <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::map()</a></code> and <code><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">purrr::list_rbind()</a></code>
+to download all of the data into one data frame.
+<ul>
+<li>Cache that result because API calls are slow</li>
+</ul>
+</li>
+<li>Run the wrangling functions.
+<ul>
+<li>Save these results with, e.g. <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">base::saveRDS()</a></code>.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
 </div>
-<div class="section level4">
-<h4 id="where">
-<strong>Where?</strong><a class="anchor" aria-label="anchor" href="#where"></a>
-</h4>
-<p>What kind of place, and specific location, should the data describe?
-The Census API can provide information at many <a href="https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html" class="external-link">levels
-of geographical detail</a>. Some questions might pertain to entire
-states. Others might involve comparisons among all of the tracts in a
-metropolitan area. You can find details about the different geographic
-levels in <code><a href="../reference/ACS_GEOGRAPHY_METADATA.html">hercacstables::ACS_GEOGRAPHY_METADATA</a></code>. If you
-know the real-world name of a place, but not the numeric code that the
-Census uses for it, then you can look it up <a href="https://www.census.gov/library/reference/code-lists/ansi.html" class="external-link">here</a>.</p>
-<p>For the question that we’re dealing with, we want to look at the
-geographic area served by a school district. There are actually three
-different kinds of school district geographic levels.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">school_district_geographies</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/ACS_GEOGRAPHY_METADATA.html">ACS_GEOGRAPHY_METADATA</a></span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Geographic Level`</span>, <span class="st">"school"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">school_district_geographies</span> <span class="op">|&gt;</span></span>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<p>Let’s say you want to ask this question:</p>
+<blockquote>
+<p>How did [the number of households] differ between [Hispanic and
+non-Hispanic people] and across [Manchester, Nashua, and suburban areas]
+in [Hillsborough County, NH] during [the last 10 years]?</p>
+</blockquote>
+<div class="section level3">
+<h3 id="find-the-measurement-and-demographic-groups">Find the <strong>measurement</strong> and <strong>demographic
+groups</strong><a class="anchor" aria-label="anchor" href="#find-the-measurement-and-demographic-groups"></a>
+</h3>
+<p>First, find the variables that describe the numbers of households.
+One way to do this is to search
+<code><a href="../reference/ACS_GROUP_METADATA.html">hercacstables::ACS_GROUP_METADATA</a></code> for groups whose
+<code>Universe</code> is “Households” and whose <code>Description</code>
+contains “Hispanic” or “Ethnicity.” A group’s <code>Universe</code>
+describes what it is measuring, often telling you the units of whatever
+its values are. A group’s <code>Description</code> is a phrase that
+summarizes what it reports.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/ACS_GROUP_METADATA.html">ACS_GROUP_METADATA</a></span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">ACS5</span>,</span>
+<span>        <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Universe</span>, <span class="st">"Household"</span><span class="op">)</span>,</span>
+<span>        <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Description</span>, <span class="st">"Hispanic|Ethnic"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
+<span>        <span class="st">"Group"</span>,</span>
+<span>        <span class="st">"Universe"</span>,</span>
+<span>        <span class="st">"Description"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="32%">
-<col width="25%">
-<col width="17%">
-<col width="12%">
-<col width="12%">
+<col width="4%">
+<col width="38%">
+<col width="57%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">Geographic Level</th>
-<th align="left">Containing Geographies</th>
-<th align="left">Wildcard Option</th>
-<th align="left">ACS1</th>
-<th align="left">ACS5</th>
+<th align="left">Group</th>
+<th align="left">Universe</th>
+<th align="left">Description</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">school district (elementary)</td>
-<td align="left">{state}</td>
-<td align="left">{state}</td>
-<td align="left">2023-01-01</td>
-<td align="left">2022-01-01</td>
+<td align="left">B11001H</td>
+<td align="left">Households with a householder who is White alone, not
+Hispanic or Latino</td>
+<td align="left">Household Type (Including Living Alone) (White Alone,
+Not Hispanic or Latino)</td>
 </tr>
 <tr class="even">
-<td align="left">school district (secondary)</td>
-<td align="left">{state}</td>
-<td align="left">{state}</td>
-<td align="left">2023-01-01</td>
-<td align="left">2022-01-01</td>
+<td align="left">B11001I</td>
+<td align="left">Households with a householder who is Hispanic or
+Latino</td>
+<td align="left">Household Type (Including Living Alone) (Hispanic or
+Latino)</td>
 </tr>
 <tr class="odd">
-<td align="left">school district (unified)</td>
-<td align="left">{state}</td>
-<td align="left">{state}</td>
-<td align="left">2023-01-01</td>
-<td align="left">2022-01-01</td>
+<td align="left">B19001H</td>
+<td align="left">Households with a householder who is White alone, not
+Hispanic or Latino</td>
+<td align="left">Household Income in the Past 12 Months (White Alone,
+Not Hispanic or Latino Householder)</td>
+</tr>
+<tr class="even">
+<td align="left">B19001I</td>
+<td align="left">Households with a householder who is Hispanic or
+Latino</td>
+<td align="left">Household Income in the Past 12 Months (Hispanic or
+Latino Householder)</td>
+</tr>
+<tr class="odd">
+<td align="left">B19013H</td>
+<td align="left">Households with a householder who is White alone, not
+Hispanic or Latino</td>
+<td align="left">Median Household Income in the Past 12 Months (White
+Alone, Not Hispanic or Latino Householder)</td>
+</tr>
+<tr class="even">
+<td align="left">B19013I</td>
+<td align="left">Households with a householder who is Hispanic or
+Latino</td>
+<td align="left">Median Household Income in the Past 12 Months (Hispanic
+or Latino Householder)</td>
+</tr>
+<tr class="odd">
+<td align="left">B19025H</td>
+<td align="left">Households with a householder who is White alone, not
+Hispanic or Latino</td>
+<td align="left">Aggregate Household Income in the Past 12 Months (White
+Alone, Not Hispanic or Latino Householder)</td>
+</tr>
+<tr class="even">
+<td align="left">B19025I</td>
+<td align="left">Households with a householder who is Hispanic or
+Latino</td>
+<td align="left">Aggregate Household Income in the Past 12 Months
+(Hispanic or Latino Householder)</td>
+</tr>
+<tr class="odd">
+<td align="left">B19037H</td>
+<td align="left">Households with a householder who is White alone, not
+Hispanic or Latino</td>
+<td align="left">Age of Householder by Household Income in the Past 12
+Months (White Alone, Not Hispanic or Latino Householder)</td>
+</tr>
+<tr class="even">
+<td align="left">B19037I</td>
+<td align="left">Households with a householder who is Hispanic or
+Latino</td>
+<td align="left">Age of Householder by Household Income in the Past 12
+Months (Hispanic or Latino Householder)</td>
+</tr>
+<tr class="odd">
+<td align="left">B22005H</td>
+<td align="left">Households with a householder who is White alone, not
+Hispanic or Latino</td>
+<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by
+Race of Householder (White Alone, Not Hispanic or Latino)</td>
+</tr>
+<tr class="even">
+<td align="left">B22005I</td>
+<td align="left">Households with a householder who is Hispanic or
+Latino</td>
+<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by
+Race of Householder (Hispanic or Latino)</td>
 </tr>
 </tbody>
 </table>
-<p>It looks like the specific geographic level that we should ask about
-is “school districts (unified)”.</p>
-<p>The “Containing Geographies” column lets us know that we also have to
-tell the API which state we are interested in. The “Wildcard Option”
-column tells us that we can use “*” to say “all of the states.”</p>
-<p>We just want Ohio, so we must supply its FIPS code. If you don’t know
-it off the top of your head, you can use a <a href="https://www.census.gov/library/reference/code-lists/ansi.html" class="external-link">page</a>
-on the Census’s website to search for the FIPS code of a specific
-geography.</p>
-<p>Ohio’s FIPS code is 39.</p>
+<p>It looks like our best bet is group “B11001I.” It is likely that
+group “B11001” contains counts of households of any race. The first row
+of most groups is the total value across any demographic subset that it
+keeps track of. Since our question does not ask about different
+household types, we probably just need row one from groups “B11001” and
+“B11001I.” This gives us a good opportunity to document the ethnicities
+counted in each.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">HOUSEHOLD_GROUPS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B11001"</span>, <span class="st">"B11001I"</span><span class="op">)</span></span>
+<span><span class="va">household_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/ACS_VARIABLE_METADATA.html">ACS_VARIABLE_METADATA</a></span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Dataset</span> <span class="op">==</span> <span class="st">"ACS1"</span>,</span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">HOUSEHOLD_GROUPS</span>,</span>
+<span>                  <span class="va">.data</span><span class="op">$</span><span class="va">Index</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        Ethnicity <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_match.html" class="external-link">case_match</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Group</span>,</span>
+<span>                                      <span class="st">"B11001"</span> <span class="op">~</span> <span class="st">"All"</span>,</span>
+<span>                                      <span class="st">"B11001I"</span> <span class="op">~</span> <span class="st">"Hispanic or Latino"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"Index"</span>, <span class="st">"Variable"</span>, <span class="st">"Ethnicity"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">household_variables</span>,</span>
+<span>             align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lrll"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Group</th>
+<th align="right">Index</th>
+<th align="left">Variable</th>
+<th align="left">Ethnicity</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">B11001I</td>
+<td align="right">1</td>
+<td align="left">B11001I_001E</td>
+<td align="left">Hispanic or Latino</td>
+</tr>
+<tr class="even">
+<td align="left">B11001</td>
+<td align="right">1</td>
+<td align="left">B11001_001E</td>
+<td align="left">All</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="find-the-geographic-levels-and-geographic-area">Find the <strong>geographic levels</strong> and <strong>geographic
+area</strong><a class="anchor" aria-label="anchor" href="#find-the-geographic-levels-and-geographic-area"></a>
+</h3>
+<p>The next step is to <a href="https://www.census.gov/library/reference/code-lists/ansi.html" class="external-link">find
+the codes</a> that are related to the geographic areas and levels. We
+need to know the FIPS code for the state, county, and two cities. We
+also need to know that the geographic level that we’re working with is
+“county subdivision.” As the last part of this step, we define a lookup
+table to translate from the FIPS codes for the different geographies to
+a human-readable name.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">NEW_HAMPSHIRE</span> <span class="op">&lt;-</span> <span class="st">"33"</span></span>
+<span><span class="va">COUNTY_LEVEL</span> <span class="op">&lt;-</span> <span class="st">"county"</span></span>
+<span><span class="va">HILLSBOROUGH_CO</span> <span class="op">&lt;-</span> <span class="st">"011"</span></span>
+<span><span class="va">CITY_LEVEL</span> <span class="op">&lt;-</span> <span class="st">"county subdivision"</span></span>
+<span><span class="va">MANCHESTER_NH</span> <span class="op">&lt;-</span> <span class="st">"45140"</span></span>
+<span><span class="va">NASHUA_NH</span> <span class="op">&lt;-</span> <span class="st">"50260"</span></span>
+<span></span>
+<span><span class="va">geography_definitions</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>    <span class="op">~</span> <span class="va">FIPS</span>,          <span class="op">~</span> <span class="va">Location</span>,</span>
+<span>    <span class="va">HILLSBOROUGH_CO</span>, <span class="st">"County-wide"</span>,</span>
+<span>    <span class="va">MANCHESTER_NH</span>,   <span class="st">"Manchester"</span>,</span>
+<span>    <span class="va">NASHUA_NH</span>,       <span class="st">"Nashua"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">geography_definitions</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">FIPS</th>
+<th align="left">Location</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">011</td>
+<td align="left">County-wide</td>
+</tr>
+<tr class="even">
+<td align="left">45140</td>
+<td align="left">Manchester</td>
+</tr>
+<tr class="odd">
+<td align="left">50260</td>
+<td align="left">Nashua</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="find-the-time-interval">Find the <strong>time interval</strong><a class="anchor" aria-label="anchor" href="#find-the-time-interval"></a>
+</h3>
+<p>This example looks for population changes “in the last ten years.”
+What that really means is the ten most recent years for which we have
+data. We can use 1-year estimates for our question because we are
+dealing with geographic levels that have more than 50,000 people in
+them. In the case of the 1-year ACS dataset, the latest will be one or
+two years ago. The earliest will be 11 years before that because there
+was no survey in 2020.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">UNIFIED_SCHOOL_DISTRICT</span> <span class="op">&lt;-</span> <span class="va">school_district_geographies</span><span class="op">$</span><span class="va">`Geographic Level`</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">UNIFIED_SCHOOL_DISTRICT</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "school district (unified)"</span></span>
-<span><span class="va">STATE_FIPS</span> <span class="op">&lt;-</span> <span class="fl">39</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="when">
-<strong>When?</strong><a class="anchor" aria-label="anchor" href="#when"></a>
-</h4>
-<p>A request to the Census API must include year its path. That means
-that it takes multiple API calls to pull data for multiple years. Each
-of these calls will be identical to the others, <em>except for</em> the
-year in the path. This repetitiveness might just be the single biggest
-motivator for developing <code>hercacstables</code>. It’s very easy in R
-to iterate over an array of years, making one function call for each
-year, and then bundling all of the results into one tidy data frame.</p>
-<p>The other aspect of the “when” question is whether or not to use
-1-year or 5-year estimates. The ACS reports both. Five-year estimates
-include data from the preceding four years. This increases sample sizes
-enough to provide information for smaller geographic levels, like tracts
-and block groups. One-year estimates are more responsive to rapid
-changes (like unemployment during the COVID-19 pandemic, for example),
-but are only available for larger geographic levels.</p>
-<p>Unified school districts are large enough for the 1-year ACS to
-include them. For our example, we will use every year of data available.
-That is 2005 to 2022, except for 2020, which does not have 1-year ACS
-data.</p>
+<code class="sourceCode R"><span><span class="va">BUILD_DATE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">LATEST_YEAR</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/most_recent_vintage.html">most_recent_vintage</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acs1"</span><span class="op">)</span></span>
+<span><span class="va">TEN_YEARS_AGO</span> <span class="op">&lt;-</span> <span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">11L</span></span></code></pre></div>
+<p>The last ten years available from the Census are, as of 2024-12-14,
+2012 through 2023.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">YEARS_FOR_ACS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2005</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="fl">2023</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">YEARS_INCLUDED</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">TEN_YEARS_AGO</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="what-describe-the-steps-to-answer-our-question">
-<strong>What?</strong> Describe the steps to answer our
-question<a class="anchor" aria-label="anchor" href="#what-describe-the-steps-to-answer-our-question"></a>
-</h4>
-<p>Thus far, we have identified what we need to deal with the
-“populations” (who), “school districts” and “in Ohio” (where), and
-“changed” (when) aspects of our question. The final aspect is the “four
-largest” parts. It will take three steps to find the four largest school
-districts in Ohio.</p>
-<p>The first step is to use the [hercacstables::fetch_data()] function
-to pull data from the Census API. We need the number of children that
-live in each school district in Ohio in the most recent year
-available.</p>
+<div class="section level3">
+<h3 id="define-functions-that-use-the-api">Define functions that use the API<a class="anchor" aria-label="anchor" href="#define-functions-that-use-the-api"></a>
+</h3>
+<p>We will need to make multiple calls to the API, so it makes sense to
+create some reusable functions. We need two calls per year. The first
+one will pull the county-wide household counts. The second one will pull
+the household counts for each city. Each function should have “year” as
+its argument so that we can reuse it.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fetch_district_children</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.state_fips</span>, <span class="va">.year</span>, <span class="va">.district_geoids</span> <span class="op">=</span> <span class="st">"*"</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="va">generalized_fetch_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.year</span>, <span class="va">.level</span>, <span class="va">.areas</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
-<span>        variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NAME"</span>, <span class="va">SCHOOL_CHILDREN_VARIABLES</span><span class="op">)</span>, <span class="co"># district names, too</span></span>
-<span>        year <span class="op">=</span> <span class="va">.year</span>,                                     <span class="co"># most recent year</span></span>
-<span>        survey_type <span class="op">=</span> <span class="st">"acs"</span>,                              <span class="co"># American Community Survey</span></span>
-<span>        table_or_survey_code <span class="op">=</span> <span class="st">"acs1"</span>,                    <span class="co"># One-year estimates</span></span>
-<span>        for_geo <span class="op">=</span> <span class="va">UNIFIED_SCHOOL_DISTRICT</span>,                <span class="co"># "school district (unified)"</span></span>
-<span>        for_items <span class="op">=</span> <span class="va">.district_geoids</span>,                     <span class="co"># every school district</span></span>
-<span>        state <span class="op">=</span> <span class="va">STATE_FIPS</span>                                <span class="co"># our state's two-digit code</span></span>
+<span>        variables <span class="op">=</span> <span class="va">household_variables</span><span class="op">$</span><span class="va">Variable</span>,</span>
+<span>        year <span class="op">=</span> <span class="va">.year</span>,</span>
+<span>        survey_type <span class="op">=</span> <span class="st">"acs"</span>,</span>
+<span>        table_or_survey_code <span class="op">=</span> <span class="st">"acs1"</span>,</span>
+<span>        for_geo <span class="op">=</span> <span class="va">.level</span>,</span>
+<span>        for_items <span class="op">=</span> <span class="va">.areas</span>,</span>
+<span>        state <span class="op">=</span> <span class="va">NEW_HAMPSHIRE</span>,</span>
+<span>        <span class="va">...</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">latest_school_districts_raw</span> <span class="op">&lt;-</span> <span class="fu">fetch_district_children</span><span class="op">(</span><span class="va">STATE_FIPS</span>, <span class="fl">2023</span><span class="op">)</span></span>
+<span><span class="va">fetch_county_households</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="fu">generalized_fetch_data</span><span class="op">(</span><span class="va">.year</span>,</span>
+<span>                           <span class="st">"county"</span>,</span>
+<span>                           <span class="va">HILLSBOROUGH_CO</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">latest_school_districts_raw</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_sample</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">8</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fetch_city_households</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="fu">generalized_fetch_data</span><span class="op">(</span><span class="va">.year</span>,</span>
+<span>                           <span class="va">CITY_LEVEL</span>,</span>
+<span>                           <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">MANCHESTER_NH</span>,</span>
+<span>                             <span class="va">NASHUA_NH</span><span class="op">)</span>,</span>
+<span>                           county <span class="op">=</span> <span class="va">HILLSBOROUGH_CO</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">fetch_example_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>        <span class="fu">fetch_county_households</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span>,</span>
+<span>        <span class="fu">fetch_city_households</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="fetch-the-data">Fetch the data<a class="anchor" aria-label="anchor" href="#fetch-the-data"></a>
+</h3>
+<p>This is where <code>hercacstables</code> starts to come into its own.
+We define the fetching process as few times as possible, just tweaking
+it for related cases. This leads to a lot of code reuse and efficiency,
+especially for reports that you just need to update once a year.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">raw_households</span> <span class="op">&lt;-</span> <span class="va">YEARS_INCLUDED</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">fetch_example_data</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">list_rbind</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">raw_households</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Value"</span><span class="op">)</span>,</span>
+<span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>        align <span class="op">=</span> <span class="st">"lllrrrl"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
-<colgroup>
-<col width="47%">
-<col width="5%">
-<col width="24%">
-<col width="6%">
-<col width="5%">
-<col width="5%">
-<col width="4%">
-</colgroup>
 <thead><tr class="header">
-<th align="left">NAME</th>
 <th align="left">state</th>
-<th align="left">school district (unified)</th>
+<th align="left">county</th>
 <th align="left">Group</th>
 <th align="right">Index</th>
 <th align="right">Value</th>
 <th align="right">Year</th>
+<th align="left">county subdivision</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">Toledo City School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04490</td>
-<td align="left">B01001</td>
-<td align="right">6</td>
-<td align="right">3872</td>
+<td align="left">33</td>
+<td align="left">011</td>
+<td align="left">B11001I</td>
+<td align="right">1</td>
+<td align="right">11,255</td>
 <td align="right">2023</td>
+<td align="left">NA</td>
 </tr>
 <tr class="even">
-<td align="left">Columbus City School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04380</td>
-<td align="left">B01001</td>
-<td align="right">29</td>
-<td align="right">14856</td>
+<td align="left">33</td>
+<td align="left">011</td>
+<td align="left">B11001</td>
+<td align="right">1</td>
+<td align="right">170,761</td>
 <td align="right">2023</td>
+<td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="left">West Clermont Local School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04635</td>
-<td align="left">B01001</td>
-<td align="right">28</td>
-<td align="right">2916</td>
+<td align="left">33</td>
+<td align="left">011</td>
+<td align="left">B11001I</td>
+<td align="right">1</td>
+<td align="right">4,511</td>
 <td align="right">2023</td>
+<td align="left">45140</td>
 </tr>
 <tr class="even">
-<td align="left">Fairfield City School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04610</td>
-<td align="left">B01001</td>
-<td align="right">6</td>
-<td align="right">1314</td>
+<td align="left">33</td>
+<td align="left">011</td>
+<td align="left">B11001</td>
+<td align="right">1</td>
+<td align="right">50,053</td>
 <td align="right">2023</td>
+<td align="left">45140</td>
 </tr>
 <tr class="odd">
-<td align="left">Toledo City School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04490</td>
-<td align="left">B01001</td>
-<td align="right">29</td>
-<td align="right">6601</td>
+<td align="left">33</td>
+<td align="left">011</td>
+<td align="left">B11001I</td>
+<td align="right">1</td>
+<td align="right">4,770</td>
 <td align="right">2023</td>
+<td align="left">50260</td>
 </tr>
 <tr class="even">
-<td align="left">Parma City School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04463</td>
-<td align="left">B01001</td>
-<td align="right">4</td>
-<td align="right">2072</td>
+<td align="left">33</td>
+<td align="left">011</td>
+<td align="left">B11001</td>
+<td align="right">1</td>
+<td align="right">36,451</td>
 <td align="right">2023</td>
-</tr>
-<tr class="odd">
-<td align="left">Lakota Local School District (Butler County), Ohio</td>
-<td align="left">39</td>
-<td align="left">04611</td>
-<td align="left">B01001</td>
-<td align="right">5</td>
-<td align="right">3350</td>
-<td align="right">2023</td>
-</tr>
-<tr class="even">
-<td align="left">West Clermont Local School District, Ohio</td>
-<td align="left">39</td>
-<td align="left">04635</td>
-<td align="left">B01001</td>
-<td align="right">4</td>
-<td align="right">2016</td>
-<td align="right">2023</td>
+<td align="left">50260</td>
 </tr>
 </tbody>
 </table>
-<p>The next step is to sum up the populations for each district and then
-sort them from biggest to smallest.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wrangle_latest_kids</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.raw_children</span><span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="va">.raw_children</span> <span class="op">|&gt;</span></span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span></span>
-<span>            <span class="va">.data</span><span class="op">$</span><span class="va">NAME</span>,</span>
-<span>            <span class="va">.data</span><span class="op">[[</span><span class="va">UNIFIED_SCHOOL_DISTRICT</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>            name <span class="op">=</span> <span class="st">"Children"</span>,</span>
-<span>            wt <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Value</span></span>
-<span>        <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Children</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">latest_school_districts</span> <span class="op">&lt;-</span> <span class="fu">wrangle_latest_kids</span><span class="op">(</span><span class="va">latest_school_districts_raw</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">latest_school_districts</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Children <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Children</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>align <span class="op">=</span> <span class="st">"lrr"</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="54%">
-<col width="33%">
-<col width="11%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">NAME</th>
-<th align="right">school district (unified)</th>
-<th align="right">Children</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Columbus City School District, Ohio</td>
-<td align="right">04380</td>
-<td align="right">79,141</td>
-</tr>
-<tr class="even">
-<td align="left">Cleveland Municipal School District, Ohio</td>
-<td align="right">04378</td>
-<td align="right">53,773</td>
-</tr>
-<tr class="odd">
-<td align="left">Cincinnati City School District, Ohio</td>
-<td align="right">04375</td>
-<td align="right">48,798</td>
-</tr>
-<tr class="even">
-<td align="left">Toledo City School District, Ohio</td>
-<td align="right">04490</td>
-<td align="right">31,622</td>
-</tr>
-<tr class="odd">
-<td align="left">Akron City School District, Ohio</td>
-<td align="right">04348</td>
-<td align="right">31,297</td>
-</tr>
-<tr class="even">
-<td align="left">South-Western City School District, Ohio</td>
-<td align="right">04480</td>
-<td align="right">24,636</td>
-</tr>
-<tr class="odd">
-<td align="left">Olentangy Local School District, Ohio</td>
-<td align="right">04676</td>
-<td align="right">22,083</td>
-</tr>
-<tr class="even">
-<td align="left">Dayton City School District, Ohio</td>
-<td align="right">04384</td>
-<td align="right">21,972</td>
-</tr>
-</tbody>
-</table>
-<p>The last step is to pull the GEOIDs for each of the four biggest
-districts.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">top_district_geoids</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.districts</span>, <span class="va">n</span><span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="va">.districts</span><span class="op">[[</span><span class="va">UNIFIED_SCHOOL_DISTRICT</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">]</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">districts_for_query</span> <span class="op">&lt;-</span> <span class="fu">top_district_geoids</span><span class="op">(</span><span class="va">latest_school_districts</span>, <span class="fl">4</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">districts_for_query</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "04380" "04378" "04375" "04490"</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="pulling-it-all-together">Pulling it all together<a class="anchor" aria-label="anchor" href="#pulling-it-all-together"></a>
+<h3 id="wrangle-the-data">Wrangle the data<a class="anchor" aria-label="anchor" href="#wrangle-the-data"></a>
 </h3>
-<p>Now we have all of the components that we need to pull the population
-histories for the four biggest school districts in Ohio.</p>
-<p>First, we fetch the data. Notice that we can reuse the fetching
-function that we defined above!</p>
+<p>The raw data are not very usable. Several of the columns still have
+codes, rather than human-readable values. The value column also does not
+explicitly state values for the suburban or for non-Hispanic folks. The
+“wrangling” process is where we addressing these drawbacks.</p>
+<div class="section level4">
+<h4 id="map-codes-to-words">Map codes to words<a class="anchor" aria-label="anchor" href="#map-codes-to-words"></a>
+</h4>
+<p>We should get rid of the columns that are Census database codes and
+create columns about location and demographics that have human-readable
+values.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fetch_district_histories</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.state_fips</span>, <span class="va">.district_geoids</span> <span class="op">=</span> <span class="st">"*"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">YEARS_FOR_ACS</span> <span class="op">|&gt;</span></span>
-<span>        <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
-<span>            \<span class="op">(</span><span class="va">.year</span><span class="op">)</span> <span class="fu">fetch_district_children</span><span class="op">(</span><span class="va">.state_fips</span>,</span>
-<span>                                             <span class="va">.year</span>, </span>
-<span>                                             <span class="va">.district_geoids</span><span class="op">)</span></span>
-<span>        <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>        <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">list_rbind</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">}</span> </span>
-<span></span>
-<span><span class="va">big_district_histories_raw</span> <span class="op">&lt;-</span> <span class="fu">fetch_district_histories</span><span class="op">(</span><span class="va">STATE_FIPS</span>,</span>
-<span>                                                       <span class="va">districts_for_query</span><span class="op">)</span></span></code></pre></div>
-<p>Next, we sum up the number of children and create human-readable
-names for each district.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wrangle_histories</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.raw_district_histories</span>, <span class="va">.latest_districts</span><span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="va">.raw_district_histories</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span></span>
-<span>        <span class="va">.data</span><span class="op">[[</span><span class="va">UNIFIED_SCHOOL_DISTRICT</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Year</span>,</span>
-<span>        name <span class="op">=</span> <span class="st">"Children"</span>,</span>
-<span>        wt <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Value</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">households</span> <span class="op">&lt;-</span> <span class="va">raw_households</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
-<span>            <span class="va">.latest_districts</span>,</span>
-<span>            <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">all_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NAME"</span>, <span class="va">UNIFIED_SCHOOL_DISTRICT</span><span class="op">)</span><span class="op">)</span></span>
-<span>            <span class="op">)</span>,</span>
-<span>        by <span class="op">=</span> <span class="va">UNIFIED_SCHOOL_DISTRICT</span></span>
+<span>        <span class="va">household_variables</span>,</span>
+<span>        by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"Index"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        District <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html" class="external-link">str_extract</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">NAME</span>,</span>
-<span>                                        <span class="st">"^\\S*"</span><span class="op">)</span></span>
+<span>        FIPS <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/coalesce.html" class="external-link">coalesce</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`county subdivision`</span>,</span>
+<span>                               <span class="va">.data</span><span class="op">$</span><span class="va">county</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
+<span>        <span class="va">geography_definitions</span>,</span>
+<span>        by <span class="op">=</span> <span class="st">"FIPS"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
-<span>        <span class="st">"District"</span>,</span>
+<span>        <span class="st">"Location"</span>,</span>
 <span>        <span class="st">"Year"</span>,</span>
-<span>        <span class="st">"Children"</span></span>
+<span>        <span class="st">"Ethnicity"</span>,</span>
+<span>        Households <span class="op">=</span> <span class="st">"Value"</span></span>
 <span>    <span class="op">)</span></span>
-<span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">big_district_histories</span> <span class="op">&lt;-</span> <span class="fu">wrangle_histories</span><span class="op">(</span><span class="va">big_district_histories_raw</span>,</span>
-<span>                                            <span class="va">latest_school_districts</span><span class="op">)</span> </span></code></pre></div>
-<p>Finally, we can plot the results.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_district_histories</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.district_histories</span><span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="va">.district_histories</span> <span class="op">|&gt;</span></span>
-<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
-<span>            <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>                x <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Year</span>,</span>
-<span>                y <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Children</span>,</span>
-<span>                color <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">District</span></span>
-<span>            <span class="op">)</span></span>
-<span>        <span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
-<span>            linewidth <span class="op">=</span> <span class="fl">2</span></span>
-<span>        <span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span></span>
-<span>            size <span class="op">=</span> <span class="fl">5</span></span>
-<span>        <span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span></span>
-<span>            name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>            labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_number</a></span><span class="op">(</span>big.mark <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,</span>
-<span>            breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_width.html" class="external-link">breaks_width</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>,</span>
-<span>            minor_breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_width.html" class="external-link">breaks_width</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span>        <span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span></span>
-<span>            name <span class="op">=</span> <span class="st">"School-aged children in school district's area"</span>,</span>
-<span>            labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                                         scale <span class="op">=</span> <span class="fl">0.001</span>,</span>
-<span>                                         suffix <span class="op">=</span> <span class="st">"K"</span><span class="op">)</span>,</span>
-<span>            limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span></span>
-<span>        <span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html" class="external-link">scale_color_discrete</a></span><span class="op">(</span></span>
-<span>            guide <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>title <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>                                          position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span>
-<span>        <span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="va">households</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Households"</span><span class="op">)</span>,</span>
+<span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>        align <span class="op">=</span> <span class="st">"rllr"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">Location</th>
+<th align="left">Year</th>
+<th align="left">Ethnicity</th>
+<th align="right">Households</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">County-wide</td>
+<td align="left">2023</td>
+<td align="left">Hispanic or Latino</td>
+<td align="right">11,255</td>
+</tr>
+<tr class="even">
+<td align="right">County-wide</td>
+<td align="left">2023</td>
+<td align="left">All</td>
+<td align="right">170,761</td>
+</tr>
+<tr class="odd">
+<td align="right">Manchester</td>
+<td align="left">2023</td>
+<td align="left">Hispanic or Latino</td>
+<td align="right">4,511</td>
+</tr>
+<tr class="even">
+<td align="right">Manchester</td>
+<td align="left">2023</td>
+<td align="left">All</td>
+<td align="right">50,053</td>
+</tr>
+<tr class="odd">
+<td align="right">Nashua</td>
+<td align="left">2023</td>
+<td align="left">Hispanic or Latino</td>
+<td align="right">4,770</td>
+</tr>
+<tr class="even">
+<td align="right">Nashua</td>
+<td align="left">2023</td>
+<td align="left">All</td>
+<td align="right">36,451</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level4">
+<h4 id="compute-implicit-values">Compute implicit values<a class="anchor" aria-label="anchor" href="#compute-implicit-values"></a>
+</h4>
+<p>Now that the columns are human-readable, we can compute the values
+that we are actually interested in. That computation involves
+subtracting either the cities’ households from the county’s, or the
+number of Hispanic households from the total number of households. This
+task turns up very frequently when dealing with Census data, so the
+package includes a helper function to do it for you:
+<code><a href="../reference/subtract_parts_from_whole.html">hercacstables::subtract_parts_from_whole()</a></code>. That function
+does not remove the rows that contain the all-groups category. In our
+case, we must remove them so all of the calculations come out
+correctly.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">households</span> <span class="op">&lt;-</span> <span class="va">households</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/subtract_parts_from_whole.html">subtract_parts_from_whole</a></span><span class="op">(</span></span>
+<span>        grouping_column <span class="op">=</span> <span class="st">"Location"</span>,</span>
+<span>        value_column <span class="op">=</span> <span class="st">"Households"</span>,</span>
+<span>        whole_name <span class="op">=</span> <span class="st">"County-wide"</span>,</span>
+<span>        part_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Manchester"</span>, <span class="st">"Nashua"</span><span class="op">)</span>,</span>
+<span>        remainder_name <span class="op">=</span> <span class="st">"Suburbs"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
+<span>        <span class="op">!</span><span class="st">"County-wide"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/subtract_parts_from_whole.html">subtract_parts_from_whole</a></span><span class="op">(</span></span>
+<span>        grouping_column <span class="op">=</span> <span class="st">"Ethnicity"</span>,</span>
+<span>        value_column <span class="op">=</span> <span class="st">"Households"</span>,</span>
+<span>        whole_name <span class="op">=</span> <span class="st">"All"</span>,</span>
+<span>        part_names <span class="op">=</span> <span class="st">"Hispanic or Latino"</span>,</span>
+<span>        remainder_name <span class="op">=</span> <span class="st">"Not Hispanic or Latino"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
+<span>        <span class="op">!</span><span class="st">"All"</span></span>
+<span>    <span class="op">)</span></span>
 <span></span>
-<span><span class="fu">plot_district_histories</span><span class="op">(</span><span class="va">big_district_histories</span><span class="op">)</span></span></code></pre></div>
-<p><img src="hercacstables_files/figure-html/plot-big-district-histories-1.png" width="504"></p>
-<p>It looks like maybe a lot of people are moving from Cleveland to
-Columbus, and taking their kids with them.</p>
+<span><span class="va">households</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Households"</span><span class="op">)</span>,</span>
+<span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>        align <span class="op">=</span> <span class="st">"lrlr"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Year</th>
+<th align="right">Location</th>
+<th align="left">Ethnicity</th>
+<th align="right">Households</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">2023</td>
+<td align="right">Manchester</td>
+<td align="left">Hispanic or Latino</td>
+<td align="right">4,511</td>
+</tr>
+<tr class="even">
+<td align="left">2023</td>
+<td align="right">Manchester</td>
+<td align="left">Not Hispanic or Latino</td>
+<td align="right">45,542</td>
+</tr>
+<tr class="odd">
+<td align="left">2023</td>
+<td align="right">Nashua</td>
+<td align="left">Hispanic or Latino</td>
+<td align="right">4,770</td>
+</tr>
+<tr class="even">
+<td align="left">2023</td>
+<td align="right">Nashua</td>
+<td align="left">Not Hispanic or Latino</td>
+<td align="right">31,681</td>
+</tr>
+<tr class="odd">
+<td align="left">2023</td>
+<td align="right">Suburbs</td>
+<td align="left">Hispanic or Latino</td>
+<td align="right">1,974</td>
+</tr>
+<tr class="even">
+<td align="left">2023</td>
+<td align="right">Suburbs</td>
+<td align="left">Not Hispanic or Latino</td>
+<td align="right">82,283</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section level3">
-<h3 id="everything-is-reusable">Everything is reusable<a class="anchor" aria-label="anchor" href="#everything-is-reusable"></a>
+<h3 id="answer-the-question">Answer the question<a class="anchor" aria-label="anchor" href="#answer-the-question"></a>
 </h3>
-<p>Now that you’ve seen the example with Ohio, you may be thinking “that
-question is not relevant to me.” However! You could rerun all of the
-code, changing just the <code>STATE_FIPS</code> to your state’s FIPS
-code, and get <em>the same analysis</em> for <strong>a different
-state</strong>.</p>
-<p>Let’s look at changes in population for the five largest school
-districts in Delaware.</p>
+<p>Now we can finally look at trends in number of households in
+Hillsborough County, NH, comparing between Hispanic and non-Hispanic
+households among Manchester, Nashua, and the suburbs.</p>
+<div class="section level4">
+<h4 id="visualize">Visualize<a class="anchor" aria-label="anchor" href="#visualize"></a>
+</h4>
+<p>The first step is to make some graphs. These data are 4-dimensional
+because they involve time, location, ethnicity, and number of
+households. That means we’ll need more than one graph. It looked from
+the tables above that the number of Hispanic households is much lower
+than non-Hispanic households in all three locations. Let’s make a
+two-panel graph, where each panel shows one ethnicity. That way they can
+have separate y axes. Both graphs will have time on the x-axis, number
+of households on the y, and designate location with the color of points
+and lines.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">households</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
+<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
+<span>            x <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Year</span>,</span>
+<span>            y <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Households</span>,</span>
+<span>            color <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Location</span>,</span>
+<span>            group <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Location</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
+<span>        linewidth <span class="op">=</span> <span class="fl">2</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span></span>
+<span>        size <span class="op">=</span> <span class="fl">5</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>        breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_width.html" class="external-link">breaks_width</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>,</span>
+<span>        minor_breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_width.html" class="external-link">breaks_width</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"Number of households"</span>,</span>
+<span>        limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
+<span>        labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_d</a></span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>        guide <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span></span>
+<span>        rows <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Ethnicity</span><span class="op">)</span>,</span>
+<span>        scales <span class="op">=</span> <span class="st">"free_y"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<p><img src="hercacstables_files/figure-html/plot-the-results-1.png" width="504"></p>
+<p>It looks like the number of households is growing, with non-Hispanic
+households increasing in the suburbs and Hispanic households increasing
+in the cities.</p>
+</div>
+<div class="section level4">
+<h4 id="analyze">Analyze<a class="anchor" aria-label="anchor" href="#analyze"></a>
+</h4>
+<p>Let’s test this with an ANCOVA. We’ll subtract 2012 from the year so
+that the intercept estimate gives us the value in 2012, not AD 0.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">STATE_FIPS</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
-<span></span>
-<span><span class="va">latest_de_districts</span> <span class="op">&lt;-</span> <span class="va">STATE_FIPS</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">fetch_district_children</span><span class="op">(</span><span class="fl">2023</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">wrangle_latest_kids</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">de_district_geoids</span> <span class="op">&lt;-</span> <span class="va">latest_de_districts</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">top_district_geoids</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">big_de_district_histories</span> <span class="op">&lt;-</span> <span class="va">STATE_FIPS</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">fetch_district_histories</span><span class="op">(</span><span class="va">de_district_geoids</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">wrangle_histories</span><span class="op">(</span><span class="va">latest_de_districts</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">plot_district_histories</span><span class="op">(</span><span class="va">big_de_district_histories</span><span class="op">)</span></span></code></pre></div>
-<p><img src="hercacstables_files/figure-html/this-time-for-delaware-1.png" width="504"></p>
-<p>You could do the same thing with any other state. That’s the goal of
-this project: help define workflows for making reports from Census data
-so that they can be easily rerun for comparable places and times.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="set-up-your-api-key">Set up your API key<a class="anchor" aria-label="anchor" href="#set-up-your-api-key"></a>
-</h2>
-<p>You should use an API key to identify yourself when you access
-data.census.gov. Like many public APIs, the US Census Bureau’s data
-portal allows anonymous users. However, it limits the number of requests
-that an anonymous user can send, both per second and per day. If you <a href="http://api.census.gov/data/key_signup.html" class="external-link">register</a> with the
-site, it will send you a key. You can use the key to identify yourself
-when making future calls. Chances are that you will never come up
-against any kind of throttling.</p>
-<p>To make it easy for new users, <code>hercacstables</code> includes a
-function, <code><a href="../reference/api_key_setup.html">api_key_setup()</a></code>, that will take you to the
-sign-up page and then help you permanently save your key as a local
-environment variable. That variable is called “CENSUS_API_KEY” to be
-compatible with another popular package for accessing the Census API, <a href="https://walker-data.com/tidycensus/index.html" class="external-link">tidycensus</a>.</p>
+<code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">&lt;-</span> <span class="va">households</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        Year <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="va">TEN_YEARS_AGO</span>,</span>
+<span>        Location <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Location</span>,</span>
+<span>                          levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Suburbs"</span>,</span>
+<span>                                     <span class="st">"Manchester"</span>,</span>
+<span>                                     <span class="st">"Nashua"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        Ethnicity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Ethnicity</span>,</span>
+<span>                           levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Not Hispanic or Latino"</span>,</span>
+<span>                                      <span class="st">"Hispanic or Latino"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span></span>
+<span>        <span class="va">Households</span> <span class="op">~</span> <span class="va">Year</span> <span class="op">*</span> <span class="va">Ethnicity</span> <span class="op">*</span> <span class="va">Location</span>,</span>
+<span>        data <span class="op">=</span> <span class="va">_</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<p>I always like to look at the ANOVA table first to get a 10,000 meter
+view before I try to interpret specific parameters.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/api_key_setup.html">api_key_setup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/anova.html" class="external-link">anova</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sumsq"</span>,</span>
+<span>                        <span class="st">"meansq"</span><span class="op">)</span>,</span>
+<span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="st">"statistic"</span>,</span>
+<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">signif</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="st">"p.value"</span>,</span>
+<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>        align <span class="op">=</span> <span class="st">"lrrrrr"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="32%">
+<col width="4%">
+<col width="20%">
+<col width="20%">
+<col width="13%">
+<col width="10%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">term</th>
+<th align="right">df</th>
+<th align="right">sumsq</th>
+<th align="right">meansq</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Year</td>
+<td align="right">1</td>
+<td align="right">60,931,207</td>
+<td align="right">60,931,207</td>
+<td align="right">94.270</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Ethnicity</td>
+<td align="right">1</td>
+<td align="right">35,763,474,535</td>
+<td align="right">35,763,474,535</td>
+<td align="right">55330.000</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Location</td>
+<td align="right">2</td>
+<td align="right">4,974,084,103</td>
+<td align="right">2,487,042,052</td>
+<td align="right">3848.000</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Year:Ethnicity</td>
+<td align="right">1</td>
+<td align="right">16,522,903</td>
+<td align="right">16,522,903</td>
+<td align="right">25.560</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Year:Location</td>
+<td align="right">2</td>
+<td align="right">8,405,692</td>
+<td align="right">4,202,846</td>
+<td align="right">6.503</td>
+<td align="right">0.0031</td>
+</tr>
+<tr class="even">
+<td align="left">Ethnicity:Location</td>
+<td align="right">2</td>
+<td align="right">6,022,394,783</td>
+<td align="right">3,011,197,392</td>
+<td align="right">4659.000</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Year:Ethnicity:Location</td>
+<td align="right">2</td>
+<td align="right">15,834,332</td>
+<td align="right">7,917,166</td>
+<td align="right">12.250</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Residuals</td>
+<td align="right">50</td>
+<td align="right">32,316,192</td>
+<td align="right">646,324</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+<p>It looks like EVERYTHING is significant, so let’s look at all of the
+parameters that were in the near-significant range.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">`p.value`</span> <span class="op">&lt;</span> <span class="fl">0.1</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"estimate"</span>,</span>
+<span>                        <span class="st">"std.error"</span>,</span>
+<span>                        <span class="st">"statistic"</span><span class="op">)</span>,</span>
+<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">signif</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="st">"p.value"</span>,</span>
+<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>        align <span class="op">=</span> <span class="st">"lrrrr"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="58%">
+<col width="10%">
+<col width="11%">
+<col width="11%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">73570.0</td>
+<td align="right">477.00</td>
+<td align="right">154.200</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="even">
+<td align="left">Year</td>
+<td align="right">699.2</td>
+<td align="right">72.08</td>
+<td align="right">9.701</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="odd">
+<td align="left">EthnicityHispanic or Latino</td>
+<td align="right">-72620.0</td>
+<td align="right">674.60</td>
+<td align="right">-107.600</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="even">
+<td align="left">LocationManchester</td>
+<td align="right">-32190.0</td>
+<td align="right">646.70</td>
+<td align="right">-49.770</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="odd">
+<td align="left">LocationNashua</td>
+<td align="right">-41140.0</td>
+<td align="right">674.60</td>
+<td align="right">-60.980</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="even">
+<td align="left">Year:EthnicityHispanic or Latino</td>
+<td align="right">-612.2</td>
+<td align="right">101.90</td>
+<td align="right">-6.006</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="odd">
+<td align="left">Year:LocationManchester</td>
+<td align="right">-436.5</td>
+<td align="right">99.71</td>
+<td align="right">-4.378</td>
+<td align="right">1e-04</td>
+</tr>
+<tr class="even">
+<td align="left">Year:LocationNashua</td>
+<td align="right">-594.0</td>
+<td align="right">101.90</td>
+<td align="right">-5.827</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="odd">
+<td align="left">EthnicityHispanic or Latino:LocationManchester</td>
+<td align="right">33950.0</td>
+<td align="right">914.60</td>
+<td align="right">37.120</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="even">
+<td align="left">EthnicityHispanic or Latino:LocationNashua</td>
+<td align="right">42500.0</td>
+<td align="right">954.10</td>
+<td align="right">44.540</td>
+<td align="right">0e+00</td>
+</tr>
+<tr class="odd">
+<td align="left">Year:EthnicityHispanic or
+Latino:LocationManchester</td>
+<td align="right">507.8</td>
+<td align="right">141.00</td>
+<td align="right">3.601</td>
+<td align="right">7e-04</td>
+</tr>
+<tr class="even">
+<td align="left">Year:EthnicityHispanic or Latino:LocationNashua</td>
+<td align="right">686.1</td>
+<td align="right">144.20</td>
+<td align="right">4.759</td>
+<td align="right">0e+00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level4">
+<h4 id="summarize">Summarize<a class="anchor" aria-label="anchor" href="#summarize"></a>
+</h4>
+<p>The number of households in Hillsborough county overall grew from
+2012-2023. The number of Hispanic households was much higher in the two
+cities than in the suburban parts of the county. This difference became
+more pronounced over the decade, for two reasons. The number of Hispanic
+households grew more quickly in Nashua and Manchester than in the
+suburban areas. The number of non-Hispanic households grew more quickly
+in the suburbs than in the cities. Isn’t it nice when the visual
+patterns are corroborated by significant statistics?</p>
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

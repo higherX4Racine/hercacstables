@@ -38,7 +38,9 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/average_tract_poverty_ratio.html">Average Poverty Ratios by Tract in Racine County, WI</a></li>
     <li><a class="dropdown-item" href="articles/children_in_poverty.html">Children in Poverty</a></li>
+    <li><a class="dropdown-item" href="articles/pop-changes-in-big-oh-districts.html">pop-changes-in-big-oh-districts</a></li>
     <li><a class="dropdown-item" href="articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
+    <li><a class="dropdown-item" href="articles/set-up-your-api-key.html">Set up your API key</a></li>
   </ul>
 </li>
       </ul>
@@ -58,6 +60,8 @@
 </h1></div>
 <!-- badges: start -->
 <!-- badges: end -->
+<p>If this is your first time using <code>hercacstables</code> then you probably want to register with the Census. The Census limits the number of anonymous API queries that it receives from any one IP address. Check out <code><a href="articles/set-up-your-api-key.html">vignette("set-up-your-api-key", package = "hercacstables")</a></code>.</p>
+<p>Otherwise, welcome back!</p>
 <div class="section level2">
 <h2 id="for-the-newest-r-users">For the newest R users:<a class="anchor" aria-label="anchor" href="#for-the-newest-r-users"></a>
 </h2>
@@ -74,868 +78,487 @@
 <div class="section level2">
 <h2 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
 </h2>
-<p>The American Community Survey (ACS) from the US Census’s website returns data in a weirdly idiosyncratic way. There are many subtotals in each table. Grouping variables are organized in a tree-like, rather than tabular fashion. This package is intended to make it easy to access and use the ACS data with R.</p>
-<p>Many questions that work with Census data follow a common pattern:</p>
-<blockquote>
-<p>How did [measurement] differ among [demographic groups] and across [geographic levels] in [geographic area] during [span of time]?</p>
-</blockquote>
-<p>A <strong>Measurement</strong> is any of the huge number of things that the Census keeps track of. Measurements are arranged in tables (called “groups”) and rows. If you were drawing maps, this would be what determines the color of each area. Examples include population size (table B01001 and others), median household income (table B19013 and others), types of computers in a household (table B28001), number of vehicles used while commuting (table B08015).</p>
-<p>A <strong>Demographic Group</strong> is a subset of the population that shares specific traits. Demographic groups can be represented either by groups (common when reporting by race or ethnicity) or rows (most other cases, like age, sex, or veteran status). If you were drawing maps, you would probably have a different version of each map for each demographic grouping. Examples include the number of Hispanic girls under 5 years old (table B01001I, row 18), the median income of Asian American households (table B19013D, row 1), the number of households with no computer (table B28001, row 11), the number of vehicles used by women while commuting (table B08015, row 3).</p>
-<p>A <strong>Geographic Level</strong> is a <a href="https://www.census.gov/programs-surveys/geography/guidance.html" class="external-link">Census-defined hierarchy</a> from the whole country to small blocks. The level that you are interested in is determined by the scale of your question. If you were drawing maps, these would be the areas that appeared as different colors. Examples include congressional districts, incorporated cities, school districts, and Census tracts.</p>
-<p>A <strong>Geographic Area</strong> is a set of specific instances of one or more geographic levels. This is the full geographic scope of your question. If you were drawing maps, this would determine their scale. Examples include whole states, metropolitan areas, Census-designated places, and counties.</p>
-</div>
-<div class="section level2">
-<h2 id="the-workflow">The workflow<a class="anchor" aria-label="anchor" href="#the-workflow"></a>
-</h2>
-<ol style="list-style-type: decimal">
-<li>Identify the groups and rows that contain the data you need
-<ul>
-<li>Find potential groups by searching the <code>Universe</code> and <code>Description</code> fields of <code><a href="reference/ACS_GROUP_METADATA.html">hercacstables::ACS_GROUP_METADATA</a></code>.</li>
-<li>Identify specific variables with <code><a href="reference/ACS_VARIABLE_METADATA.html">hercacstables::ACS_VARIABLE_METADATA</a></code>: filter by the <code>Group</code> field and examine the <code>Details</code> field.</li>
-<li>Create a lookup table that maps from the Census variable name to your variables.
-<ul>
-<li>You may need several if you are pulling data from several groups.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Define the geographies that you will use
-<ul>
-<li>Use <code><a href="reference/ACS_GEOGRAPHY_METADATA.html">hercacstables::ACS_GEOGRAPHY_METADATA</a></code> for this, too!</li>
-<li>You need to know at least two levels of geography:
-<ul>
-<li>The one that you want to pull data for, your level of interest
-<ul>
-<li>This is often small, like tract or county subdivision.</li>
-</ul>
-</li>
-<li>Any and all levels that contain your level of interest
-<ul>
-<li>These will be larger, like state or county.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Create a lookup table that maps from geographic ids to meaningful names.</li>
-</ul>
-</li>
-<li>Write fetching functions that call <code><a href="reference/fetch_data.html">hercacstables::fetch_data()</a></code>
-<ul>
-<li>they will often always use the same variables (from step 1)</li>
-<li>they may need to be parameterized by geography if you’re pulling from multiple levels</li>
-<li>they should always be parameterized by year so that you can reuse them</li>
-</ul>
-</li>
-<li>Write wrangling functions that for turning fetched tables into useful ones.
-<ul>
-<li>These will probably involve using <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join()</a></code> between the fetched data and your lookup tables.</li>
-<li>You can also perform calculations like aggregating or finding remainders.</li>
-</ul>
-</li>
-<li>Run the workflow in two stages.
-<ul>
-<li>Use <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::map()</a></code> and <code><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">purrr::list_rbind()</a></code> to download all of the data into one data frame.
-<ul>
-<li>Cache that result because API calls are slow</li>
-</ul>
-</li>
-<li>Run the wrangling functions.
-<ul>
-<li>Save these results with, e.g. <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">base::saveRDS()</a></code>.</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
+<p>The American Community Survey (ACS) from the US Census’s website provides a vast amount of useful data.</p>
+<figure><img src="reference/figures/README-group-descriptions-wordcloud.png" alt="A wordcloud made from the Census’ descriptions of its ACS groups"><figcaption aria-hidden="true">
+A wordcloud made from the Census’ descriptions of its ACS groups
+</figcaption></figure><p>However, it returns those data in a weirdly idiosyncratic way. Even though the output seems tabular, the data are really organized in a tree-like fashion. This package is intended to make it easy to access and use the ACS data with R.</p>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>Let’s say you want to ask this question:</p>
-<blockquote>
-<p>How did [the number of households] differ between [Hispanic and non-Hispanic people] and across [Manchester, Nashua, and suburban areas] in [Hillsborough County, NH] during [the last 10 years]?</p>
-</blockquote>
+<p>Let’s say that you are a data intern for a <a href="https://cityofracine.org/WasteWater/Commission/" class="external-link">wastewater agency</a> in the southeastern part of Wisconsin. Your mentors have asked you to find insights from the American Community Survey.</p>
 <div class="section level3">
-<h3 id="find-the-measurement-and-demographic-groups">find the <strong>measurement</strong> and <strong>demographic groups</strong>
-<a class="anchor" aria-label="anchor" href="#find-the-measurement-and-demographic-groups"></a>
+<h3 id="specifying-your-community">Specifying your community<a class="anchor" aria-label="anchor" href="#specifying-your-community"></a>
 </h3>
-<p>First, find the variables that describe the numbers of households. One way to do this is to search <code><a href="reference/ACS_GROUP_METADATA.html">hercacstables::ACS_GROUP_METADATA</a></code> for groups whose <code>Universe</code> is “Households” and whose <code>Description</code> contains “Hispanic” or “Ethnicity.” A group’s <code>Universe</code> describes what it is measuring, often telling you the units of whatever its values are. A group’s <code>Description</code> is a phrase that summarizes what it reports.</p>
+<p>They tell you that the wastewater commission’s area of responsibility is essentially identical to the local school district’s, <a href="https://www.rusd.org" class="external-link">Racine Unified</a>.</p>
+<p>You look for geographical levels related to schools in <code><a href="reference/ACS_GEOGRAPHY_METADATA.html">hercacstables::ACS_GEOGRAPHY_METADATA</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/ACS_GROUP_METADATA.html">ACS_GROUP_METADATA</a></span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">SCHOOL_GEOGRAPHIES</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/ACS_GEOGRAPHY_METADATA.html">ACS_GEOGRAPHY_METADATA</a></span>,</span>
+<span>                                    <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"school"</span>, <span class="va">.data</span><span class="op">$</span><span class="va">`Geographic Level`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>This table tells us two things. First, he geographic level that you should examine is “school district (unified)”. Second, you also need to specify the state when you’re fetching data about it. With <code><a href="reference/fetch_data.html">hercacstables::fetch_data()</a></code>, and tools from the <a href="https://www.tidyverse.org" title="The tidyverse" class="external-link">tidyverse</a>, you can find the FIPS codes for unified school districts in Wisconsin that have the word “Racine” in them.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">RACINE_DISTRICTS</span> <span class="op">&lt;-</span> <span class="st">"NAME"</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
+<span>        variables <span class="op">=</span> <span class="va">_</span>,</span>
+<span>        year <span class="op">=</span> <span class="fl">2020</span>,                           <span class="co"># the most recent decennial</span></span>
+<span>        for_geo <span class="op">=</span> <span class="st">"school district (unified)"</span>, <span class="co"># see above</span></span>
+<span>        for_items <span class="op">=</span> <span class="st">"*"</span>,                       <span class="co"># this wildcard gets every item</span></span>
+<span>        survey_type <span class="op">=</span> <span class="st">"dec"</span>,                   <span class="co"># not actually the ACS *flex*</span></span>
+<span>        table_or_survey_code <span class="op">=</span> <span class="st">"pl"</span>,           <span class="co"># this data set is similar to ACS</span></span>
+<span>        state <span class="op">=</span> <span class="fl">55L</span>                            <span class="co"># the Badger State</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>        <span class="va">.data</span><span class="op">$</span><span class="va">ACS5</span>,</span>
-<span>        <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Universe</span>, <span class="st">"Household"</span><span class="op">)</span>,</span>
-<span>        <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Description</span>, <span class="st">"Hispanic|Ethnic"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
-<span>        <span class="st">"Group"</span>,</span>
-<span>        <span class="st">"Universe"</span>,</span>
-<span>        <span class="st">"Description"</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>        <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">NAME</span>, <span class="st">"Racine"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
+<col width="46%">
+<col width="9%">
+<col width="36%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">NAME</th>
+<th align="left">state</th>
+<th align="left">school district (unified)</th>
+<th align="right">Year</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="left">Racine School District, Wisconsin</td>
+<td align="left">55</td>
+<td align="left">12360</td>
+<td align="right">2020</td>
+</tr></tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="finding-relevant-data">Finding relevant data<a class="anchor" aria-label="anchor" href="#finding-relevant-data"></a>
+</h3>
+<p>The first thing that you could do is to check for data related to plumbing. If you were doing this without R, you might visit <a href="data.census.gov"></a> and search for “ACS plumbing”.</p>
+<div class="section level4">
+<h4 id="groups-with-relevant-data">Groups with relevant data<a class="anchor" aria-label="anchor" href="#groups-with-relevant-data"></a>
+</h4>
+<p>With <code>hercacstables</code>, you would search within its metadata about ACS groups:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">PLUMBING_GROUPS</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/ACS_GROUP_METADATA.html">ACS_GROUP_METADATA</a></span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"plumbing"</span>,          <span class="co"># search for the term "plumbing"</span></span>
+<span>              <span class="va">.data</span><span class="op">$</span><span class="va">Description</span>,  <span class="co"># within the "Description" column</span></span>
+<span>              ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># ignore capitalization</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Group</th>
 <th align="left">Universe</th>
 <th align="left">Description</th>
+<th align="left">ACS1</th>
+<th align="left">ACS5</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">B11001H</td>
-<td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
-<td align="left">Household Type (Including Living Alone) (White Alone, Not Hispanic or Latino)</td>
+<td align="left">B25016</td>
+<td align="left">Occupied housing units</td>
+<td align="left">Tenure by Plumbing Facilities by Occupants per Room</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">B11001I</td>
-<td align="left">Households with a householder who is Hispanic or Latino</td>
-<td align="left">Household Type (Including Living Alone) (Hispanic or Latino)</td>
+<td align="left">B25047</td>
+<td align="left">Housing units</td>
+<td align="left">Plumbing Facilities for All Housing Units</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">B19001H</td>
-<td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
-<td align="left">Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder)</td>
+<td align="left">B25048</td>
+<td align="left">Occupied housing units</td>
+<td align="left">Plumbing Facilities for Occupied Housing Units</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">B19001I</td>
-<td align="left">Households with a householder who is Hispanic or Latino</td>
-<td align="left">Household Income in the Past 12 Months (Hispanic or Latino Householder)</td>
+<td align="left">B25049</td>
+<td align="left">Occupied housing units</td>
+<td align="left">Tenure by Plumbing Facilities</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">B19013H</td>
-<td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
-<td align="left">Median Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder)</td>
+<td align="left">B25050</td>
+<td align="left">Occupied housing units</td>
+<td align="left">Plumbing Facilities by Occupants per Room by Year Structure Built</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">B19013I</td>
-<td align="left">Households with a householder who is Hispanic or Latino</td>
-<td align="left">Median Household Income in the Past 12 Months (Hispanic or Latino Householder)</td>
-</tr>
-<tr class="odd">
-<td align="left">B19025H</td>
-<td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
-<td align="left">Aggregate Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder)</td>
-</tr>
-<tr class="even">
-<td align="left">B19025I</td>
-<td align="left">Households with a householder who is Hispanic or Latino</td>
-<td align="left">Aggregate Household Income in the Past 12 Months (Hispanic or Latino Householder)</td>
-</tr>
-<tr class="odd">
-<td align="left">B19037H</td>
-<td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
-<td align="left">Age of Householder by Household Income in the Past 12 Months (White Alone, Not Hispanic or Latino Householder)</td>
-</tr>
-<tr class="even">
-<td align="left">B19037I</td>
-<td align="left">Households with a householder who is Hispanic or Latino</td>
-<td align="left">Age of Householder by Household Income in the Past 12 Months (Hispanic or Latino Householder)</td>
-</tr>
-<tr class="odd">
-<td align="left">B22005H</td>
-<td align="left">Households with a householder who is White alone, not Hispanic or Latino</td>
-<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (White Alone, Not Hispanic or Latino)</td>
-</tr>
-<tr class="even">
-<td align="left">B22005I</td>
-<td align="left">Households with a householder who is Hispanic or Latino</td>
-<td align="left">Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino)</td>
+<td align="left">B99259</td>
+<td align="left">Housing units</td>
+<td align="left">Allocation of Plumbing Facilities</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
-<p>It looks like our best bet is group “B11001I.” It is likely that group “B11001” contains counts of households of any race. The first row of most groups is the total value across any demographic subset that it keeps track of. Since our question does not ask about different household types, we probably just need row one from groups “B11001” and “B11001I.” This gives us a good opportunity to document the ethnicities counted in each.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">HOUSEHOLD_GROUPS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B11001"</span>, <span class="st">"B11001I"</span><span class="op">)</span></span>
-<span><span class="va">household_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/ACS_VARIABLE_METADATA.html">ACS_VARIABLE_METADATA</a></span> <span class="op">|&gt;</span></span>
+<p>It appears that the keyword “plumbing” appears in 6 different ACS groups.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="specific-variables-about-plumbing">Specific variables about plumbing<a class="anchor" aria-label="anchor" href="#specific-variables-about-plumbing"></a>
+</h3>
+<p>Let’s say that “Tenure<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Whether the occupants rent or own, not if they can’t be fired.&lt;/p&gt;"><sup>1</sup></a> by plumbing facilities” jumps out to you as potentially interesting.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">GROUP</span> <span class="op">&lt;-</span> <span class="st">"B25049"</span></span></code></pre></div>
+<p>There is metadata in <code>hercacstables</code> about variables, too. You can use search it to see what specific data is reported by group B25049.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">PLUMBING_VARIABLES</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/ACS_VARIABLE_METADATA.html">ACS_VARIABLE_METADATA</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Dataset</span> <span class="op">==</span> <span class="st">"ACS1"</span>,</span>
-<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">HOUSEHOLD_GROUPS</span>,</span>
-<span>                  <span class="va">.data</span><span class="op">$</span><span class="va">Index</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        Ethnicity <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_match.html" class="external-link">case_match</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Group</span>,</span>
-<span>                                      <span class="st">"B11001"</span> <span class="op">~</span> <span class="st">"All"</span>,</span>
-<span>                                      <span class="st">"B11001I"</span> <span class="op">~</span> <span class="st">"Hispanic or Latino"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"Index"</span>, <span class="st">"Variable"</span>, <span class="st">"Ethnicity"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">household_variables</span>,</span>
-<span>             align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lrll"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Dataset</span> <span class="op">==</span> <span class="st">"ACS1"</span>, <span class="co"># use the 1-year dataset only</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Group</span> <span class="op">==</span> <span class="va">GROUP</span>     <span class="co"># pull all of the variables for this group</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
 <thead><tr class="header">
+<th align="left">Dataset</th>
 <th align="left">Group</th>
 <th align="right">Index</th>
 <th align="left">Variable</th>
-<th align="left">Ethnicity</th>
+<th align="left">Details</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">B11001I</td>
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
 <td align="right">1</td>
-<td align="left">B11001I_001E</td>
-<td align="left">Hispanic or Latino</td>
+<td align="left">B25049_001E</td>
+<td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">B11001</td>
-<td align="right">1</td>
-<td align="left">B11001_001E</td>
-<td align="left">All</td>
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">2</td>
+<td align="left">B25049_002E</td>
+<td align="left">Owner occupied</td>
+</tr>
+<tr class="odd">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">3</td>
+<td align="left">B25049_003E</td>
+<td align="left">Owner occupied , Complete plumbing facilities</td>
+</tr>
+<tr class="even">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">4</td>
+<td align="left">B25049_004E</td>
+<td align="left">Owner occupied , Lacking plumbing facilities</td>
+</tr>
+<tr class="odd">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">5</td>
+<td align="left">B25049_005E</td>
+<td align="left">Renter occupied</td>
+</tr>
+<tr class="even">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">6</td>
+<td align="left">B25049_006E</td>
+<td align="left">Renter occupied , Complete plumbing facilities</td>
+</tr>
+<tr class="odd">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">7</td>
+<td align="left">B25049_007E</td>
+<td align="left">Renter occupied , Lacking plumbing facilities</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section level3">
-<h3 id="find-the-geographic-levels-and-geographic-area">find the <strong>geographic levels</strong> and <strong>geographic area</strong>
-<a class="anchor" aria-label="anchor" href="#find-the-geographic-levels-and-geographic-area"></a>
+<h3 id="unpacking-variable-details">Unpacking variable details<a class="anchor" aria-label="anchor" href="#unpacking-variable-details"></a>
 </h3>
-<p>The next step is to <a href="https://www.census.gov/library/reference/code-lists/ansi.html" class="external-link">find the codes</a> that are related to the geographic areas and levels. We need to know the FIPS code for the state, county, and two cities. We also need to know that the geographic level that we’re working with is “county subdivision.” As the last part of this step, we define a lookup table to translate from the FIPS codes for the different geographies to a human-readable name.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">NEW_HAMPSHIRE</span> <span class="op">&lt;-</span> <span class="st">"33"</span></span>
-<span><span class="va">COUNTY_LEVEL</span> <span class="op">&lt;-</span> <span class="st">"county"</span></span>
-<span><span class="va">HILLSBOROUGH_CO</span> <span class="op">&lt;-</span> <span class="st">"011"</span></span>
-<span><span class="va">CITY_LEVEL</span> <span class="op">&lt;-</span> <span class="st">"county subdivision"</span></span>
-<span><span class="va">MANCHESTER_NH</span> <span class="op">&lt;-</span> <span class="st">"45140"</span></span>
-<span><span class="va">NASHUA_NH</span> <span class="op">&lt;-</span> <span class="st">"50260"</span></span>
-<span></span>
-<span><span class="va">geography_definitions</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>    <span class="op">~</span> <span class="va">FIPS</span>,          <span class="op">~</span> <span class="va">Location</span>,</span>
-<span>    <span class="va">HILLSBOROUGH_CO</span>, <span class="st">"County-wide"</span>,</span>
-<span>    <span class="va">MANCHESTER_NH</span>,   <span class="st">"Manchester"</span>,</span>
-<span>    <span class="va">NASHUA_NH</span>,       <span class="st">"Nashua"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">geography_definitions</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">FIPS</th>
-<th align="left">Location</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">011</td>
-<td align="left">County-wide</td>
-</tr>
-<tr class="even">
-<td align="left">45140</td>
-<td align="left">Manchester</td>
-</tr>
-<tr class="odd">
-<td align="left">50260</td>
-<td align="left">Nashua</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="find-the-time-interval">find the <strong>time interval</strong>
-<a class="anchor" aria-label="anchor" href="#find-the-time-interval"></a>
-</h3>
-<p>The last ten years available from the Census are, as of 2024-12-12, 2013 through 2023. We can use 1-year estimates for our question because we are dealing with geographic levels that have more than 50,000 people in them. That gives us more year-to-year precision, although it does mean that we have to exclude 2020. There are no 1-year ACS estimates for 2020 because of the COVID-19 pandemic.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">YEARS_INCLUDED</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">TEN_YEARS_AGO</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="define-functions-that-use-the-api">define functions that use the API<a class="anchor" aria-label="anchor" href="#define-functions-that-use-the-api"></a>
-</h3>
-<p>We will need to make multiple calls to the API, so it makes sense to create some reusable functions. We need two calls per year. The first one will pull the county-wide household counts. The second one will pull the household counts for each city. Each function should have “year” as its argument so that we can reuse it.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">generalized_fetch_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.year</span>, <span class="va">.level</span>, <span class="va">.areas</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
-<span>        variables <span class="op">=</span> <span class="va">household_variables</span><span class="op">$</span><span class="va">Variable</span>,</span>
-<span>        year <span class="op">=</span> <span class="va">.year</span>,</span>
-<span>        survey_type <span class="op">=</span> <span class="st">"acs"</span>,</span>
-<span>        table_or_survey_code <span class="op">=</span> <span class="st">"acs1"</span>,</span>
-<span>        for_geo <span class="op">=</span> <span class="va">.level</span>,</span>
-<span>        for_items <span class="op">=</span> <span class="va">.areas</span>,</span>
-<span>        state <span class="op">=</span> <span class="va">NEW_HAMPSHIRE</span>,</span>
-<span>        <span class="va">...</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">fetch_county_households</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="fu">generalized_fetch_data</span><span class="op">(</span><span class="va">.year</span>,</span>
-<span>                           <span class="st">"county"</span>,</span>
-<span>                           <span class="va">HILLSBOROUGH_CO</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">fetch_city_households</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="fu">generalized_fetch_data</span><span class="op">(</span><span class="va">.year</span>,</span>
-<span>                           <span class="va">CITY_LEVEL</span>,</span>
-<span>                           <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">MANCHESTER_NH</span>,</span>
-<span>                             <span class="va">NASHUA_NH</span><span class="op">)</span>,</span>
-<span>                           county <span class="op">=</span> <span class="va">HILLSBOROUGH_CO</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">fetch_example_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
-<span>        <span class="fu">fetch_county_households</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span>,</span>
-<span>        <span class="fu">fetch_city_households</span><span class="op">(</span><span class="va">.year</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="fetch-the-data">fetch the data<a class="anchor" aria-label="anchor" href="#fetch-the-data"></a>
-</h3>
-<p>This is where <code>hercacstables</code> starts to come into its own. We define the fetching process as few times as possible, just tweaking it for related cases. This leads to a lot of code reuse and efficiency, especially for reports that you just need to update once a year.</p>
+<p>You can see that group B25049 reports the number of households that have, or do not have, plumbing facilities. It further breaks those households down into renters and owner-occupants. The raw metadata from the Census, and in <code><a href="reference/ACS_VARIABLE_METADATA.html">hercacstables::ACS_VARIABLE_METADATA</a></code>, packs all of that information into the “Details” column.</p>
+<p>It would be more useful if we actually had separate columns for the types of tenure and plumbing facilities. We also don’t need row 1, which is the total number of households, or rows 2 and 5, which report subtotals by tenure. The unique data are in rows 2, 3, 6, and 7. The best way to do this is to use <code><a href="reference/unpack_group_details.html">hercacstables::unpack_group_details()</a></code> in combination with tools from the <a href="https://www.tidyverse.org" title="The tidyverse" class="external-link">tidyverse</a></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">raw_households</span> <span class="op">&lt;-</span> <span class="va">YEARS_INCLUDED</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">fetch_example_data</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">list_rbind</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">raw_households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Value"</span><span class="op">)</span>,</span>
-<span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">PLUMBING_VARIABLES</span> <span class="op">&lt;-</span> <span class="va">GROUP</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/unpack_group_details.html">unpack_group_details</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Dataset</span> <span class="op">==</span> <span class="st">"ACS1"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>        align <span class="op">=</span> <span class="st">"lllrrrl"</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span></span>
+<span>        Tenure <span class="op">=</span> <span class="st">"A"</span>,</span>
+<span>        Plumbing <span class="op">=</span> <span class="st">"B"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">if_all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Tenure"</span>, <span class="st">"Plumbing"</span><span class="op">)</span>,</span>
+<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="10%">
-<col width="12%">
-<col width="13%">
-<col width="10%">
-<col width="13%">
 <col width="9%">
-<col width="30%">
+<col width="8%">
+<col width="15%">
+<col width="20%">
+<col width="35%">
 </colgroup>
 <thead><tr class="header">
+<th align="left">Dataset</th>
+<th align="left">Group</th>
+<th align="right">Index</th>
+<th align="left">Variable</th>
+<th align="left">Tenure</th>
+<th align="left">Plumbing</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">3</td>
+<td align="left">B25049_003E</td>
+<td align="left">Owner occupied</td>
+<td align="left">Complete plumbing facilities</td>
+</tr>
+<tr class="even">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">4</td>
+<td align="left">B25049_004E</td>
+<td align="left">Owner occupied</td>
+<td align="left">Lacking plumbing facilities</td>
+</tr>
+<tr class="odd">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">6</td>
+<td align="left">B25049_006E</td>
+<td align="left">Renter occupied</td>
+<td align="left">Complete plumbing facilities</td>
+</tr>
+<tr class="even">
+<td align="left">ACS1</td>
+<td align="left">B25049</td>
+<td align="right">7</td>
+<td align="left">B25049_007E</td>
+<td align="left">Renter occupied</td>
+<td align="left">Lacking plumbing facilities</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="fetch-data">Fetch data<a class="anchor" aria-label="anchor" href="#fetch-data"></a>
+</h3>
+<p>We are finally ready to pull a recent history of access to plumbing in eastern Racine County. Once again, we’ll use <code><a href="reference/fetch_data.html">hercacstables::fetch_data()</a></code> and the <a href="https://www.tidyverse.org" title="The tidyverse" class="external-link">tidyverse</a>.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">RAW_RACINE_PLUMBING</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2005</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="fl">2023</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
+<span>        \<span class="op">(</span><span class="va">.year</span><span class="op">)</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
+<span>            variables <span class="op">=</span> <span class="va">PLUMBING_VARIABLES</span><span class="op">$</span><span class="va">Variable</span>,</span>
+<span>            year <span class="op">=</span> <span class="va">.year</span>,</span>
+<span>            for_geo <span class="op">=</span> <span class="st">"school district (unified)"</span>,</span>
+<span>            for_items <span class="op">=</span> <span class="st">"12360"</span>,</span>
+<span>            survey_type <span class="op">=</span> <span class="st">"acs"</span>,</span>
+<span>            table_or_survey_code <span class="op">=</span> <span class="st">"acs1"</span>,</span>
+<span>            state <span class="op">=</span> <span class="fl">55L</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/list_c.html" class="external-link">list_rbind</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
 <th align="left">state</th>
-<th align="left">county</th>
+<th align="left">school district (unified)</th>
 <th align="left">Group</th>
 <th align="right">Index</th>
 <th align="right">Value</th>
 <th align="right">Year</th>
-<th align="left">county subdivision</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">33</td>
-<td align="left">011</td>
-<td align="left">B11001I</td>
-<td align="right">1</td>
-<td align="right">11,255</td>
-<td align="right">2023</td>
-<td align="left">NA</td>
+<td align="left">55</td>
+<td align="left">12360</td>
+<td align="left">B25049</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">2008</td>
 </tr>
 <tr class="even">
-<td align="left">33</td>
-<td align="left">011</td>
-<td align="left">B11001</td>
-<td align="right">1</td>
-<td align="right">170,761</td>
-<td align="right">2023</td>
-<td align="left">NA</td>
+<td align="left">55</td>
+<td align="left">12360</td>
+<td align="left">B25049</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">2015</td>
 </tr>
 <tr class="odd">
-<td align="left">33</td>
-<td align="left">011</td>
-<td align="left">B11001I</td>
-<td align="right">1</td>
-<td align="right">4,511</td>
-<td align="right">2023</td>
-<td align="left">45140</td>
+<td align="left">55</td>
+<td align="left">12360</td>
+<td align="left">B25049</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">2016</td>
 </tr>
 <tr class="even">
-<td align="left">33</td>
-<td align="left">011</td>
-<td align="left">B11001</td>
-<td align="right">1</td>
-<td align="right">50,053</td>
-<td align="right">2023</td>
-<td align="left">45140</td>
-</tr>
-<tr class="odd">
-<td align="left">33</td>
-<td align="left">011</td>
-<td align="left">B11001I</td>
-<td align="right">1</td>
-<td align="right">4,770</td>
-<td align="right">2023</td>
-<td align="left">50260</td>
-</tr>
-<tr class="even">
-<td align="left">33</td>
-<td align="left">011</td>
-<td align="left">B11001</td>
-<td align="right">1</td>
-<td align="right">36,451</td>
-<td align="right">2023</td>
-<td align="left">50260</td>
+<td align="left">55</td>
+<td align="left">12360</td>
+<td align="left">B25049</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">2010</td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section level3">
-<h3 id="wrangle-the-data">wrangle the data<a class="anchor" aria-label="anchor" href="#wrangle-the-data"></a>
-</h3>
-<p>The raw data are not very usable. Several of the columns still have codes, rather than human-readable values. The value column also does not explicitly state values for the suburban or for non-Hispanic folks. The “wrangling” process is where we addressing these drawbacks.</p>
-<div class="section level4">
-<h4 id="map-codes-to-words">map codes to words<a class="anchor" aria-label="anchor" href="#map-codes-to-words"></a>
-</h4>
-<p>We should get rid of the columns that are Census database codes and create columns about location and demographics that have human-readable values.</p>
+<p>The data in <code>RAW_RACINE_PLUMBING</code> don’t make much sense without the information in <code>PLUMBING_VARIABLES</code>. Fortunately, we can use the <a href="https://www.tidyverse.org" title="The tidyverse" class="external-link">tidyverse</a> to join the two tables together.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">households</span> <span class="op">&lt;-</span> <span class="va">raw_households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
-<span>        <span class="va">household_variables</span>,</span>
+<code class="sourceCode R"><span><span class="va">RACINE_PLUMBING</span> <span class="op">&lt;-</span> <span class="va">PLUMBING_VARIABLES</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span></span>
+<span>        <span class="va">RAW_RACINE_PLUMBING</span>,</span>
 <span>        by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"Index"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        FIPS <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/coalesce.html" class="external-link">coalesce</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`county subdivision`</span>,</span>
-<span>                               <span class="va">.data</span><span class="op">$</span><span class="va">county</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
-<span>        <span class="va">geography_definitions</span>,</span>
-<span>        by <span class="op">=</span> <span class="st">"FIPS"</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
-<span>        <span class="st">"Location"</span>,</span>
 <span>        <span class="st">"Year"</span>,</span>
-<span>        <span class="st">"Ethnicity"</span>,</span>
+<span>        <span class="st">"Tenure"</span>,</span>
+<span>        <span class="st">"Plumbing"</span>,</span>
 <span>        Households <span class="op">=</span> <span class="st">"Value"</span></span>
-<span>    <span class="op">)</span></span>
-<span></span>
-<span><span class="va">households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Households"</span><span class="op">)</span>,</span>
-<span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>        align <span class="op">=</span> <span class="st">"rllr"</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="right">Location</th>
-<th align="left">Year</th>
-<th align="left">Ethnicity</th>
-<th align="right">Households</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">County-wide</td>
-<td align="left">2023</td>
-<td align="left">Hispanic or Latino</td>
-<td align="right">11,255</td>
-</tr>
-<tr class="even">
-<td align="right">County-wide</td>
-<td align="left">2023</td>
-<td align="left">All</td>
-<td align="right">170,761</td>
-</tr>
-<tr class="odd">
-<td align="right">Manchester</td>
-<td align="left">2023</td>
-<td align="left">Hispanic or Latino</td>
-<td align="right">4,511</td>
-</tr>
-<tr class="even">
-<td align="right">Manchester</td>
-<td align="left">2023</td>
-<td align="left">All</td>
-<td align="right">50,053</td>
-</tr>
-<tr class="odd">
-<td align="right">Nashua</td>
-<td align="left">2023</td>
-<td align="left">Hispanic or Latino</td>
-<td align="right">4,770</td>
-</tr>
-<tr class="even">
-<td align="right">Nashua</td>
-<td align="left">2023</td>
-<td align="left">All</td>
-<td align="right">36,451</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level4">
-<h4 id="compute-implicit-values">compute implicit values<a class="anchor" aria-label="anchor" href="#compute-implicit-values"></a>
-</h4>
-<p>Now that the columns are human-readable, we can compute the values that we are actually interested in. That computation involves subtracting either the cities’ households from the county’s, or the number of Hispanic households from the total number of households. This task turns up very frequently when dealing with Census data, so the package includes a helper function to do it for you: <code><a href="reference/subtract_parts_from_whole.html">hercacstables::subtract_parts_from_whole()</a></code>. That function does not remove the rows that contain the all-groups category. In our case, we must remove them so all of the calculations come out correctly.</p>
+<p><code>RACINE_PLUMBING</code> has 72 rows, which is too many to show in a README. Let’s just look at how the number of homes without plumbing has changed over the years of the ACS.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">households</span> <span class="op">&lt;-</span> <span class="va">households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/subtract_parts_from_whole.html">subtract_parts_from_whole</a></span><span class="op">(</span></span>
-<span>        grouping_column <span class="op">=</span> <span class="st">"Location"</span>,</span>
-<span>        value_column <span class="op">=</span> <span class="st">"Households"</span>,</span>
-<span>        whole_name <span class="op">=</span> <span class="st">"County-wide"</span>,</span>
-<span>        part_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Manchester"</span>, <span class="st">"Nashua"</span><span class="op">)</span>,</span>
-<span>        remainder_name <span class="op">=</span> <span class="st">"Suburbs"</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
-<span>        <span class="op">!</span><span class="st">"County-wide"</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/subtract_parts_from_whole.html">subtract_parts_from_whole</a></span><span class="op">(</span></span>
-<span>        grouping_column <span class="op">=</span> <span class="st">"Ethnicity"</span>,</span>
-<span>        value_column <span class="op">=</span> <span class="st">"Households"</span>,</span>
-<span>        whole_name <span class="op">=</span> <span class="st">"All"</span>,</span>
-<span>        part_names <span class="op">=</span> <span class="st">"Hispanic or Latino"</span>,</span>
-<span>        remainder_name <span class="op">=</span> <span class="st">"Not Hispanic or Latino"</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
-<span>        <span class="op">!</span><span class="st">"All"</span></span>
-<span>    <span class="op">)</span></span>
-<span></span>
-<span><span class="va">households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">==</span> <span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Households"</span><span class="op">)</span>,</span>
-<span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>        align <span class="op">=</span> <span class="st">"lrlr"</span></span>
-<span>    <span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">Year</th>
-<th align="right">Location</th>
-<th align="left">Ethnicity</th>
-<th align="right">Households</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">2023</td>
-<td align="right">Manchester</td>
-<td align="left">Hispanic or Latino</td>
-<td align="right">4,511</td>
-</tr>
-<tr class="even">
-<td align="left">2023</td>
-<td align="right">Manchester</td>
-<td align="left">Not Hispanic or Latino</td>
-<td align="right">45,542</td>
-</tr>
-<tr class="odd">
-<td align="left">2023</td>
-<td align="right">Nashua</td>
-<td align="left">Hispanic or Latino</td>
-<td align="right">4,770</td>
-</tr>
-<tr class="even">
-<td align="left">2023</td>
-<td align="right">Nashua</td>
-<td align="left">Not Hispanic or Latino</td>
-<td align="right">31,681</td>
-</tr>
-<tr class="odd">
-<td align="left">2023</td>
-<td align="right">Suburbs</td>
-<td align="left">Hispanic or Latino</td>
-<td align="right">1,974</td>
-</tr>
-<tr class="even">
-<td align="left">2023</td>
-<td align="right">Suburbs</td>
-<td align="left">Not Hispanic or Latino</td>
-<td align="right">82,283</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section level3">
-<h3 id="answer-the-question">Answer the question<a class="anchor" aria-label="anchor" href="#answer-the-question"></a>
-</h3>
-<p>Now we can finally look at trends in number of households in Hillsborough County, NH, comparing between Hispanic and non-Hispanic households among Manchester, Nashua, and the suburbs.</p>
-<div class="section level4">
-<h4 id="visualize">visualize<a class="anchor" aria-label="anchor" href="#visualize"></a>
-</h4>
-<p>The first step is to make some graphs. These data are 4-dimensional because they involve time, location, ethnicity, and number of households. That means we’ll need more than one graph. It looked from the tables above that the number of Hispanic households is much lower than non-Hispanic households in all three locations. Let’s make a two-panel graph, where each panel shows one ethnicity. That way they can have separate y axes. Both graphs will have time on the x-axis, number of households on the y, and designate location with the color of points and lines.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
-<span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>            x <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Year</span>,</span>
-<span>            y <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Households</span>,</span>
-<span>            color <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Location</span>,</span>
-<span>            group <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Location</span></span>
-<span>        <span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
-<span>        linewidth <span class="op">=</span> <span class="fl">2</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span></span>
-<span>        size <span class="op">=</span> <span class="fl">5</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span></span>
-<span>        name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>        breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_width.html" class="external-link">breaks_width</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>,</span>
-<span>        minor_breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_width.html" class="external-link">breaks_width</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span></span>
-<span>        name <span class="op">=</span> <span class="st">"Number of households"</span>,</span>
-<span>        limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
-<span>        labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_d</a></span><span class="op">(</span></span>
-<span>        name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>        guide <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span></span>
-<span>        rows <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Ethnicity</span><span class="op">)</span>,</span>
-<span>        scales <span class="op">=</span> <span class="st">"free_y"</span></span>
-<span>    <span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-plot-the-results-1.png" width="100%"></p>
-<p>It looks like the number of households is growing, with non-Hispanic households increasing in the suburbs and Hispanic households increasing in the cities.</p>
-</div>
-<div class="section level4">
-<h4 id="analyze">analyze<a class="anchor" aria-label="anchor" href="#analyze"></a>
-</h4>
-<p>Let’s test this with an ANCOVA. We’ll subtract 2013 from the year so that the intercept estimate gives us the value in 2013, not AD 0.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">&lt;-</span> <span class="va">households</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        Year <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Year</span> <span class="op">-</span> <span class="va">TEN_YEARS_AGO</span>,</span>
-<span>        Location <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Location</span>,</span>
-<span>                          levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Suburbs"</span>,</span>
-<span>                                     <span class="st">"Manchester"</span>,</span>
-<span>                                     <span class="st">"Nashua"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>        Ethnicity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Ethnicity</span>,</span>
-<span>                           levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Not Hispanic or Latino"</span>,</span>
-<span>                                      <span class="st">"Hispanic or Latino"</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span></span>
-<span>        <span class="va">Households</span> <span class="op">~</span> <span class="va">Year</span> <span class="op">*</span> <span class="va">Ethnicity</span> <span class="op">*</span> <span class="va">Location</span>,</span>
-<span>        data <span class="op">=</span> <span class="va">_</span></span>
-<span>    <span class="op">)</span></span></code></pre></div>
-<p>I always like to look at the ANOVA table first to get a 10,000 meter view before I try to interpret specific parameters.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/stats/anova.html" class="external-link">anova</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sumsq"</span>,</span>
-<span>                        <span class="st">"meansq"</span><span class="op">)</span>,</span>
-<span>                      <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html" class="external-link">label_comma</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="st">"statistic"</span>,</span>
-<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">signif</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="st">"p.value"</span>,</span>
-<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>        align <span class="op">=</span> <span class="st">"lrrrrr"</span></span>
-<span>    <span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="30%">
-<col width="6%">
-<col width="19%">
-<col width="19%">
-<col width="13%">
-<col width="10%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">term</th>
-<th align="right">df</th>
-<th align="right">sumsq</th>
-<th align="right">meansq</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Year</td>
-<td align="right">1</td>
-<td align="right">60,931,207</td>
-<td align="right">60,931,207</td>
-<td align="right">94.270</td>
-<td align="right">0.0000</td>
-</tr>
-<tr class="even">
-<td align="left">Ethnicity</td>
-<td align="right">1</td>
-<td align="right">35,763,474,535</td>
-<td align="right">35,763,474,535</td>
-<td align="right">55330.000</td>
-<td align="right">0.0000</td>
-</tr>
-<tr class="odd">
-<td align="left">Location</td>
-<td align="right">2</td>
-<td align="right">4,974,084,103</td>
-<td align="right">2,487,042,052</td>
-<td align="right">3848.000</td>
-<td align="right">0.0000</td>
-</tr>
-<tr class="even">
-<td align="left">Year:Ethnicity</td>
-<td align="right">1</td>
-<td align="right">16,522,903</td>
-<td align="right">16,522,903</td>
-<td align="right">25.560</td>
-<td align="right">0.0000</td>
-</tr>
-<tr class="odd">
-<td align="left">Year:Location</td>
-<td align="right">2</td>
-<td align="right">8,405,692</td>
-<td align="right">4,202,846</td>
-<td align="right">6.503</td>
-<td align="right">0.0031</td>
-</tr>
-<tr class="even">
-<td align="left">Ethnicity:Location</td>
-<td align="right">2</td>
-<td align="right">6,022,394,783</td>
-<td align="right">3,011,197,392</td>
-<td align="right">4659.000</td>
-<td align="right">0.0000</td>
-</tr>
-<tr class="odd">
-<td align="left">Year:Ethnicity:Location</td>
-<td align="right">2</td>
-<td align="right">15,834,332</td>
-<td align="right">7,917,166</td>
-<td align="right">12.250</td>
-<td align="right">0.0000</td>
-</tr>
-<tr class="even">
-<td align="left">Residuals</td>
-<td align="right">50</td>
-<td align="right">32,316,192</td>
-<td align="right">646,324</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-</tr>
-</tbody>
-</table>
-<p>It looks like EVERYTHING is significant, so let’s look at all of the parameters that were in the near-significant range.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">NO_PLUMBING</span> <span class="op">&lt;-</span> <span class="va">RACINE_PLUMBING</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>        <span class="va">.data</span><span class="op">$</span><span class="va">`p.value`</span> <span class="op">&lt;</span> <span class="fl">0.1</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Plumbing</span> <span class="op">==</span> <span class="st">"Lacking plumbing facilities"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"estimate"</span>,</span>
-<span>                        <span class="st">"std.error"</span>,</span>
-<span>                        <span class="st">"statistic"</span><span class="op">)</span>,</span>
-<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">signif</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">across</a></span><span class="op">(</span><span class="st">"p.value"</span>,</span>
-<span>                      \<span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">.</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
+<span>        <span class="st">"Year"</span>,</span>
+<span>        <span class="st">"Tenure"</span>,</span>
+<span>        <span class="st">"Households"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>        align <span class="op">=</span> <span class="st">"lrrrr"</span></span>
+<span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span></span>
+<span>        names_from <span class="op">=</span> <span class="st">"Tenure"</span>,</span>
+<span>        values_from <span class="op">=</span> <span class="st">"Households"</span>,</span>
+<span>        values_fill <span class="op">=</span> <span class="cn">NA</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">NO_PLUMBING</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<colgroup>
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
-</colgroup>
 <thead><tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">std.error</th>
-<th align="right">statistic</th>
-<th align="right">p.value</th>
+<th align="right">Year</th>
+<th align="right">Owner occupied</th>
+<th align="right">Renter occupied</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">74270.0</td>
-<td align="right">417.80</td>
-<td align="right">177.800</td>
-<td align="right">0e+00</td>
+<td align="right">2005</td>
+<td align="right">111</td>
+<td align="right">131</td>
 </tr>
 <tr class="even">
-<td align="left">Year</td>
-<td align="right">699.2</td>
-<td align="right">72.08</td>
-<td align="right">9.701</td>
-<td align="right">0e+00</td>
+<td align="right">2006</td>
+<td align="right">49</td>
+<td align="right">127</td>
 </tr>
 <tr class="odd">
-<td align="left">EthnicityHispanic or Latino</td>
-<td align="right">-73240.0</td>
-<td align="right">590.90</td>
-<td align="right">-123.900</td>
-<td align="right">0e+00</td>
+<td align="right">2007</td>
+<td align="right">50</td>
+<td align="right">24</td>
 </tr>
 <tr class="even">
-<td align="left">LocationManchester</td>
-<td align="right">-32620.0</td>
-<td align="right">565.70</td>
-<td align="right">-57.670</td>
-<td align="right">0e+00</td>
+<td align="right">2008</td>
+<td align="right">0</td>
+<td align="right">59</td>
 </tr>
 <tr class="odd">
-<td align="left">LocationNashua</td>
-<td align="right">-41730.0</td>
-<td align="right">590.90</td>
-<td align="right">-70.620</td>
-<td align="right">0e+00</td>
+<td align="right">2009</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="left">Year:EthnicityHispanic or Latino</td>
-<td align="right">-612.2</td>
-<td align="right">101.90</td>
-<td align="right">-6.006</td>
-<td align="right">0e+00</td>
+<td align="right">2010</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="left">Year:LocationManchester</td>
-<td align="right">-436.5</td>
-<td align="right">99.71</td>
-<td align="right">-4.378</td>
-<td align="right">1e-04</td>
+<td align="right">2011</td>
+<td align="right">74</td>
+<td align="right">72</td>
 </tr>
 <tr class="even">
-<td align="left">Year:LocationNashua</td>
-<td align="right">-594.0</td>
-<td align="right">101.90</td>
-<td align="right">-5.827</td>
-<td align="right">0e+00</td>
+<td align="right">2012</td>
+<td align="right">35</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="left">EthnicityHispanic or Latino:LocationManchester</td>
-<td align="right">34460.0</td>
-<td align="right">800.00</td>
-<td align="right">43.080</td>
-<td align="right">0e+00</td>
+<td align="right">2013</td>
+<td align="right">92</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="left">EthnicityHispanic or Latino:LocationNashua</td>
-<td align="right">43180.0</td>
-<td align="right">835.60</td>
-<td align="right">51.680</td>
-<td align="right">0e+00</td>
+<td align="right">2014</td>
+<td align="right">82</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="left">Year:EthnicityHispanic or Latino:LocationManchester</td>
-<td align="right">507.8</td>
-<td align="right">141.00</td>
-<td align="right">3.601</td>
-<td align="right">7e-04</td>
+<td align="right">2015</td>
+<td align="right">0</td>
+<td align="right">37</td>
 </tr>
 <tr class="even">
-<td align="left">Year:EthnicityHispanic or Latino:LocationNashua</td>
-<td align="right">686.1</td>
-<td align="right">144.20</td>
-<td align="right">4.759</td>
-<td align="right">0e+00</td>
+<td align="right">2016</td>
+<td align="right">0</td>
+<td align="right">36</td>
+</tr>
+<tr class="odd">
+<td align="right">2017</td>
+<td align="right">273</td>
+<td align="right">109</td>
+</tr>
+<tr class="even">
+<td align="right">2018</td>
+<td align="right">0</td>
+<td align="right">78</td>
+</tr>
+<tr class="odd">
+<td align="right">2019</td>
+<td align="right">48</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">2021</td>
+<td align="right">117</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">2022</td>
+<td align="right">0</td>
+<td align="right">85</td>
+</tr>
+<tr class="even">
+<td align="right">2023</td>
+<td align="right">59</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section level4">
-<h4 id="summarize">summarize<a class="anchor" aria-label="anchor" href="#summarize"></a>
-</h4>
-<p>The number of households in Hillsborough county overall grew from 2013-2023. The number of Hispanic households was much higher in the two cities than in the suburban parts of the county. This difference became more pronounced over the decade, for two reasons. The number of Hispanic households grew more quickly in Nashua and Manchester than in the suburban areas. The number of non-Hispanic households grew more quickly in the suburbs than in the cities. Isn’t it nice when the visual patterns are corroborated by significant statistics?</p>
 </div>
 </div>
-</div>
-</div>
+
+
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">

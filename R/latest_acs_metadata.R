@@ -15,10 +15,14 @@ latest_acs_metadata <- function(information_type) {
 
     .RAW_ACS_GROUP_METADATA <- tibble::tibble(
         .year_span = c(1L, 5L),
-        .year = .this_year - c(1L, 2L),
         .info_type = information_type
     ) |>
         dplyr::mutate(
+            .year = purrr::map_int(.data$.year_span,
+                                   \(.ys) most_recent_vintage(
+                                       "acs",
+                                       paste0("acs", .ys)
+                    )),
             Metadata = purrr::pmap(dplyr::pick(tidyselect::everything()),
                                    fetch_metadata_table),
             Dataset = paste0("ACS", .data$.year_span)

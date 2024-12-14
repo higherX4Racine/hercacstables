@@ -19,10 +19,6 @@ knitr::opts_chunk$set(
 
 ## Welcome
 
-If this is your first time using `hercacstables` then you probably want to
-[register with the Census](#set-up-your-api-key).
-Otherwise, welcome back!
-
 This package helps R users to access data from the United States Census Bureau,
 especially its American Community Survey.
 
@@ -50,367 +46,523 @@ Census variables.
 You can then use database-style joins to connect the concepts to the values that
 you pull from the API.
 
-## Worked example
+Many questions that work with Census data follow a common pattern:
 
-If you want to use the Census API then you probably have a real-world question
-that you think the data will help you to answer.
-For example, you might ask
+> How did [measurement] differ among [demographic groups] and across
+[geographic levels] in [geographic area] during [span of time]?
 
-> **How have populations changed in Ohio's four largest school districts?**
+A **Measurement** is any of the huge number of things that the Census keeps
+track of.
+Measurements are arranged in tables (called "groups") and rows. 
+If you were drawing maps, this would be what determines the color of each area.
+Examples include
+population size (table B01001 and others),
+median household income (table B19013 and others),
+types of computers in a household (table B28001),
+number of vehicles used while commuting (table B08015).
 
-To answer this with `hercacstables`, you should break it down into four
-component questions.
+A **Demographic Group** is a subset of the population that shares specific
+traits.
+Demographic groups can be represented either by groups (common when reporting by
+race or ethnicity) or rows (most other cases, like age, sex, or veteran status).
+If you were drawing maps, you would probably have a different version of each
+map for each demographic grouping.
+Examples include
+the number of Hispanic girls under 5 years old (table B01001I, row 18),
+the median income of Asian American households (table B19013D, row 1),
+the number of households with no computer (table B28001, row 11),
+the number of vehicles used by women while commuting (table B08015, row 3).
 
-#### **Who?**
-
-What population or populations are you trying to understand?
-This will help us identify the
-[groups](https://api.census.gov/data/2022/acs/acs5/groups.html) and
-[variables](https://api.census.gov/data/2022/acs/acs5/variables.html)
-that we will specifically ask for.
-
-All of those groups and values can be accessed offline with
-`hercacstables::ACS_GROUP_METADATA` and `hercacstables::ACS_VARIABLE_METADATA`.
-
-We want to know about populations in school districts.
-It makes sense then to only look at school-aged children, say 5-18.
-Our requests should only ask for data about kids in that age range.
-We can do this with the built-in table `hercacstables::AGE_AND_SEX_METADATA`.
-
-```{r}
-#| label: school-children-metadata
-school_children_metadata <- hercacstables::AGE_AND_SEX_METADATA |>
-    dplyr::filter(
-        .data$`Lower Age` >= 5,
-        .data$`Upper Age` <= 18
-    )
-
-knitr::kable(school_children_metadata)
-```
-
-From this table we can see that we will need to include six variables in our API
-query.
-
-```{r}
-#| label: variables-for-query
-SCHOOL_CHILDREN_VARIABLES <- school_children_metadata$variable
-print(SCHOOL_CHILDREN_VARIABLES)
-```
-
-#### **Where?**
-
-What kind of place, and specific location, should the data describe?
-The Census API can provide information at many
-[levels of geographical detail](https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html).
-Some questions might pertain to entire states.
-Others might involve comparisons among all of the tracts in a metropolitan area.
-You can find details about the different geographic levels in
-`hercacstables::ACS_GEOGRAPHY_METADATA`.
-If you know the real-world name of a place, but not the numeric code that the
-Census uses for it, then you can look it up
-[here](https://www.census.gov/library/reference/code-lists/ansi.html).
-
-For the question that we're dealing with, we want to look at the geographic area
-served by a school district.
-There are actually three different kinds of school district geographic levels.
-
-```{r}
-#| label: school-district-geographies
-school_district_geographies <- hercacstables::ACS_GEOGRAPHY_METADATA |>
-    dplyr::filter(stringr::str_detect(.data$`Geographic Level`, "school"))
-
-school_district_geographies |>
-    knitr::kable()
-```
-
-It looks like the specific geographic level that we should ask about is "school
-districts (unified)".
-
-The "Containing Geographies" column lets us know that we also have to tell the
-API which state we are interested in.
-The "Wildcard Option" column tells us that we can use "*" to say "all of the
-states."
-
-We just want Ohio, so we must supply its FIPS code.
-If you don't know it off the top of your head, you can use a
-[page](https://www.census.gov/library/reference/code-lists/ansi.html) on the
-Census's website to search for the FIPS code of a specific geography.
-
-Ohio's FIPS code is 39.
-
-```{r}
-#| label: geography-for-query
-UNIFIED_SCHOOL_DISTRICT <- school_district_geographies$`Geographic Level`[3]
-print(UNIFIED_SCHOOL_DISTRICT)
-STATE_FIPS <- 39
-```
-
-#### **When?**
-
-A request to the Census API must include year its path.
-That means that it takes multiple API calls to pull data for multiple years.
-Each of these calls will be identical to the others, _except for_ the year in
-the path.
-This repetitiveness might just be the single biggest motivator for developing
-`hercacstables`.
-It's very easy in R to iterate over an array of years, making one function call
-for each year, and then bundling all of the results into one tidy data frame.
-
-The other aspect of the "when" question is whether or not to use 1-year or
-5-year estimates.
-The ACS reports both.
-Five-year estimates include data from the preceding four years.
-This increases sample sizes enough to provide information for smaller
-geographic levels, like tracts and block groups.
-One-year estimates are more responsive to rapid changes (like unemployment
-during the COVID-19 pandemic, for example), but are only available for larger
-geographic levels.
-
-Unified school districts are large enough for the 1-year ACS to include them.
-For our example, we will use every year of data available.
-That is 2005 to 2022, except for 2020, which does not have 1-year ACS data.
-
-```{r}
-#| label: years-for-acs
-YEARS_FOR_ACS <- c(2005:2019, 2021:2023)
-```
-
-#### **What?** Describe the steps to answer our question
-
-Thus far, we have identified what we need to deal with the "populations" (who),
-"school districts" and "in Ohio" (where), and "changed" (when) aspects of our
+A **Geographic Level** is a
+[Census-defined hierarchy](https://www.census.gov/programs-surveys/geography/guidance.html)
+from the whole country to small blocks.
+The level that you are interested in is determined by the scale of your
 question.
-The final aspect is the "four largest" parts.
-It will take three steps to find the four largest school districts in Ohio.
+If you were drawing maps, these would be the areas that appeared as different
+colors.
+Examples include congressional districts, incorporated cities, school districts,
+and Census tracts.
 
-The first step is to use the [hercacstables::fetch_data()] function to pull
-data from the Census API.
-We need the number of children that live in each school district in Ohio in the
-most recent year available.
+A **Geographic Area** is a set of specific instances of one or more geographic
+levels.
+This is the full geographic scope of your question.
+If you were drawing maps, this would determine their scale.
+Examples include whole states, metropolitan areas, Census-designated places, and
+counties.
 
-```{r}
-#| label: fetch-latest-school-districts
-#| cache: TRUE
-fetch_district_children <- function(.state_fips, .year, .district_geoids = "*") {
-    hercacstables::fetch_data(
-        variables = c("NAME", SCHOOL_CHILDREN_VARIABLES), # district names, too
-        year = .year,                                     # most recent year
-        survey_type = "acs",                              # American Community Survey
-        table_or_survey_code = "acs1",                    # One-year estimates
-        for_geo = UNIFIED_SCHOOL_DISTRICT,                # "school district (unified)"
-        for_items = .district_geoids,                     # every school district
-        state = STATE_FIPS                                # our state's two-digit code
-    )
-}
+## The workflow
 
-latest_school_districts_raw <- fetch_district_children(STATE_FIPS, 2023)
+1. Identify the groups and rows that contain the data you need
+   * Find potential groups by searching the `Universe` and `Description` fields
+     of `hercacstables::ACS_GROUP_METADATA`.
+   * Identify specific variables with `hercacstables::ACS_VARIABLE_METADATA`:
+     filter by the `Group` field and examine the `Details` field.
+   * Create a lookup table that maps from the Census variable name to your
+     variables.
+     * You may need several if you are pulling data from several groups.
+2. Define the geographies that you will use
+   * Use `hercacstables::ACS_GEOGRAPHY_METADATA` for this, too!
+   * You need to know at least two levels of geography:
+     * The one that you want to pull data for, your level of interest
+       * This is often small, like tract or county subdivision.
+     * Any and all levels that contain your level of interest
+       * These will be larger, like state or county.
+   * Create a lookup table that maps from geographic ids to meaningful names.
+3. Write fetching functions that call `hercacstables::fetch_data()`
+   * they will often always use the same variables (from step 1)
+   * they may need to be parameterized by geography if you're pulling from
+     multiple levels
+   * they should always be parameterized by year so that you can reuse them
+4. Write wrangling functions that for turning fetched tables into useful ones.
+   * These will probably involve using `dplyr::inner_join()` between the fetched
+     data and your lookup tables.
+   * You can also perform calculations like aggregating or finding remainders.
+5. Run the workflow in two stages.
+   * Use `purrr::map()` and `purrr::list_rbind()` to download all of the data into
+   one data frame.
+     * Cache that result because API calls are slow
+   * Run the wrangling functions.
+     * Save these results with, e.g. `base::saveRDS()`.
 
-latest_school_districts_raw |>
-    dplyr::slice_sample(n = 8) |>
-    knitr::kable()
-```
+## Example
 
-The next step is to sum up the populations for each district and then sort them
-from biggest to smallest.
+Let's say you want to ask this question:
 
-```{r}
-#| label: find-biggest-districts
+> How did [the number of households] differ between [Hispanic and non-Hispanic
+people] and across [Manchester, Nashua, and suburban areas] in [Hillsborough
+County, NH] during [the last 10 years]?
 
-wrangle_latest_kids <- function(.raw_children){
-    .raw_children |>
-        dplyr::count(
-            .data$NAME,
-            .data[[UNIFIED_SCHOOL_DISTRICT]],
-            name = "Children",
-            wt = .data$Value
-        ) |>
-        dplyr::arrange(dplyr::desc(.data$Children))
-}
+### Find the **measurement** and **demographic groups**
 
-latest_school_districts <- wrangle_latest_kids(latest_school_districts_raw)
-
-latest_school_districts |>
-    dplyr::slice(1:8) |>
-    dplyr::mutate(Children = scales::label_comma(accuracy = 1)(.data$Children)) |>
-    knitr::kable(align = "lrr")
-```
-
-The last step is to pull the GEOIDs for each of the four biggest districts.
-
-```{r}
-#| label: districts-for-query
-
-top_district_geoids <- function(.districts, n){
-    .districts[[UNIFIED_SCHOOL_DISTRICT]][1:n]
-}
-
-districts_for_query <- top_district_geoids(latest_school_districts, 4)
-
-print(districts_for_query)
-```
-
-### Pulling it all together
-
-Now we have all of the components that we need to pull the population histories
-for the four biggest school districts in Ohio.
-
-First, we fetch the data.
-Notice that we can reuse the fetching function that we defined above!
+First, find the variables that describe the numbers of households.
+One way to do this is to search `hercacstables::ACS_GROUP_METADATA` for groups
+whose `Universe` is "Households" and whose `Description` contains "Hispanic" or
+"Ethnicity."
+A group's `Universe` describes what it is measuring, often telling you the units
+of whatever its values are.
+A group's `Description` is a phrase that summarizes what it reports.
 
 ```{r}
-#| label: fetch-histories-from-four-districts
+#| label: search-for-relevant-groups
 
-fetch_district_histories <- function(.state_fips, .district_geoids = "*") {
-    YEARS_FOR_ACS |>
-        purrr::map(
-            \(.year) fetch_district_children(.state_fips,
-                                             .year, 
-                                             .district_geoids)
-        ) |>
-        purrr::list_rbind()
-} 
-
-big_district_histories_raw <- fetch_district_histories(STATE_FIPS,
-                                                       districts_for_query)
-```
-
-Next, we sum up the number of children and create human-readable names for each
-district.
-
-```{r}
-#| label: wrangle-biggest-histories
-
-wrangle_histories <- function(.raw_district_histories, .latest_districts){
-    .raw_district_histories |>
-    dplyr::count(
-        .data[[UNIFIED_SCHOOL_DISTRICT]],
-        .data$Year,
-        name = "Children",
-        wt = .data$Value
-    ) |>
-    dplyr::inner_join(
-        dplyr::select(
-            .latest_districts,
-            tidyselect::all_of(c("NAME", UNIFIED_SCHOOL_DISTRICT))
-            ),
-        by = UNIFIED_SCHOOL_DISTRICT
-    ) |>
-    dplyr::mutate(
-        District = stringr::str_extract(.data$NAME,
-                                        "^\\S*")
+hercacstables::ACS_GROUP_METADATA |>
+    dplyr::filter(
+        .data$ACS5,
+        stringr::str_detect(.data$Universe, "Household"),
+        stringr::str_detect(.data$Description, "Hispanic|Ethnic")
     ) |>
     dplyr::select(
-        "District",
-        "Year",
-        "Children"
+        "Group",
+        "Universe",
+        "Description"
+    ) |>
+    knitr::kable()
+```
+
+It looks like our best bet is group "B11001I."
+It is likely that group "B11001" contains counts of households of any race.
+The first row of most groups is the total value across any demographic subset
+that it keeps track of.
+Since our question does not ask about different household types, we probably
+just need row one from groups "B11001" and "B11001I."
+This gives us a good opportunity to document the ethnicities counted in each.
+
+```{r}
+#| label: show-relevant-variables
+
+HOUSEHOLD_GROUPS <- c("B11001", "B11001I")
+household_variables <- hercacstables::ACS_VARIABLE_METADATA |>
+    dplyr::filter(
+        .data$Dataset == "ACS1",
+        .data$Group %in% HOUSEHOLD_GROUPS,
+                  .data$Index == 1) |>
+    dplyr::mutate(
+        Ethnicity = dplyr::case_match(.data$Group,
+                                      "B11001" ~ "All",
+                                      "B11001I" ~ "Hispanic or Latino")
+    ) |>
+    dplyr::select("Group", "Index", "Variable", "Ethnicity")
+
+knitr::kable(household_variables,
+             align = c("lrll"))
+```
+
+### Find the **geographic levels** and **geographic area**
+
+The next step is to
+[find the codes](https://www.census.gov/library/reference/code-lists/ansi.html)
+that are related to the geographic areas and levels.
+We need to know the FIPS code for the state, county, and two cities.
+We also need to know that the geographic level that we're working with is
+"county subdivision."
+As the last part of this step, we define a lookup table to translate from the
+FIPS codes for the different geographies to a human-readable name.
+
+```{r}
+#| label: define-geographic-codes
+
+NEW_HAMPSHIRE <- "33"
+COUNTY_LEVEL <- "county"
+HILLSBOROUGH_CO <- "011"
+CITY_LEVEL <- "county subdivision"
+MANCHESTER_NH <- "45140"
+NASHUA_NH <- "50260"
+
+geography_definitions <- tibble::tribble(
+    ~ FIPS,          ~ Location,
+    HILLSBOROUGH_CO, "County-wide",
+    MANCHESTER_NH,   "Manchester",
+    NASHUA_NH,       "Nashua"
+)
+
+geography_definitions |>
+    knitr::kable()
+```
+
+### Find the **time interval**
+
+This example looks for population changes "in the last ten years."
+What that really means is the ten most recent years for which we have data.
+We can use 1-year estimates for our question because we are dealing with
+geographic levels that have more than 50,000 people in them.
+In the case of the 1-year ACS dataset, the latest will be one or two years ago.
+The earliest will be 11 years before that because there was no survey in 2020.
+
+```{r}
+#| label: define-time-range
+BUILD_DATE <- Sys.Date()
+LATEST_YEAR <- hercacstables::most_recent_vintage("acs", "acs1")
+TEN_YEARS_AGO <- LATEST_YEAR - 11L
+```
+
+The last ten years available from the Census are, as of `r BUILD_DATE`,
+`r TEN_YEARS_AGO` through `r LATEST_YEAR`.
+
+```{r}
+#| label: define-years
+
+YEARS_INCLUDED <- c(TEN_YEARS_AGO:2019, 2021:LATEST_YEAR)
+```
+
+### Define functions that use the API
+
+We will need to make multiple calls to the API, so it makes sense to create
+some reusable functions.
+We need two calls per year.
+The first one will pull the county-wide household counts.
+The second one will pull the household counts for each city.
+Each function should have "year" as its argument so that we can reuse it.
+
+```{r}
+#| label: fetching-functions
+
+generalized_fetch_data <- function(.year, .level, .areas, ...) {
+    hercacstables::fetch_data(
+        variables = household_variables$Variable,
+        year = .year,
+        survey_type = "acs",
+        table_or_survey_code = "acs1",
+        for_geo = .level,
+        for_items = .areas,
+        state = NEW_HAMPSHIRE,
+        ...
     )
 }
 
-big_district_histories <- wrangle_histories(big_district_histories_raw,
-                                            latest_school_districts) 
-```
-
-Finally, we can plot the results.
-
-```{r}
-#| label: plot-big-district-histories
-
-plot_district_histories <- function(.district_histories){
-    .district_histories |>
-        ggplot2::ggplot(
-            ggplot2::aes(
-                x = .data$Year,
-                y = .data$Children,
-                color = .data$District
-            )
-        ) +
-        ggplot2::geom_line(
-            linewidth = 2
-        ) +
-        ggplot2::geom_point(
-            size = 5
-        ) +
-        ggplot2::scale_x_continuous(
-            name = NULL,
-            labels = scales::label_number(big.mark = ""),
-            breaks = scales::breaks_width(5),
-            minor_breaks = scales::breaks_width(1)
-        ) +
-        ggplot2::scale_y_continuous(
-            name = "School-aged children in school district's area",
-            labels = scales::label_comma(accuracy = 1,
-                                         scale = 0.001,
-                                         suffix = "K"),
-            limits = c(0, NA)
-        ) +
-        ggplot2::scale_color_discrete(
-            guide = ggplot2::guide_legend(title = NULL,
-                                          position = "top")
-        ) +
-        ggplot2::theme_minimal()
+fetch_county_households <- function(.year){
+    generalized_fetch_data(.year,
+                           "county",
+                           HILLSBOROUGH_CO)
 }
 
-plot_district_histories(big_district_histories)
+fetch_city_households <- function(.year){
+    generalized_fetch_data(.year,
+                           CITY_LEVEL,
+                           c(MANCHESTER_NH,
+                             NASHUA_NH),
+                           county = HILLSBOROUGH_CO)
+}
+
+fetch_example_data <- function(.year) {
+    dplyr::bind_rows(
+        fetch_county_households(.year),
+        fetch_city_households(.year)
+    )
+}
 ```
-    
-It looks like maybe a lot of people are moving from Cleveland to Columbus, and
-taking their kids with them.
-    
-### Everything is reusable
 
-Now that you've seen the example with Ohio, you may be thinking "that question
-is not relevant to me."
-However!
-You could rerun all of the code, changing just the `STATE_FIPS` to your state's
-FIPS code, and get _the same analysis_ for **a different state**.
+### Fetch the data
 
-Let's look at changes in population for the five largest school districts in
-Delaware.
+This is where `hercacstables` starts to come into its own.
+We define the fetching process as few times as possible, just tweaking it for
+related cases.
+This leads to a lot of code reuse and efficiency, especially for reports that
+you just need to update once a year.
 
 ```{r}
-#| label: this-time-for-delaware
+#| label: actually-fetch-data
+#| cache: true
 
-STATE_FIPS <- 10
-
-latest_de_districts <- STATE_FIPS |>
-    fetch_district_children(2023) |>
-    wrangle_latest_kids()
-
-de_district_geoids <- latest_de_districts |>
-    top_district_geoids(5)
-
-big_de_district_histories <- STATE_FIPS |>
-    fetch_district_histories(de_district_geoids) |>
-    wrangle_histories(latest_de_districts)
-
-plot_district_histories(big_de_district_histories)
+raw_households <- YEARS_INCLUDED |>
+    purrr::map(fetch_example_data) |>
+    purrr::list_rbind()
 ```
-
-You could do the same thing with any other state.
-That's the goal of this project: help define workflows for making reports from
-Census data so that they can be easily rerun for comparable places and times.
-
-   
-## Set up your API key
-
-You should use an API key to identify yourself when you access data.census.gov.
-Like many public APIs, the US Census Bureau's data portal allows anonymous
-users.
-However, it limits the number of requests that an anonymous user can send, both
-per second and per day.
-If you [register](http://api.census.gov/data/key_signup.html) with the site, it
-will send you a key.
-You can use the key to identify yourself when making future calls.
-Chances are that you will never come up against any kind of throttling.
-
-To make it easy for new users, `hercacstables` includes a function,
-`api_key_setup()`, that will take you to the sign-up page and then help you
-permanently save your key as a local environment variable.
-That variable is called "CENSUS_API_KEY" to be compatible with another popular
-package for accessing the Census API,
-[tidycensus](https://walker-data.com/tidycensus/index.html).
 
 ```{r}
-#| eval: false
-api_key_setup()
+#| label: show-the-raw-data
+
+raw_households |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
+    dplyr::mutate(
+        dplyr::across(c("Value"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "lllrrrl"
+    )
 ```
+
+### Wrangle the data
+
+The raw data are not very usable.
+Several of the columns still have codes, rather than human-readable values.
+The value column also does not explicitly state values for the suburban or for
+non-Hispanic folks.
+The "wrangling" process is where we addressing these drawbacks.
+
+#### Map codes to words
+
+We should get rid of the columns that are Census database codes and create
+columns about location and demographics that have human-readable values.
+
+```{r}
+#| label: wrangle-household-data-mapping
+
+households <- raw_households |>
+    dplyr::inner_join(
+        household_variables,
+        by = c("Group", "Index")
+    ) |>
+    dplyr::mutate(
+        FIPS = dplyr::coalesce(.data$`county subdivision`,
+                               .data$county)
+    ) |>
+    dplyr::inner_join(
+        geography_definitions,
+        by = "FIPS"
+    ) |>
+    dplyr::select(
+        "Location",
+        "Year",
+        "Ethnicity",
+        Households = "Value"
+    )
+
+households |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
+    dplyr::mutate(
+        dplyr::across(c("Households"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "rllr"
+    )
+```
+
+#### Compute implicit values
+
+Now that the columns are human-readable, we can compute the values that we are
+actually interested in.
+That computation involves subtracting either the cities' households from the
+county's, or the number of Hispanic households from the total number of
+households.
+This task turns up very frequently when dealing with Census data, so the
+package includes a helper function to do it for you:
+`hercacstables::subtract_parts_from_whole()`.
+That function does not remove the rows that contain the all-groups category.
+In our case, we must remove them so all of the calculations come out correctly.
+
+```{r}
+#| label: wrangle-household-data-computing
+
+households <- households |>
+    hercacstables::subtract_parts_from_whole(
+        grouping_column = "Location",
+        value_column = "Households",
+        whole_name = "County-wide",
+        part_names = c("Manchester", "Nashua"),
+        remainder_name = "Suburbs"
+    ) |>
+    dplyr::select(
+        !"County-wide"
+    ) |>
+    hercacstables::subtract_parts_from_whole(
+        grouping_column = "Ethnicity",
+        value_column = "Households",
+        whole_name = "All",
+        part_names = "Hispanic or Latino",
+        remainder_name = "Not Hispanic or Latino"
+    ) |>
+    dplyr::select(
+        !"All"
+    )
+
+households |>
+    dplyr::filter(.data$Year == LATEST_YEAR) |>
+    dplyr::mutate(
+        dplyr::across(c("Households"),
+                      scales::label_comma(accuracy = 1))
+    ) |>
+    knitr::kable(
+        align = "lrlr"
+    )
+```
+
+### Answer the question
+
+Now we can finally look at trends in number of households in Hillsborough
+County, NH, comparing between Hispanic and non-Hispanic households among
+Manchester, Nashua, and the suburbs.
+
+#### Visualize
+
+The first step is to make some graphs.
+These data are 4-dimensional because they involve time, location, ethnicity, and
+number of households.
+That means we'll need more than one graph.
+It looked from the tables above that the number of Hispanic households is much
+lower than non-Hispanic households in all three locations.
+Let's make a two-panel graph, where each panel shows one ethnicity.
+That way they can have separate y axes.
+Both graphs will have time on the x-axis, number of households on the y, and
+designate location with the color of points and lines.
+
+```{r}
+#| label: plot-the-results
+#| fig-width: 7
+#| fig-height: 6
+#| dpi: 72
+#| warning: false
+
+households |>
+    ggplot2::ggplot(
+        ggplot2::aes(
+            x = .data$Year,
+            y = .data$Households,
+            color = .data$Location,
+            group = .data$Location
+        )
+    ) +
+    ggplot2::geom_line(
+        linewidth = 2
+    ) +
+    ggplot2::geom_point(
+        size = 5
+    ) +
+    ggplot2::scale_x_continuous(
+        name = NULL,
+        breaks = scales::breaks_width(5),
+        minor_breaks = scales::breaks_width(1)
+    ) +
+    ggplot2::scale_y_continuous(
+        name = "Number of households",
+        limits = c(0, NA),
+        labels = scales::label_comma(accuracy = 1)
+    ) +
+    ggplot2::scale_color_viridis_d(
+        name = NULL,
+        guide = ggplot2::guide_legend(position = "top")
+    ) +
+    ggplot2::facet_grid(
+        rows = ggplot2::vars(.data$Ethnicity),
+        scales = "free_y"
+    )
+```
+
+It looks like the number of households is growing, with non-Hispanic households
+increasing in the suburbs and Hispanic households increasing in the cities.
+
+#### Analyze
+
+Let's test this with an ANCOVA.
+We'll subtract `r TEN_YEARS_AGO` from the year so that the intercept estimate gives us the
+value in `r TEN_YEARS_AGO`, not AD 0.
+
+```{r}
+#| label: statistical-model
+
+household_model <- households |>
+    dplyr::mutate(
+        Year = .data$Year - TEN_YEARS_AGO,
+        Location = factor(.data$Location,
+                          levels = c("Suburbs",
+                                     "Manchester",
+                                     "Nashua")),
+        Ethnicity = factor(.data$Ethnicity,
+                           levels = c("Not Hispanic or Latino",
+                                      "Hispanic or Latino"))
+    ) |>
+    lm(
+        Households ~ Year * Ethnicity * Location,
+        data = _
+    )
+```
+
+I always like to look at the ANOVA table first to get a 10,000 meter view before
+I try to interpret specific parameters.
+
+```{r}
+#| label: anova-table
+household_model |>
+    anova() |>
+    broom::tidy() |>
+    dplyr::mutate(
+        dplyr::across(c("sumsq",
+                        "meansq"),
+                      scales::label_comma(accuracy = 1)),
+        dplyr::across("statistic",
+                      \(.) signif(., 4)),
+        dplyr::across("p.value",
+                      \(.) round(., 4))
+    ) |>
+    knitr::kable(
+        align = "lrrrrr"
+    )
+```
+
+It looks like EVERYTHING is significant, so let's look at all of the parameters
+that were in the near-significant range.
+
+```{r}
+#| label: significant-parameters
+household_model |>
+    broom::tidy() |>
+    dplyr::filter(
+        .data$`p.value` < 0.1
+    ) |>
+    dplyr::mutate(
+        dplyr::across(c("estimate",
+                        "std.error",
+                        "statistic"),
+                      \(.) signif(., 4)),
+        dplyr::across("p.value",
+                      \(.) round(., 4))
+    ) |>
+    knitr::kable(
+        align = "lrrrr"
+    )
+```
+
+#### Summarize
+
+The number of households in Hillsborough county overall grew from
+`r TEN_YEARS_AGO`-`r LATEST_YEAR`.
+The number of Hispanic households was much higher in the two cities than in the
+suburban parts of the county.
+This difference became more pronounced over the decade, for two reasons.
+The number of Hispanic households grew more quickly in Nashua and Manchester
+than in the suburban areas.
+The number of non-Hispanic households grew more quickly in the suburbs than in
+the cities.
+Isn't it nice when the visual patterns are corroborated by significant
+statistics?

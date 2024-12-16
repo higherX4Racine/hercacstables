@@ -47,7 +47,7 @@ devtools::install_github("higherX4Racine/hercacstables")
 The American Community Survey (ACS) from the US Census's website provides a vast
 amount of useful data.
 
-![A wordcloud made from the Census' descriptions of its ACS groups](man/figures/README-group-descriptions-wordcloud.png)
+![](man/figures/README-group-descriptions-wordcloud.png)
 
 However, it returns those data in a weirdly idiosyncratic way.
 Even though the output seems tabular, the data are really organized in a
@@ -76,7 +76,7 @@ SCHOOL_GEOGRAPHIES <- dplyr::filter(hercacstables::ACS_GEOGRAPHY_METADATA,
 ```
 
 This table tells us two things.
-First, he geographic level that you should examine is "school district
+First, the geographic level that you should examine is "school district
 (unified)".
 Second, you also need to specify the state when you're fetching data about it.
 With `hercacstables::fetch_data()`, and tools from the [tidyverse][tidyverse],
@@ -109,8 +109,8 @@ knitr::kable(RACINE_DISTRICTS)
 ### Finding relevant data
 
 The first thing that you could do is to check for data related to plumbing.
-If you were doing this without R, you might visit [](data.census.gov) and
-search for "ACS plumbing".
+If you were doing this without R, you might visit
+[data.census.gov](https://data.census.gov) and search for "ACS plumbing".
 
 #### Groups with relevant data
 
@@ -121,7 +121,7 @@ With `hercacstables`, you would search within its metadata about ACS groups:
 
 PLUMBING_GROUPS <- hercacstables::ACS_GROUP_METADATA |>
     dplyr::filter(
-        grepl("plumbing",          # search for the term "plumbing"
+        grepl("plumbing",         # search for the term "plumbing"
               .data$Description,  # within the "Description" column
               ignore.case = TRUE) # ignore capitalization
     )
@@ -149,15 +149,15 @@ Whether the occupants rent or own, not if they can't be fired.
 GROUP <- "B25049"
 ```
 
-There is metadata in `hercacstables` about variables, too.
-You can use search it to see what specific data is reported by group `r GROUP`.
+There `hercacstables` also provides metadata about variables.
+You can search it to see details about each variable in group `r GROUP`.
 
 ```{r}
 #| label: search-for-variables-in-group
 
 PLUMBING_VARIABLES <- hercacstables::ACS_VARIABLE_METADATA |>
     dplyr::filter(
-        .data$Dataset == "ACS1", # use the 1-year dataset only
+        .data$Dataset == "ACS5", # use the 1-year dataset only
         .data$Group == GROUP     # pull all of the variables for this group
     )
 ```
@@ -179,18 +179,19 @@ packs all of that information into the "Details" column.
 
 It would be more useful if we actually had separate columns for the types of
 tenure and plumbing facilities.
-We also don't need row 1, which is the total number of households, or rows 2 and
-5, which report subtotals by tenure.
-The unique data are in rows 2, 3, 6, and 7.
-The best way to do this is to use `hercacstables::unpack_group_details()` in
-combination with tools from the [tidyverse][tidyverse]
+You can use `hercacstables::unpack_group_details()` to do this, in combination
+with tools from the [tidyverse][tidyverse].
+
+You might also decide that you don't the rows that report the total number of
+households (row 1) and subtotals by tenure (2 and 5).
+You'll have that data anyway from  3, 4, 6, and 7.
 
 ```{r}
 #| label: make-a-helpful-metadata-table
 PLUMBING_VARIABLES <- GROUP |>
     hercacstables::unpack_group_details() |>
     dplyr::filter(
-        .data$Dataset == "ACS1"
+        .data$Dataset == "ACS5"
     ) |>
     dplyr::rename(
         Tenure = "A",
@@ -211,8 +212,9 @@ knitr::kable(PLUMBING_VARIABLES)
 
 ### Fetch data
 
-We are finally ready to pull a recent history of access to plumbing in eastern
-Racine County.
+You are finally ready to pull a some census data about plumbing!
+For starters, you could compare the local area to the whole county, the state,
+its census region, and the whole country.
 Once again, we'll use `hercacstables::fetch_data()` and the
 [tidyverse][tidyverse].
 
@@ -220,78 +222,148 @@ Once again, we'll use `hercacstables::fetch_data()` and the
 #| label: fetch-racine-plumbing
 #| cache: true
 
-RAW_RACINE_PLUMBING <- c(2005:2019, 2021:2023) |>
-    purrr::map(
-        \(.year) hercacstables::fetch_data(
-            variables = PLUMBING_VARIABLES$Variable,
-            year = .year,
-            for_geo = "school district (unified)",
-            for_items = "12360",
+YEAR <- hercacstables::most_recent_vintage("acs", "acs5")
+
+RAW_PLUMBING <- tibble::tribble(
+    ~ geo,                       ~ items, ~ other,
+    "us",                        "1",     list(),
+    "region",                    "2",     list(),
+    "state",                     "55",    list(),
+    "county",                    "101",   list(state = 55),
+    "school district (unified)", "12360", list(state = 55)
+) |>
+    purrr::pmap(
+        \(geo, items, other) rlang::exec(
+            hercacstables::fetch_data,
+            variables = c("NAME", PLUMBING_VARIABLES$Variable),
+            year = YEAR,
+            for_geo = geo,
+            for_items = items,
             survey_type = "acs",
-            table_or_survey_code = "acs1",
-            state = 55L
+            table_or_survey_code = "acs5",
+            !!!other
         )
-    ) |>
-    purrr::list_rbind()
+    )
 ```
 
 ```{r}
 #| label: show-raw-racine-plumbing
 #| echo: false
+#| results: asis
 
-RAW_RACINE_PLUMBING |>
-    dplyr::slice_sample(n = 4) |>
-    knitr::kable()
+RAW_PLUMBING |>
+    purrr::walk(
+        \(.d) .d |>
+            dplyr::slice(1) |>
+            knitr::kable() |>
+            print()
+    )
 ```
 
-The data in `RAW_RACINE_PLUMBING` don't make much sense without the information
-in `PLUMBING_VARIABLES`.
+The data in `RAW_PLUMBING` do not have much meaning without the information in
+`PLUMBING_VARIABLES`.
 Fortunately, we can use the [tidyverse][tidyverse] to join the two tables
 together.
 
 ```{r}
 #| label: wrangle-racine-plumbing
 
-RACINE_PLUMBING <- PLUMBING_VARIABLES |>
-    dplyr::left_join(
-        RAW_RACINE_PLUMBING,
+PLUMBING <- RAW_PLUMBING |>
+    purrr::map(
+        \(.) dplyr::select(.,
+                           "Group",
+                           "Index",
+                           Geography = "NAME",
+                           Households = "Value"
+        )
+    ) |>
+    purrr::list_rbind() |>
+    dplyr::right_join(
+        PLUMBING_VARIABLES,
         by = c("Group", "Index")
     ) |>
     dplyr::select(
-        "Year",
+        "Geography",
         "Tenure",
         "Plumbing",
-        Households = "Value"
+        "Households"
     )
 ```
 
-`RACINE_PLUMBING` has `r nrow(RACINE_PLUMBING)` rows, which is too many to show
-in a README.
-Let's just look at how the number of homes without plumbing has changed over the
-years of the ACS.
+```{r}
+#| label: show_plumbing
+
+knitr::kable(PLUMBING)
+```
+
+Finally, you can do some [tidyverse][tidyverse]-only magic to look at the
+different rates of plumbing for renters versus owners.
 
 ```{r}
-#| label: no-plumbing-in-racine
+#| label: wrangle-rates-of-plumbing
 
-NO_PLUMBING <- RACINE_PLUMBING |>
-    dplyr::filter(
-        .data$Plumbing == "Lacking plumbing facilities"
-    ) |>
-    dplyr::select(
-        "Year",
-        "Tenure",
-        "Households"
+RATES_OF_PLUMBING <- PLUMBING |>
+    dplyr::mutate(
+        dplyr::across(c("Tenure", "Plumbing"),
+                      \(.) stringr::str_extract(., "^\\S+"))
     ) |>
     tidyr::pivot_wider(
         names_from = "Tenure",
-        values_from = "Households",
-        values_fill = NA
+        values_from = "Households"
+    ) |>
+    dplyr::mutate(
+        `All Households` = .data$Owner + .data$Renter
+    ) |>
+    tidyr::pivot_longer(
+        cols = c("Renter", "Owner", "All Households"),
+        names_to = "Tenure",
+        values_to = "Households"
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "Plumbing",
+        values_from = "Households"
+    ) |>
+    dplyr::mutate(
+        Households = .data$Complete + .data$Lacking,
+        Rate = .data$Complete / .data$Households
+    ) |>
+    dplyr::select(
+        "Geography",
+        "Tenure",
+        "Rate"
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "Tenure",
+        values_from = "Rate"
     )
 ```
 
 ```{r}
-#| label: show-no-plumbing
-knitr::kable(NO_PLUMBING)
+#| label: show-rates-of-plumbing
+#| echo: false
+
+RATES_OF_PLUMBING |>
+    dplyr::mutate(
+        dplyr::across(!"Geography",
+                      \(.) scales::label_percent(accuracy = 0.01)(.))
+    ) |>
+    knitr::kable(
+        align = "lrrr"
+    )
 ```
+
+Three things might jump out at you.
+The first is that almost every household in the US has complete plumbing
+facilities.
+The second thing is that plumbing access seems a little different for renters
+and owners.
+The third thing is that who has more access to plumbing is different in Racine
+than at larger geographic levels.
+At the scale of the nation, region, and state, renters are a little less likely
+to have complete access to plumbing.
+In contrast, renters in Racine County and the Racine Unified School District are
+actually a little more likely to have access to plumbing.
+
+## Footnotes
 
 [tidyverse]: https://www.tidyverse.org "The tidyverse"

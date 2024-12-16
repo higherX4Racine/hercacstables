@@ -1,10 +1,5 @@
 ---
-title: "pop-changes-in-big-oh-districts"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{pop-changes-in-big-oh-districts}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "Population changes in school districts"
 ---
 
 ```{r, include = FALSE}
@@ -347,5 +342,3 @@ plot_district_histories(big_de_district_histories)
 You could do the same thing with any other state.
 That's the goal of this project: help define workflows for making reports from
 Census data so that they can be easily rerun for comparable places and times.
-
-   

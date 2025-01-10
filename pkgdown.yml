@@ -2,13 +2,17 @@ pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
-  articles/average_tract_poverty_ratio: average_tract_poverty_ratio.html
   articles/children_in_poverty: children_in_poverty.html
+  articles/determine_geographies: determine_geographies.html
+  articles/determine-demographies: determine-demographies.html
+  articles/determine-measurement: determine-measurement.html
+  articles/determine-timeframes: determine-timeframes.html
   hercacstables: hercacstables.html
+  articles/plumbing-and-owner-occupancy: plumbing-and-owner-occupancy.html
   articles/Population-changes-in-school-districts: Population-changes-in-school-districts.html
   race_ethnicity_categories: race_ethnicity_categories.html
   set-up-your-api-key: set-up-your-api-key.html
-last_built: 2024-12-16T16:53Z
+last_built: 2025-01-10T18:10Z
 urls:
   reference: https://higherx4racine.github.io/hercacstables/reference
   article: https://higherx4racine.github.io/hercacstables/articles

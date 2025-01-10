@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Set up your API key • hercacstables</title>
+<title>determine-demographies • hercacstables</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Set up your API key">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="determine-demographies">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -63,29 +63,25 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Set up your API key</h1>
+      <h1>determine-demographies</h1>
             
       
 
-      <div class="d-none name"><code>set-up-your-api-key.Rmd</code></div>
+      <div class="d-none name"><code>determine-demographies.Rmd</code></div>
     </div>
 
     
     
-<p>You should use an API key to identify yourself when you access
-data.census.gov. Like many public APIs, the US Census Bureau’s data
-portal allows anonymous users. However, it limits the number of requests
-that an anonymous user can send, both per second and per day. If you <a href="http://api.census.gov/data/key_signup.html" class="external-link">register</a> with the
-site, it will send you a key. You can use the key to identify yourself
-when making future calls. Chances are that you will never come up
-against any kind of throttling.</p>
-<p>To make it easy for new users, <code>hercacstables</code> includes a
-function, <code><a href="../reference/api_key_setup.html">api_key_setup()</a></code>, that will take you to the
-sign-up page and then help you permanently save your key as a local
-environment variable. That variable is called “CENSUS_API_KEY” to be
-compatible with another popular package for accessing the Census API, <a href="https://walker-data.com/tidycensus/index.html" class="external-link">tidycensus</a>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/api_key_setup.html">api_key_setup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>A <strong>Demographic Group</strong> is a subset of the population
+that shares specific traits. Demographic groups can be represented
+either by groups (common when reporting by race or ethnicity) or rows
+(most other cases, like age, sex, or veteran status). If you were
+drawing maps, you would probably have a different version of each map
+for each demographic grouping. Examples include the number of Hispanic
+girls under 5 years old (table B01001I, row 18), the median income of
+Asian American households (table B19013D, row 1), the number of
+households with no computer (table B28001, row 11), the number of
+vehicles used by women while commuting (table B08015, row 3).</p>
   </main>
 </div>
 

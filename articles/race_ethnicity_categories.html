@@ -34,8 +34,12 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/average_tract_poverty_ratio.html">Average Poverty Ratios by Tract in Racine County, WI</a></li>
-    <li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
+<li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
+    <li><a class="dropdown-item" href="../articles/determine_geographies.html">determine_geographies</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-demographies.html">determine-demographies</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-measurement.html">determine-measurement</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-timeframes.html">determine-timeframes</a></li>
+    <li><a class="dropdown-item" href="../articles/plumbing-and-owner-occupancy.html">Plumbing and Owner-occupancy</a></li>
     <li><a class="dropdown-item" href="../articles/Population-changes-in-school-districts.html">Population changes in school districts</a></li>
     <li><a class="dropdown-item" href="../articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
     <li><a class="dropdown-item" href="../articles/set-up-your-api-key.html">Set up your API key</a></li>
@@ -182,17 +186,100 @@ table describes.</p>
 </table>
 </div>
 <div class="section level3">
-<h3 id="tables-with-race-in-their-description">Tables with “RACE” in their description<a class="anchor" aria-label="anchor" href="#tables-with-race-in-their-description"></a>
+<h3 id="tables-with-race-in-their-description">Tables with “race” in their description<a class="anchor" aria-label="anchor" href="#tables-with-race-in-their-description"></a>
 </h3>
-<p>There are also 0 tables that have the word “RACE” in their
+<p>There are also 14 tables that have the word “RACE” in their
 description.</p>
-<table class="table">
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="6%">
+<col width="88%">
+<col width="4%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">Group</th>
 <th align="left">Description</th>
 <th align="right">rows</th>
 </tr></thead>
-<tbody></tbody>
+<tbody>
+<tr class="odd">
+<td align="left">B02001</td>
+<td align="left">Race</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="left">B02003</td>
+<td align="left">Detailed Race</td>
+<td align="right">71</td>
+</tr>
+<tr class="odd">
+<td align="left">B02008</td>
+<td align="left">White Alone or in Combination With One or More Other
+Races</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">B02009</td>
+<td align="left">Black or African American Alone or in Combination With
+One or More Other Races</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">B02010</td>
+<td align="left">American Indian and Alaska Native Alone or in
+Combination With One or More Other Races</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">B02011</td>
+<td align="left">Asian Alone or in Combination With One or More Other
+Races</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">B02012</td>
+<td align="left">Native Hawaiian and Other Pacific Islander Alone or in
+Combination With One or More Other Races</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">B02013</td>
+<td align="left">Some Other Race Alone or in Combination With One or
+More Other Races</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">B03002</td>
+<td align="left">Hispanic or Latino Origin by Race</td>
+<td align="right">42</td>
+</tr>
+<tr class="even">
+<td align="left">B25006</td>
+<td align="left">Race of Householder</td>
+<td align="right">20</td>
+</tr>
+<tr class="odd">
+<td align="left">B98013</td>
+<td align="left">Total Population Coverage Rate by Weighting Race and
+Hispanic or Latino Groups</td>
+<td align="right">14</td>
+</tr>
+<tr class="even">
+<td align="left">B99021</td>
+<td align="left">Allocation of Race</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="left">C02003</td>
+<td align="left">Detailed Race</td>
+<td align="right">42</td>
+</tr>
+<tr class="even">
+<td align="left">C03002</td>
+<td align="left">Hispanic or Latino Origin by Race</td>
+<td align="right">12</td>
+</tr>
+</tbody>
 </table>
 <p>They seem to fall into four categories. There are two tables with 10
 rows each, <code>B02001</code> and <code>B25006</code>. These are
@@ -246,9 +333,7 @@ way that “maps” from the Census variable to the real-world meaning.</p>
 <span>        `Table Type` <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span>,</span>
 <span>                                      <span class="st">"Subtable"</span>,</span>
 <span>                                      <span class="st">"Convenience"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">convenience_check_variables</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="10%">
@@ -363,9 +448,11 @@ cache its results. API calls are much slower than local functions, so it
 is usually a good idea to isolate them and run them as few times as
 possible.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">convenience_check_values_raw</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">LATEST_YEAR</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/most_recent_vintage.html">most_recent_vintage</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acs1"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">convenience_check_values_raw</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
 <span>    <span class="va">convenience_check_variables</span><span class="op">$</span><span class="va">Variable</span>,</span>
-<span>    year <span class="op">=</span> <span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">2L</span>,      <span class="co"># the most recent one available at the time of writing</span></span>
+<span>    year <span class="op">=</span> <span class="va">LATEST_YEAR</span>,           <span class="co"># the most recent one available at the time of writing</span></span>
 <span>    for_geo <span class="op">=</span> <span class="st">"us"</span>,               <span class="co"># the entire nation</span></span>
 <span>    for_items <span class="op">=</span> <span class="st">"*"</span>,              <span class="co"># all nation-level geographies</span></span>
 <span>    survey_type <span class="op">=</span> <span class="st">"acs"</span>,          <span class="co"># as opposed to, e.g. "dec," for Decennial survey data</span></span>
@@ -420,29 +507,29 @@ subtables.</p>
 <tr class="odd">
 <td align="left">People</td>
 <td align="left">White</td>
-<td align="right">218,123,424</td>
-<td align="right">218,123,424</td>
+<td align="right">210,875,446</td>
+<td align="right">210,875,446</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">People</td>
 <td align="left">Black</td>
-<td align="right">41,288,572</td>
-<td align="right">41,288,572</td>
+<td align="right">41,070,890</td>
+<td align="right">41,070,890</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="odd">
 <td align="left">Households</td>
 <td align="left">White</td>
-<td align="right">89,093,698</td>
-<td align="right">89,093,698</td>
+<td align="right">87,717,076</td>
+<td align="right">87,717,076</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">Households</td>
 <td align="left">Black</td>
-<td align="right">15,396,339</td>
-<td align="right">15,396,339</td>
+<td align="right">15,556,942</td>
+<td align="right">15,556,942</td>
 <td align="left">Yes</td>
 </tr>
 </tbody>
@@ -990,7 +1077,7 @@ in their percentages of Hispanic ethnicity.</p>
 </table>
 <p>Next, we pull 18 years of ACS data.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2009</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="op">(</span><span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2005</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
 <span>        <span class="op">~</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
 <span>            <span class="va">hispanic_and_broad_race_variables</span><span class="op">$</span><span class="va">Variable</span>,</span>
@@ -1059,6 +1146,38 @@ in their percentages of Hispanic ethnicity.</p>
 <tbody>
 <tr class="odd">
 <td align="left">ASIAN ALONE</td>
+<td align="right">2005</td>
+<td align="right">12,312,949</td>
+<td align="right">158,866</td>
+<td align="right">12,471,815</td>
+<td align="right">1%</td>
+</tr>
+<tr class="even">
+<td align="left">SOME OTHER RACE ALONE</td>
+<td align="right">2006</td>
+<td align="right">768,782</td>
+<td align="right">18,238,347</td>
+<td align="right">19,007,129</td>
+<td align="right">96%</td>
+</tr>
+<tr class="odd">
+<td align="left">AMERICAN INDIAN AND ALASKA NATIVE ALONE</td>
+<td align="right">2007</td>
+<td align="right">2,019,204</td>
+<td align="right">346,143</td>
+<td align="right">2,365,347</td>
+<td align="right">15%</td>
+</tr>
+<tr class="even">
+<td align="left">SOME OTHER RACE ALONE</td>
+<td align="right">2008</td>
+<td align="right">701,823</td>
+<td align="right">14,290,365</td>
+<td align="right">14,992,188</td>
+<td align="right">95%</td>
+</tr>
+<tr class="odd">
+<td align="left">ASIAN ALONE</td>
 <td align="right">2009</td>
 <td align="right">13,627,633</td>
 <td align="right">146,978</td>
@@ -1066,20 +1185,20 @@ in their percentages of Hispanic ethnicity.</p>
 <td align="right">1%</td>
 </tr>
 <tr class="even">
-<td align="left">SOME OTHER RACE ALONE</td>
+<td align="left">NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE</td>
 <td align="right">2010</td>
-<td align="right">558,211</td>
-<td align="right">14,331,229</td>
-<td align="right">14,889,440</td>
-<td align="right">96%</td>
+<td align="right">474,799</td>
+<td align="right">33,117</td>
+<td align="right">507,916</td>
+<td align="right">7%</td>
 </tr>
 <tr class="odd">
-<td align="left">AMERICAN INDIAN AND ALASKA NATIVE ALONE</td>
+<td align="left">SOME OTHER RACE ALONE</td>
 <td align="right">2011</td>
-<td align="right">2,086,995</td>
-<td align="right">460,011</td>
-<td align="right">2,547,006</td>
-<td align="right">18%</td>
+<td align="right">565,213</td>
+<td align="right">14,202,943</td>
+<td align="right">14,768,156</td>
+<td align="right">96%</td>
 </tr>
 <tr class="even">
 <td align="left">SOME OTHER RACE ALONE</td>
@@ -1090,76 +1209,76 @@ in their percentages of Hispanic ethnicity.</p>
 <td align="right">96%</td>
 </tr>
 <tr class="odd">
-<td align="left">ASIAN ALONE</td>
+<td align="left">SOME OTHER RACE ALONE</td>
 <td align="right">2013</td>
-<td align="right">15,841,339</td>
-<td align="right">170,781</td>
-<td align="right">16,012,120</td>
-<td align="right">1%</td>
-</tr>
-<tr class="even">
-<td align="left">NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE</td>
-<td align="right">2014</td>
-<td align="right">507,550</td>
-<td align="right">49,604</td>
-<td align="right">557,154</td>
-<td align="right">9%</td>
-</tr>
-<tr class="odd">
-<td align="left">SOME OTHER RACE ALONE</td>
-<td align="right">2015</td>
-<td align="right">699,309</td>
-<td align="right">14,676,633</td>
-<td align="right">15,375,942</td>
-<td align="right">95%</td>
-</tr>
-<tr class="even">
-<td align="left">SOME OTHER RACE ALONE</td>
-<td align="right">2016</td>
-<td align="right">758,275</td>
-<td align="right">15,576,077</td>
-<td align="right">16,334,352</td>
-<td align="right">95%</td>
-</tr>
-<tr class="odd">
-<td align="left">SOME OTHER RACE ALONE</td>
-<td align="right">2017</td>
-<td align="right">833,898</td>
-<td align="right">15,719,042</td>
-<td align="right">16,552,940</td>
-<td align="right">95%</td>
+<td align="right">641,423</td>
+<td align="right">14,169,602</td>
+<td align="right">14,811,025</td>
+<td align="right">96%</td>
 </tr>
 <tr class="even">
 <td align="left">AMERICAN INDIAN AND ALASKA NATIVE ALONE</td>
-<td align="right">2018</td>
-<td align="right">2,180,266</td>
-<td align="right">621,321</td>
-<td align="right">2,801,587</td>
-<td align="right">22%</td>
-</tr>
-<tr class="odd">
-<td align="left">NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE</td>
-<td align="right">2019</td>
-<td align="right">565,473</td>
-<td align="right">63,210</td>
-<td align="right">628,683</td>
-<td align="right">10%</td>
-</tr>
-<tr class="even">
-<td align="left">TOTAL</td>
-<td align="right">2021</td>
-<td align="right">269,364,681</td>
-<td align="right">62,529,064</td>
-<td align="right">331,893,745</td>
+<td align="right">2014</td>
+<td align="right">2,103,422</td>
+<td align="right">498,292</td>
+<td align="right">2,601,714</td>
 <td align="right">19%</td>
 </tr>
 <tr class="odd">
+<td align="left">NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE</td>
+<td align="right">2015</td>
+<td align="right">502,876</td>
+<td align="right">52,070</td>
+<td align="right">554,946</td>
+<td align="right">9%</td>
+</tr>
+<tr class="even">
+<td align="left">TOTAL</td>
+<td align="right">2016</td>
+<td align="right">265,728,796</td>
+<td align="right">57,398,719</td>
+<td align="right">323,127,515</td>
+<td align="right">18%</td>
+</tr>
+<tr class="odd">
 <td align="left">ASIAN ALONE</td>
-<td align="right">2022</td>
-<td align="right">19,415,251</td>
-<td align="right">281,729</td>
-<td align="right">19,696,980</td>
+<td align="right">2017</td>
+<td align="right">17,999,846</td>
+<td align="right">215,482</td>
+<td align="right">18,215,328</td>
 <td align="right">1%</td>
+</tr>
+<tr class="even">
+<td align="left">ASIAN ALONE</td>
+<td align="right">2018</td>
+<td align="right">18,193,513</td>
+<td align="right">221,685</td>
+<td align="right">18,415,198</td>
+<td align="right">1%</td>
+</tr>
+<tr class="odd">
+<td align="left">SOME OTHER RACE ALONE</td>
+<td align="right">2019</td>
+<td align="right">839,270</td>
+<td align="right">15,513,283</td>
+<td align="right">16,352,553</td>
+<td align="right">95%</td>
+</tr>
+<tr class="even">
+<td align="left">TWO OR MORE RACES</td>
+<td align="right">2021</td>
+<td align="right">14,298,433</td>
+<td align="right">27,588,006</td>
+<td align="right">41,886,439</td>
+<td align="right">66%</td>
+</tr>
+<tr class="odd">
+<td align="left">SOME OTHER RACE ALONE</td>
+<td align="right">2022</td>
+<td align="right">1,912,680</td>
+<td align="right">22,531,802</td>
+<td align="right">24,444,482</td>
+<td align="right">92%</td>
 </tr>
 <tr class="even">
 <td align="left">ASIAN ALONE</td>
@@ -1635,7 +1754,7 @@ There is another table that gives the breakdown in more detail, though:
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Ben Taft.</p>
+  <p>Developed by Higher Expectations for Racine County, Ben Taft.</p>
 </div>
 
 <div class="pkgdown-footer-right">

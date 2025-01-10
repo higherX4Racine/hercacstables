@@ -23,8 +23,12 @@ SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS."'></head><body>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/average_tract_poverty_ratio.html">Average Poverty Ratios by Tract in Racine County, WI</a></li>
-    <li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
+    <li><a class="dropdown-item" href="../articles/determine_geographies.html">determine_geographies</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-demographies.html">determine-demographies</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-measurement.html">determine-measurement</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-timeframes.html">determine-timeframes</a></li>
+    <li><a class="dropdown-item" href="../articles/plumbing-and-owner-occupancy.html">Plumbing and Owner-occupancy</a></li>
     <li><a class="dropdown-item" href="../articles/Population-changes-in-school-districts.html">Population changes in school districts</a></li>
     <li><a class="dropdown-item" href="../articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
     <li><a class="dropdown-item" href="../articles/set-up-your-api-key.html">Set up your API key</a></li>
@@ -63,28 +67,28 @@ SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS."</p>
 
 
 <p>A data frame with 15 rows and 8 columns</p><dl><dt>Group</dt>
-<dd><p><chr> The table, always "B05010"</chr></p></dd>
+<dd><p>&lt;chr&gt; The table, always "B05010"</p></dd>
 
 <dt>Variable</dt>
-<dd><p><chr> The full variable name, e.g. "B05010_001E"</chr></p></dd>
+<dd><p>&lt;chr&gt; The full variable name, e.g. "B05010_001E"</p></dd>
 
 <dt>Index</dt>
-<dd><p><int> The row of this variable in the table</int></p></dd>
+<dd><p>&lt;int&gt; The row of this variable in the table</p></dd>
 
 <dt>Least Poverty Ratio</dt>
-<dd><p><dbl> The lowest ratio of income to poverty level in this tier</dbl></p></dd>
+<dd><p>&lt;dbl&gt; The lowest ratio of income to poverty level in this tier</p></dd>
 
 <dt>Greatest Poverty Ratio</dt>
-<dd><p><dbl> The highest ratio of income to poverty level in this tier</dbl></p></dd>
+<dd><p>&lt;dbl&gt; The highest ratio of income to poverty level in this tier</p></dd>
 
 <dt>Standard of Living</dt>
-<dd><p><chr> One of "Unsustainable," or "Mixed"</chr></p></dd>
+<dd><p>&lt;chr&gt; One of "Unsustainable," or "Mixed"</p></dd>
 
 <dt>Native-born Parents</dt>
-<dd><p><int> How many of the parents in the household were born in the USA.</int></p></dd>
+<dd><p>&lt;int&gt; How many of the parents in the household were born in the USA.</p></dd>
 
 <dt>Foreign-born Parents</dt>
-<dd><p><int> How many of the parents in the household were not born in the USA.</int></p></dd>
+<dd><p>&lt;int&gt; How many of the parents in the household were not born in the USA.</p></dd>
 
 
 </dl></div>
@@ -100,7 +104,7 @@ SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS."</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Ben Taft.</p>
+  <p>Developed by Higher Expectations for Racine County, Ben Taft.</p>
 </div>
 
 <div class="pkgdown-footer-right">

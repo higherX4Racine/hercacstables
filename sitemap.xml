@@ -3,10 +3,14 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/LICENSE-text.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/LICENSE.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/Population-changes-in-school-districts.html</loc></url>
-<url><loc>https://higherx4racine.github.io/hercacstables/articles/average_tract_poverty_ratio.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/children_in_poverty.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/articles/determine-demographies.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/articles/determine-measurement.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/articles/determine-timeframes.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/articles/determine_geographies.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/hercacstables.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/index.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/articles/plumbing-and-owner-occupancy.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/race_ethnicity_categories.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/articles/set-up-your-api-key.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/authors.html</loc></url>
@@ -24,7 +28,11 @@
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/FAMILIES_WITH_CHILDREN_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/GEOGRAPHY_HIERARCHY_METADATA.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/RACE_ETHNICITY_SUBTABLE_METADATA.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/RACE_OR_ETHNIC_GROUP_TYPES.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/STANDARD_OF_LIVING_METADATA.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/SUBJECT_TYPES.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/TABLE_TYPES.html</loc></url>
+<url><loc>https://higherx4racine.github.io/hercacstables/reference/VARIABLE_TYPES.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/api_key_is_set.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/api_key_setup.html</loc></url>
 <url><loc>https://higherx4racine.github.io/hercacstables/reference/api_key_value.html</loc></url>

@@ -34,8 +34,12 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/average_tract_poverty_ratio.html">Average Poverty Ratios by Tract in Racine County, WI</a></li>
-    <li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
+<li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
+    <li><a class="dropdown-item" href="../articles/determine_geographies.html">determine_geographies</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-demographies.html">determine-demographies</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-measurement.html">determine-measurement</a></li>
+    <li><a class="dropdown-item" href="../articles/determine-timeframes.html">determine-timeframes</a></li>
+    <li><a class="dropdown-item" href="../articles/plumbing-and-owner-occupancy.html">Plumbing and Owner-occupancy</a></li>
     <li><a class="dropdown-item" href="../articles/Population-changes-in-school-districts.html">Population changes in school districts</a></li>
     <li><a class="dropdown-item" href="../articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
     <li><a class="dropdown-item" href="../articles/set-up-your-api-key.html">Set up your API key</a></li>
@@ -71,6 +75,12 @@
 <div class="section level2">
 <h2 id="welcome">Welcome<a class="anchor" aria-label="anchor" href="#welcome"></a>
 </h2>
+<p>If this is your first time using <code>hercacstables</code> then you
+probably want to register with the Census. The Census limits the number
+of anonymous API queries that it receives from any one IP address. The
+<code><a href="../articles/set-up-your-api-key.html">vignette("set-up-your-api-key")</a></code> will guide you through the
+processs.</p>
+<p>Otherwise, welcome back!</p>
 <p>This package helps R users to access data from the United States
 Census Bureau, especially its American Community Survey.</p>
 <p>The database has an enormous amount of information, stored in a
@@ -447,7 +457,7 @@ was no survey in 2020.</p>
 <code class="sourceCode R"><span><span class="va">BUILD_DATE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">LATEST_YEAR</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/most_recent_vintage.html">most_recent_vintage</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acs1"</span><span class="op">)</span></span>
 <span><span class="va">TEN_YEARS_AGO</span> <span class="op">&lt;-</span> <span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">11L</span></span></code></pre></div>
-<p>The last ten years available from the Census are, as of 2024-12-16,
+<p>The last ten years available from the Census are, as of 2025-01-10,
 2012 through 2023.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">YEARS_INCLUDED</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">TEN_YEARS_AGO</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span></span></code></pre></div>
@@ -1091,7 +1101,7 @@ patterns are corroborated by significant statistics?</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Ben Taft.</p>
+  <p>Developed by Higher Expectations for Racine County, Ben Taft.</p>
 </div>
 
 <div class="pkgdown-footer-right">

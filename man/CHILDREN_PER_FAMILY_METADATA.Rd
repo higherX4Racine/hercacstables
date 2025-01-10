@@ -9,12 +9,12 @@
 
 A data frame with 15 rows and 6 columns
 \describe{
-\item{Group}{\if{html}{\out{<chr>}} The table, always "B09002"}
-\item{Variable}{\if{html}{\out{<chr>}} The full variable name, e.g. "B09002_001E"}
-\item{Index}{\if{html}{\out{<int>}} The row of this variable in the table}
-\item{Adults}{\if{html}{\out{<chr>}} The adult(s) heading the household}
-\item{Lower Age}{\if{html}{\out{<int>}} The age of the youngest children counted by this variable}
-\item{Upper Age}{\if{html}{\out{<int>}} The age of the oldest children counted by this variable}
+\item{Group}{<chr> The table, always "B09002"}
+\item{Variable}{<chr> The full variable name, e.g. "B09002_001E"}
+\item{Index}{<int> The row of this variable in the table}
+\item{Adults}{<chr> The adult(s) heading the household}
+\item{Lower Age}{<int> The age of the youngest children counted by this variable}
+\item{Upper Age}{<int> The age of the oldest children counted by this variable}
 }
 }
 }

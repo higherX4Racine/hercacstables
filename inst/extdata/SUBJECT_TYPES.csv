@@ -1,0 +1,32 @@
+﻿Subject Number,Subject Name
+1,Age; Sex
+2,Race
+3,Hispanic or Latino Origin
+4,Ancestry
+5,Citizenship Status; Year of Entry; Foreign Born Place of Birth
+6,Place of Birth
+7,Migration/Residence 1 Year Ago
+8,Commuting (Journey to Work); Place of Work
+9,Relationship to Householder
+10,Grandparents and Grandchildren Characteristics
+11,Household Type; Family Type; Subfamilies
+12,Marital Status; Marital History
+13,Fertility
+14,School Enrollment
+15,Educational Attainment; Undergraduate Field of Degree
+16,Language Spoken at Home
+17,Poverty Status
+18,Disability Status
+19,Income
+20,Earnings
+21,Veteran Status; Period of Military Service
+22,Food Stamps/Supplemental Nutrition Assistance Program (SNAP)
+23,Employment Status; Work Status Last Year
+24,"Industry, Occupation, and Class of Worker"
+25,Housing Characteristics
+26,Group Quarters
+27,Health Insurance Coverage
+28,Computer and Internet Use
+29,Citizen Voting-Age Population
+98,Quality Measures
+99,Allocation Table for Any Subject

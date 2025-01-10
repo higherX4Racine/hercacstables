@@ -9,12 +9,12 @@
 
 A data frame with 12 rows and 6 columns
 \describe{
-\item{Group}{\if{html}{\out{<chr>}} The table, always "B11003"}
-\item{Variable}{\if{html}{\out{<chr>}} The full variable name, e.g. "B11003_001E"}
-\item{Index}{\if{html}{\out{<int>}} The row of this variable in the table}
-\item{Adults}{\if{html}{\out{<chr>}} The adult(s) heading the household}
-\item{Children under 6}{\if{html}{\out{<lgl>}} Are there any children under 6 in this family?}
-\item{Childr 6-17}{\if{html}{\out{<lgl>}} Are there any children 6-17 in this family?}
+\item{Group}{<chr> The table, always "B11003"}
+\item{Variable}{<chr> The full variable name, e.g. "B11003_001E"}
+\item{Index}{<int> The row of this variable in the table}
+\item{Adults}{<chr> The adult(s) heading the household}
+\item{Children under 6}{<lgl> Are there any children under 6 in this family?}
+\item{Childr 6-17}{<lgl> Are there any children 6-17 in this family?}
 }
 }
 }

@@ -1,0 +1,12 @@
+﻿Table ID Characters,Type of Table,Contains
+B,Base Detailed Table,Most detailed estimates on all topics for all geographies
+C,Collapsed Detailed Table,Similar information from its corresponding Base Table (B) but at a lower level of detail because one or more lines in the Base Table have been grouped together
+S,Subject Table,"A span of information on a particular ACS subject, such as veterans, presented in the format of both estimates and percentages"
+R,Ranking Table,State rankings across approximately 90 key variables
+GCT,Geographic Comparison Table,Comparisons across approximately 95 key variables for geographies other than states such as counties or congressional districts
+K20,Supplemental Estimates,"Simplified Detailed Tables at a lower population threshold than the standard 1-year tables (all areas with populations of 20,000 or more)"
+XK,Experimental Estimates,"Experimental estimates, which are different from the standard ACS data releases"
+DP,Data Profile,"Broad social, economic, housing, and demographic information in a total of four profiles"
+NP,Narrative Profile,Summaries of information in the Data Profiles using nontechnical text
+CP,Comparison Profile,Comparisons of ACS estimates over time in the same layout as the Data Profiles
+S0201,Selected Population Profile,"Broad ACS statistics for population subgroups by race, ethnicity, ancestry, tribal affiliation, and place of birth"

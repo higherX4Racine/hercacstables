@@ -19,6 +19,15 @@ knitr::opts_chunk$set(
 
 ## Welcome
 
+
+If this is your first time using `hercacstables` then you probably want to
+register with the Census.
+The Census limits the number of anonymous API queries that it receives from any
+one IP address.
+The `vignette("set-up-your-api-key")` will guide you through the processs.
+
+Otherwise, welcome back!
+
 This package helps R users to access data from the United States Census Bureau,
 especially its American Community Survey.
 

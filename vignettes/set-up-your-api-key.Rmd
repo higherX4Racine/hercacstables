@@ -2,7 +2,7 @@
 title: "Set up your API key"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{set-up-your-api-key}
+  %\VignetteIndexEntry{Set up your API key}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

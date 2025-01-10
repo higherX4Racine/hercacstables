@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
   cache = FALSE
 )
 
-LATEST_YEAR <- as.POSIXlt(Sys.Date())$year + 1900L
 ```
 
 ## Preface
@@ -117,7 +116,7 @@ hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
     knitr::kable()
 ```
 
-### Tables with "RACE" in their description
+### Tables with "race" in their description
 
 ```{r}
 #| label: find-race-in-table-descriptions
@@ -126,7 +125,8 @@ hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
 tables_that_name_race <- hercacstables::ACS_GROUP_METADATA |>
     dplyr::filter(
         stringr::str_detect(.data$Group, "\\d$"),
-        stringr::str_detect(.data$Description, "RACE")
+        stringr::str_detect(.data$Description,
+                            stringr::regex("RACE", ignore_case = TRUE))
     ) |>
     dplyr::select(
         "Group", "Description"
@@ -209,7 +209,11 @@ convenience_check_variables <- tibble::tribble(
                                       "Subtable",
                                       "Convenience")
     )
+```
 
+```{r}
+#| label: show-the-convenience-table
+#| echo: false
 knitr::kable(convenience_check_variables)
 ```
 
@@ -224,9 +228,11 @@ isolate them and run them as few times as possible.
 ```{r, cache=TRUE}
 #| label: check-values-for-convenience-tables
 
+LATEST_YEAR <- hercacstables::most_recent_vintage("acs", "acs1")
+
 convenience_check_values_raw <- hercacstables::fetch_data(
     convenience_check_variables$Variable,
-    year = LATEST_YEAR - 2L,      # the most recent one available at the time of writing
+    year = LATEST_YEAR,           # the most recent one available at the time of writing
     for_geo = "us",               # the entire nation
     for_items = "*",              # all nation-level geographies
     survey_type = "acs",          # as opposed to, e.g. "dec," for Decennial survey data
@@ -461,12 +467,12 @@ hispanic_and_broad_race_variables <- hercacstables::RACE_ETHNICITY_SUBTABLE_META
 knitr::kable(hispanic_and_broad_race_variables)
 ```
 
-Next, we pull `r LATEST_YEAR - 2005 - 1` years of ACS data.
+Next, we pull `r LATEST_YEAR - 2005` years of ACS data.
 
 ```{r, cache=TRUE}
 #| label: fetch-hispanic-and-broad-race-data
 
-hispanic_and_broad_race_raw <- c(2009:2019, 2021:(LATEST_YEAR - 1)) |>
+hispanic_and_broad_race_raw <- c(2005:2019, 2021:LATEST_YEAR) |>
     purrr::map(
         ~ hercacstables::fetch_data(
             hispanic_and_broad_race_variables$Variable,

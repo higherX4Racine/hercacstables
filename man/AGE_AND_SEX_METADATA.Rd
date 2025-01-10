@@ -9,12 +9,12 @@
 
 A data frame with 49 rows and 6 columns.
 \describe{
-\item{group}{\if{html}{\out{<chr>}} Always "B01001"}
-\item{index}{\if{html}{\out{<int>}} The row in the source table that this metadata row describes.}
-\item{variable}{\if{html}{\out{<chr>}} The full variable name, e.g. "B01001_001E"}
-\item{Sex}{\if{html}{\out{<chr>}} One of "All," "Male," or "Female"}
-\item{Lower Age}{\if{html}{\out{<int>}} inclusive, in [-999, 85]}
-\item{Upper Age}{\if{html}{\out{<int>}} inclusive, in [4, 999]}
+\item{group}{<chr> Always "B01001"}
+\item{index}{<int> The row in the source table that this metadata row describes.}
+\item{variable}{<chr> The full variable name, e.g. "B01001_001E"}
+\item{Sex}{<chr> One of "All," "Male," or "Female"}
+\item{Lower Age}{<int> inclusive, in [-999, 85]}
+\item{Upper Age}{<int> inclusive, in [4, 999]}
 }
 }
 }

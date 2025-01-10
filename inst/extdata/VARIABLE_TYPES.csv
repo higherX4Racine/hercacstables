@@ -1,0 +1,8 @@
+﻿Variable Type,Title,Related Products,Meaning
+E,Estimate,"Summary Files, Subject Tables, Data Profiles, Comparison Profiles",A numeric representation of the estimate.
+EA,Estimate Annotation,"Subject Tables, Comparison Profiles","A character representation of the estimate. If an Estimate Annotation exists, use this value in place of the Estimate.(See Example #1 in Estimate and Annotation Values)"
+M,Margin of Error,"Summary Files, Subject Tables, Data Profiles",A numeric representation of the margin of error.
+MA,Margin of Error Annotation,Subject Tables Only,"A character representation of the margin of error. If a Margin of Error Annotation exists, use this value in place of the Margin of Error."
+PE,Percent Estimate,Data Profiles Only,An estimate representing a percent of the total.
+PM,Percent Margin of Error,Data Profiles Only,The Margin of Error for the corresponding Percent Estimate (PE) variable
+SS,Statistical Significance,Comparison Profiles Only,"Returns ‘*’ or ‘c’ representing the Statistical Significance for the corresponding estimate (E) variable. (See Example #2  in Estimate and Annotation Values) An * indicates that the estimate is significantly different (at a 90% confidence level) than the estimate from the most current year. A ""c"" indicates the estimates for that year and the current year are both controlled; a statistical test is not appropriate."

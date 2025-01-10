@@ -13,7 +13,16 @@ reference:
   - fetch_decennial_block_pops_by_race
   - fetch_acs5_tract_data
   - safe_api_query
-- subtitle: Learning about the API
+- subtitle: API structure
+  desc: >
+    Metadata about abbreviations, codes, and other arcane shorthand that appear
+    in the Census API.
+  contents:
+  - TABLE_TYPES
+  - SUBJECT_TYPES
+  - RACE_OR_ETHNIC_GROUP_TYPES
+  - VARIABLE_TYPES
+- subtitle: The contents of the API
   desc: >
     These functions and tables will help you to look up information about which
     Census tables store which information.

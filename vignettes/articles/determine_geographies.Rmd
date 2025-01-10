@@ -1,0 +1,27 @@
+---
+title: "determine_geographies"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+A **Geographic Level** is a
+[Census-defined hierarchy](https://www.census.gov/programs-surveys/geography/guidance.html)
+from the whole country to small blocks.
+The level that you are interested in is determined by the scale of your
+question.
+If you were drawing maps, these would be the areas that appeared as different
+colors.
+Examples include congressional districts, incorporated cities, school districts,
+and Census tracts.
+
+A **Geographic Area** is a set of specific instances of one or more geographic
+levels.
+This is the full geographic scope of your question.
+If you were drawing maps, this would determine their scale.
+Examples include whole states, metropolitan areas, Census-designated places, and
+counties.

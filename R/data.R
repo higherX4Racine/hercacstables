@@ -171,18 +171,18 @@
 #' @format ## EMPLOYMENT_STATUS_METADATA
 #' A data frame with 439 rows and 12 columns:
 #' \describe{
-#'   \item{group}{<chr>}
-#'   \item{index}{<int>}
-#'   \item{variable}{<chr>}
-#'   \item{Sex}{<chr>}
-#'   \item{Lower Age}{<int>}
-#'   \item{Upper Age}{<int>}
-#'   \item{Labor Force}{<chr>}
-#'   \item{Enlistment}{<chr>}
-#'   \item{Employment}{<chr>}
-#'   \item{Suffix}{<chr>}
-#'   \item{Census Race/Ethnicity}{<chr>}
-#'   \item{Poverty}{<chr>}
+#'   \item{group}{&lt;chr&gt;}
+#'   \item{index}{&lt;int&gt;}
+#'   \item{variable}{&lt;chr&gt;}
+#'   \item{Sex}{&lt;chr&gt;}
+#'   \item{Lower Age}{&lt;int&gt;}
+#'   \item{Upper Age}{&lt;int&gt;}
+#'   \item{Labor Force}{&lt;chr&gt;}
+#'   \item{Enlistment}{&lt;chr&gt;}
+#'   \item{Employment}{&lt;chr&gt;}
+#'   \item{Suffix}{&lt;chr&gt;}
+#'   \item{Census Race/Ethnicity}{&lt;chr&gt;}
+#'   \item{Poverty}{&lt;chr&gt;}
 #' }
 #' @source api.census.gov/data/acs/acs5/groups.html
 "EMPLOYMENT_STATUS_METADATA"
@@ -197,12 +197,12 @@
 #' @format ## STANDARD_OF_LIVING_METADATA
 #' A data frame with 13 rows and 6 columns
 #' \describe{
-#'   \item{Group}{<chr> The table, always "B17026"}
-#'   \item{Variable}{<chr> The full variable name, e.g. "B17026_001E"}
-#'   \item{Index}{<int> The row of this variable in the table}
-#'   \item{Least Poverty Ratio}{<dbl> The lowest ratio of income to poverty level in this tier}
-#'   \item{Greatest Poverty Ratio}{<dbl> The highest ratio of income to poverty level in this tier}
-#'   \item{Standard of Living}{<chr> One of "Everyone," "Unsustainable," or "Self-sustaining"}
+#'   \item{Group}{&lt;chr&gt; The table, always "B17026"}
+#'   \item{Variable}{&lt;chr&gt; The full variable name, e.g. "B17026_001E"}
+#'   \item{Index}{&lt;int&gt; The row of this variable in the table}
+#'   \item{Least Poverty Ratio}{&lt;dbl&gt; The lowest ratio of income to poverty level in this tier}
+#'   \item{Greatest Poverty Ratio}{&lt;dbl&gt; The highest ratio of income to poverty level in this tier}
+#'   \item{Standard of Living}{&lt;chr&gt; One of "Everyone," "Unsustainable," or "Self-sustaining"}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B17026.html
 "STANDARD_OF_LIVING_METADATA"
@@ -214,12 +214,12 @@
 #' @format ## FAMILIES_WITH_CHILDREN_METADATA
 #' A data frame with 12 rows and 6 columns
 #' \describe{
-#'   \item{Group}{<chr> The table, always "B11003"}
-#'   \item{Variable}{<chr> The full variable name, e.g. "B11003_001E"}
-#'   \item{Index}{<int> The row of this variable in the table}
-#'   \item{Adults}{<chr> The adult(s) heading the household}
-#'   \item{Children under 6}{<lgl> Are there any children under 6 in this family?}
-#'   \item{Childr 6-17}{<lgl> Are there any children 6-17 in this family?}
+#'   \item{Group}{&lt;chr&gt; The table, always "B11003"}
+#'   \item{Variable}{&lt;chr&gt; The full variable name, e.g. "B11003_001E"}
+#'   \item{Index}{&lt;int&gt; The row of this variable in the table}
+#'   \item{Adults}{&lt;chr&gt; The adult(s) heading the household}
+#'   \item{Children under 6}{&lt;lgl&gt; Are there any children under 6 in this family?}
+#'   \item{Childr 6-17}{&lt;lgl&gt; Are there any children 6-17 in this family?}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B11003.html
 "FAMILIES_WITH_CHILDREN_METADATA"
@@ -232,12 +232,12 @@
 #' @format ## CHILDREN_PER_FAMILY_METADATA
 #' A data frame with 15 rows and 6 columns
 #' \describe{
-#'   \item{Group}{<chr> The table, always "B09002"}
-#'   \item{Variable}{<chr> The full variable name, e.g. "B09002_001E"}
-#'   \item{Index}{<int> The row of this variable in the table}
-#'   \item{Adults}{<chr> The adult(s) heading the household}
-#'   \item{Lower Age}{<int> The age of the youngest children counted by this variable}
-#'   \item{Upper Age}{<int> The age of the oldest children counted by this variable}
+#'   \item{Group}{&lt;chr&gt; The table, always "B09002"}
+#'   \item{Variable}{&lt;chr&gt; The full variable name, e.g. "B09002_001E"}
+#'   \item{Index}{&lt;int&gt; The row of this variable in the table}
+#'   \item{Adults}{&lt;chr&gt; The adult(s) heading the household}
+#'   \item{Lower Age}{&lt;int&gt; The age of the youngest children counted by this variable}
+#'   \item{Upper Age}{&lt;int&gt; The age of the oldest children counted by this variable}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B09002.html
 "CHILDREN_PER_FAMILY_METADATA"
@@ -251,14 +251,14 @@
 #' @format ## CHILDREN_IN_POVERTY_METADATA
 #' A data frame with 15 rows and 8 columns
 #' \describe{
-#'   \item{Group}{<chr> The table, always "B05010"}
-#'   \item{Variable}{<chr> The full variable name, e.g. "B05010_001E"}
-#'   \item{Index}{<int> The row of this variable in the table}
-#'   \item{Least Poverty Ratio}{<dbl> The lowest ratio of income to poverty level in this tier}
-#'   \item{Greatest Poverty Ratio}{<dbl> The highest ratio of income to poverty level in this tier}
-#'   \item{Standard of Living}{<chr> One of "Unsustainable," or "Mixed"}
-#'   \item{Native-born Parents}{<int> How many of the parents in the household were born in the USA.}
-#'   \item{Foreign-born Parents}{<int> How many of the parents in the household were not born in the USA.}
+#'   \item{Group}{&lt;chr&gt; The table, always "B05010"}
+#'   \item{Variable}{&lt;chr&gt; The full variable name, e.g. "B05010_001E"}
+#'   \item{Index}{&lt;int&gt; The row of this variable in the table}
+#'   \item{Least Poverty Ratio}{&lt;dbl&gt; The lowest ratio of income to poverty level in this tier}
+#'   \item{Greatest Poverty Ratio}{&lt;dbl&gt; The highest ratio of income to poverty level in this tier}
+#'   \item{Standard of Living}{&lt;chr&gt; One of "Unsustainable," or "Mixed"}
+#'   \item{Native-born Parents}{&lt;int&gt; How many of the parents in the household were born in the USA.}
+#'   \item{Foreign-born Parents}{&lt;int&gt; How many of the parents in the household were not born in the USA.}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B05010.html
 "CHILDREN_IN_POVERTY_METADATA"
@@ -273,12 +273,66 @@
 #' @format ## AGE_AND_SEX_METADATA
 #' A data frame with 49 rows and 6 columns.
 #' \describe{
-#' \item{group}{<chr> Always "B01001"}
-#' \item{index}{<int> The row in the source table that this metadata row describes.}
-#' \item{variable}{<chr> The full variable name, e.g. "B01001_001E"}
-#' \item{Sex}{<chr> One of "All," "Male," or "Female"}
-#' \item{Lower Age}{<int> inclusive, in \[-999, 85\]}
-#' \item{Upper Age}{<int> inclusive, in \[4, 999\]}
+#' \item{group}{&lt;chr&gt; Always "B01001"}
+#' \item{index}{&lt;int&gt; The row in the source table that this metadata row describes.}
+#' \item{variable}{&lt;chr&gt; The full variable name, e.g. "B01001_001E"}
+#' \item{Sex}{&lt;chr&gt; One of "All," "Male," or "Female"}
+#' \item{Lower Age}{&lt;int&gt; inclusive, in \[-999, 85\]}
+#' \item{Upper Age}{&lt;int&gt; inclusive, in \[4, 999\]}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B01001.html
 "AGE_AND_SEX_METADATA"
+
+#' A Census table's ID always starts with an alphanumeric code for its type.
+#'
+#' @format ## TABLE_TYPES
+#' A data frame with 11 rows and 3 columns.
+#' \describe{
+#' \item{Table ID Characters}{&lt;chr&gt; The alphanumeric code for this type of table}
+#' \item{Type of Table}{&lt;chr&gt; A human-readable name for the type of table.}
+#' \item{Contains}{&lt;chr&gt; A description of what information this type of table will contain.}
+#' }
+#' @source https://www.census.gov/programs-surveys/acs/data/data-tables/table-ids-explained.html
+"TABLE_TYPES"
+
+#' A code for the broad subject that a Census table covers.
+#'
+#' The second 2 characters identify the subject of the table.
+#' These only apply to B, C, K20, S, R, and GCT Tables.
+#' Profiles DP, NP, CP, and S0201 cover multiple topics, so they do not have any
+#' characters to indicate a subject.
+#'
+#' @format ## TABLE_TYPES
+#' A data frame with 31 rows and 2 columns.
+#' \describe{
+#' \item{Subject Number}{&lt;chr&gt; The zero-padded numeric code for this subject}
+#' \item{Subject Name}{&lt;chr&gt; A very short description of the subject.}
+#' }
+#' @source https://www.census.gov/programs-surveys/acs/data/data-tables/table-ids-explained.html
+"SUBJECT_TYPES"
+
+#' For selected tables, an alphabetic suffix follows to indicate that a table is repeated for the nine major race and Hispanic or Latino groups:
+#'
+#' @format ## RACE_OR_ETHNIC_GROUP_TYPES
+#' A data frame with 9 rows and 2 columns.
+#' \describe{
+#' \item{Code}{&lt;chr&gt; A one-letter suffix}
+#' \item{Race or Ethnic Group}{&lt;chr&gt; A racial or ethnic identity such as "Black Alone" or "Hispanic or Latino".}
+#' }
+#' @source https://www.census.gov/programs-surveys/acs/data/data-tables/table-ids-explained.html
+"RACE_OR_ETHNIC_GROUP_TYPES"
+
+#' ACS data contain variables ending in 1- or 2-letter codes.
+#'
+#' This table defines each variable type and its meaning.
+#'
+#' @format ## VARIABLE_TYPES
+#' A data frame with 7 rows and 4 columns.
+#' \describe{
+#' \item{Variable Type}{&lt;chr&gt; A 1- or 2-letter code}
+#' \item{Title}{&lt;chr&gt; A human-readable name for the type of variable.}
+#' \item{Related Products}{&lt;chr&gt; The types of Census data that contain this kind of variable.}
+#' \item{Meaning}{&lt;chr&gt; A detailed explanation of what this kind of variable represents.}
+#' }
+#' @source https://www.census.gov/data/developers/data-sets/acs-1year/notes-on-acs-api-variable-types.html
+"VARIABLE_TYPES"

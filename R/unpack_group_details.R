@@ -2,15 +2,15 @@
 #'
 #' @param .group the code of the group, like "B25043" or "C15010B"
 #'
-#' @return a tibble with at least 4 columns, like [hercacstables::ACS_VARIABLE_METADATA], but `Details` is split into multiple columns with uppercase letter names.
+#' @return a tibble with at least 4 columns, like [hercacstables::GLOSSARY_OF_ACS_VARIABLES], but `Details` is split into multiple columns with uppercase letter names.
 #' @export
 #'
 #' @examples
 #' unpack_group_details("B01002B")
 #'
-#' @seealso [ACS_VARIABLE_METADATA]
+#' @seealso [GLOSSARY_OF_ACS_VARIABLES]
 unpack_group_details <- function(.group) {
-    hercacstables::ACS_VARIABLE_METADATA |>
+    hercacstables::GLOSSARY_OF_ACS_VARIABLES |>
         dplyr::filter(
             .data$Group == .group
         ) |>

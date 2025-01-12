@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 6,
-  dpi = 72
+  dpi = 96
 )
 ```
 
@@ -24,7 +24,7 @@ If this is your first time using `hercacstables` then you probably want to
 register with the Census.
 The Census limits the number of anonymous API queries that it receives from any
 one IP address.
-The `vignette("set-up-your-api-key")` will guide you through the processs.
+The `vignette("set_up_your_api_key")` will guide you through the processs.
 
 Otherwise, welcome back!
 
@@ -50,7 +50,7 @@ variables that report the data that you are interested in.
 
 In light of that, `hercacstables` is designed to help people make repeated,
 efficient use of the Census's API.
-There are _metadata_ tables that explicitly connect real-world concepts to
+There are _glossary_ tables that explicitly connect real-world concepts to
 Census variables.
 You can then use database-style joins to connect the concepts to the values that
 you pull from the API.
@@ -103,14 +103,14 @@ counties.
 
 1. Identify the groups and rows that contain the data you need
    * Find potential groups by searching the `Universe` and `Description` fields
-     of `hercacstables::ACS_GROUP_METADATA`.
-   * Identify specific variables with `hercacstables::ACS_VARIABLE_METADATA`:
+     of `hercacstables::GLOSSARY_OF_ACS_GROUPS`.
+   * Identify specific variables with `hercacstables::GLOSSARY_OF_ACS_VARIABLES`:
      filter by the `Group` field and examine the `Details` field.
    * Create a lookup table that maps from the Census variable name to your
      variables.
      * You may need several if you are pulling data from several groups.
 2. Define the geographies that you will use
-   * Use `hercacstables::ACS_GEOGRAPHY_METADATA` for this, too!
+   * Use `hercacstables::GLOSSARY_OF_ACS_GEOGRAPHIES` for this, too!
    * You need to know at least two levels of geography:
      * The one that you want to pull data for, your level of interest
        * This is often small, like tract or county subdivision.
@@ -144,7 +144,7 @@ County, NH] during [the last 10 years]?
 ### Find the **measurement** and **demographic groups**
 
 First, find the variables that describe the numbers of households.
-One way to do this is to search `hercacstables::ACS_GROUP_METADATA` for groups
+One way to do this is to search `hercacstables::GLOSSARY_OF_ACS_GROUPS` for groups
 whose `Universe` is "Households" and whose `Description` contains "Hispanic" or
 "Ethnicity."
 A group's `Universe` describes what it is measuring, often telling you the units
@@ -154,7 +154,7 @@ A group's `Description` is a phrase that summarizes what it reports.
 ```{r}
 #| label: search-for-relevant-groups
 
-hercacstables::ACS_GROUP_METADATA |>
+hercacstables::GLOSSARY_OF_ACS_GROUPS |>
     dplyr::filter(
         .data$ACS5,
         stringr::str_detect(.data$Universe, "Household"),
@@ -180,7 +180,7 @@ This gives us a good opportunity to document the ethnicities counted in each.
 #| label: show-relevant-variables
 
 HOUSEHOLD_GROUPS <- c("B11001", "B11001I")
-household_variables <- hercacstables::ACS_VARIABLE_METADATA |>
+household_variables <- hercacstables::GLOSSARY_OF_ACS_VARIABLES |>
     dplyr::filter(
         .data$Dataset == "ACS1",
         .data$Group %in% HOUSEHOLD_GROUPS,

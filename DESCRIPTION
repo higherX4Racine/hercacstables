@@ -1,7 +1,7 @@
 Package: hercacstables
 Title: Work with American Community Survey Tables through the US Census
     API
-Version: 0.0.0.9000
+Version: 0.1.0.1
 Authors@R: c(
         person("Higher Expectations for Racine County",
                role = c("cph", "fnd")),

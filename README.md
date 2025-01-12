@@ -3,6 +3,11 @@
 
 # hercacstables
 
+This package provides an R interface to the United States Census
+Bureau’s data API. The primary focus, as per its name, is pulling
+information from the [detailed tables of the American Community
+Survey](https://www.census.gov/programs-surveys/acs/data/data-tables.html).
+
 <!-- badges: start -->
 <!-- badges: end -->
 
@@ -13,20 +18,21 @@ API is the `hercacstables::fetch_data()` function.
 
 ``` r
 POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
-    # the database that we are fetching data from
+    # the API works one year at a time
+    year = hercacstables::most_recent_vintage("acs", "acs1"),
+    
+    # the API can only query one data source at a time
     survey_type = "acs",           # the American Community Survey
     table_or_survey_code = "acs1", # the 1-year dataset of the ACS
-    year = hercacstables::most_recent_vintage("acs", "acs1"),
-                                   # the API works one year at a time
     
-    # the geographic level of detail that we are fetching data for
+    # the API fetches values for one or more instances of a specific geography
     for_geo = "state",             # fetch values for entire states
     for_items = c(
         "11",                      # the District of Columbia
         "72"                       # Puerto Rico
     ),
     
-    # the specific data that we are fetching
+    # the codes for the specific data that we are fetching
     variables = c(
         "NAME",                    # the geographic area's name
         "B01001_001E",             # the total number of people
@@ -59,13 +65,13 @@ detailed articles for each task because each one can be
 [complex](https://www.census.gov/data/developers/guidance/api-user-guide.Core_Concepts.html).
 
 - Use one or more Census measurements:
-  `vignette("determine-measurement")`
+  `vignette("determine_measurement")`
 - Describe who or what has been measured:
-  `vignette("determine-demographies")`
+  `vignette("determine_demographies")`
 - Specify where the measurements were made:
-  `vignette("determine-geographies")`
+  `vignette("determine_geographies")`
 - Choose the year(s) that are relevant:
-  `vignette("determine-timeframes")`
+  `vignette("determine_timeframes")`
 
 ## For the newest R users:
 
@@ -93,5 +99,3 @@ However, it returns those data in a weirdly idiosyncratic way. Even
 though the output seems tabular, the data are really organized in a
 tree-like fashion. This package is intended to make it easy to access
 and use the ACS data with R.
-
-## Example

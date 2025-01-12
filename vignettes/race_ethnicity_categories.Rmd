@@ -44,7 +44,7 @@ row number.
 
 While packing information is efficient for storing and transmitting data, it
 means that users of Census information must unpack things in order to be clear.
-The `hercacstables` package has many tools and metadata tables that should make
+The `hercacstables` package has many tools and glossary tables that should make
 it easier and more convenient to unpack Census data.
 
 ## Racial and ethnic categories in the American Community Survey
@@ -81,7 +81,7 @@ Nevertheless, it occurs throughout the American Community Survey.
 #| label: find-subtables-with-ethnicity
 #| echo: false
 
-broad_subtables <- hercacstables::ACS_GROUP_METADATA |>
+broad_subtables <- hercacstables::GLOSSARY_OF_ACS_GROUPS |>
     dplyr::filter(stringr::str_detect(.data$Group, "I$")) |>
     dplyr::select("Group", "Description") |>
     dplyr::mutate(
@@ -99,16 +99,16 @@ Each identity is designated by a suffix at the end of a table's name.
 In other words, all of the values from a table with one of these suffixes in its
 name will pertain to people of just one racial/ethnic category.
 
-Since the case is so common, `hercacstables` describes it with the metadata
-table `hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA`.
+Since the case is so common, `hercacstables` describes it with the glossary
+table `hercacstables::RACE_ETHNICITY_SUBTABLES`.
 It maps from the suffix in a table's name to the racial/ethnic category the
 table describes.
 
 ```{r}
-#| label: show-race-ethnicity-subtable-metadata
+#| label: show-race-ethnicity-subtable-glossary
 #| echo: false
 
-hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
+hercacstables::RACE_ETHNICITY_SUBTABLES |>
     dplyr::select(
         "Census Race",
         "Suffix"
@@ -122,7 +122,7 @@ hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
 #| label: find-race-in-table-descriptions
 #| echo: false
 
-tables_that_name_race <- hercacstables::ACS_GROUP_METADATA |>
+tables_that_name_race <- hercacstables::GLOSSARY_OF_ACS_GROUPS |>
     dplyr::filter(
         stringr::str_detect(.data$Group, "\\d$"),
         stringr::str_detect(.data$Description,
@@ -132,7 +132,7 @@ tables_that_name_race <- hercacstables::ACS_GROUP_METADATA |>
         "Group", "Description"
     ) |>
     dplyr::left_join(
-        dplyr::count(hercacstables::ACS_VARIABLE_METADATA,
+        dplyr::count(hercacstables::GLOSSARY_OF_ACS_VARIABLES,
                      .data$Group,
                      name = "rows"),
         by = "Group"
@@ -291,14 +291,14 @@ someone who identified with more than one category will be counted in each
 corresponding table.
 
 These tables correspond to six of the ten broad categories of race/ethnicity, so
-they are actually already in `RACE_ETHNICITY_SUBTABLE_METADATA`.
+they are actually already in `RACE_ETHNICITY_SUBTABLES`.
 I just hid them before because it would have been confusing.
 
 ```{r}
 #| label: show-inclusive-columns-too
 #| echo: false
 
-hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
+hercacstables::RACE_ETHNICITY_SUBTABLES |>
     dplyr::select(
         "Census Race",
         "Suffix",
@@ -316,7 +316,7 @@ We can use `hercacstables` to check this, too.
 ```{r}
 #| label: inclusive-exclusive-population-variables
 
-incl_excl_pop_variables <- hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
+incl_excl_pop_variables <- hercacstables::RACE_ETHNICITY_SUBTABLES |>
     dplyr::filter(
         nchar(.data$`Inclusive Group`) > 0
     ) |>
@@ -411,16 +411,16 @@ Rows 10, 11, 20, and 21 contain subgroupings that distinguish between people who
 identify as biracial and those who identify as multiracial.
 
 That means that we can take rows one through eight of
-`hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA` and map them onto rows in
+`hercacstables::RACE_ETHNICITY_SUBTABLES` and map them onto rows in
 `B03002`.
 In fact, this is so useful that it is also included in
-`hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA`.
+`hercacstables::RACE_ETHNICITY_SUBTABLES`.
 
 ```{r}
 #| label: hispanic-and-broad-race-variables
 #| echo: false
 
-hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
+hercacstables::RACE_ETHNICITY_SUBTABLES |>
     dplyr::filter(
         nchar(.data$`non-Hispanic`) > 0
     ) |>
@@ -435,12 +435,12 @@ hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
 Let's use these to look at nationwide trends across racial identities in their
 percentages of Hispanic ethnicity.
 
-First, we will define our metadata table.
+First, we will define our glossary table.
 
 ```{r}
 #| label: define-hispanic-and-broad-race-variable
 
-hispanic_and_broad_race_variables <- hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA |>
+hispanic_and_broad_race_variables <- hercacstables::RACE_ETHNICITY_SUBTABLES |>
     dplyr::filter(
         nchar(.data$`non-Hispanic`) > 0
     ) |>
@@ -719,7 +719,7 @@ There is another table that gives the breakdown in more detail, though:
 #| eval: false
 #| echo: false
 
-racine_race_ethnicity_variables <- RACE_ETHNICITY_SUBTABLE_METADATA |>
+racine_race_ethnicity_variables <- RACE_ETHNICITY_SUBTABLES |>
     dplyr::filter(
         nchar(.data$Hispanic) > 0
     ) |>

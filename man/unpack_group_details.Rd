@@ -10,7 +10,7 @@ unpack_group_details(.group)
 \item{.group}{the code of the group, like "B25043" or "C15010B"}
 }
 \value{
-a tibble with at least 4 columns, like \link{ACS_VARIABLE_METADATA}, but \code{Details} is split into multiple columns with uppercase letter names.
+a tibble with at least 4 columns, like \link{GLOSSARY_OF_ACS_VARIABLES}, but \code{Details} is split into multiple columns with uppercase letter names.
 }
 \description{
 Pull apart the lists of details for one group of ACS data
@@ -20,5 +20,5 @@ unpack_group_details("B01002B")
 
 }
 \seealso{
-\link{ACS_VARIABLE_METADATA}
+\link{GLOSSARY_OF_ACS_VARIABLES}
 }

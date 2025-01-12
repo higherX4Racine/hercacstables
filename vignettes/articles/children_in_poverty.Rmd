@@ -2,9 +2,7 @@
 title: "Children in Poverty"
 ---
 
-```{r}
-#| label: setup
-#| include: FALSE
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -66,13 +64,13 @@ death](https://www.ers.usda.gov/data-products/ag-and-food-statistics-charting-th
 For that reason, Higher Expectations for Racine County uses
 **three times the Federal poverty level** as its threshold for a
 [family-sustaining income](https://selfsufficiencystandard.org/wisconsin/).
-The `hercacstables` package provides a table, `STANDARD_OF_LIVING_METADATA`,
+The `hercacstables` package provides a table, `GLOSSARY_OF_STANDARD_OF_LIVING`,
 that describes this classification.
 
 ```{r}
 #| label: show-income-brackets
 #| echo: false
-hercacstables::STANDARD_OF_LIVING_METADATA |>
+hercacstables::GLOSSARY_OF_STANDARD_OF_LIVING |>
     dplyr::select(
         "Variable",
         "Least Poverty Ratio",
@@ -91,7 +89,7 @@ in each Census income bracket.
 #| label: lookup-standard-of-living
 #| cache: true
 
-RAW_STANDARD_OF_LIVING <- hercacstables::STANDARD_OF_LIVING_METADATA |>
+RAW_STANDARD_OF_LIVING <- hercacstables::GLOSSARY_OF_STANDARD_OF_LIVING |>
     dplyr::pull(
         "Variable"
     ) |>
@@ -115,7 +113,7 @@ Then, we aggregate to get counts of families experiencing "Unsustainable" and
 #| echo: false
 STANDARD_OF_LIVING <- RAW_STANDARD_OF_LIVING |>
     dplyr::inner_join(
-        hercacstables::STANDARD_OF_LIVING_METADATA,
+        hercacstables::GLOSSARY_OF_STANDARD_OF_LIVING,
         by = "Index"
     ) |>
     dplyr::count(
@@ -159,14 +157,14 @@ look up how many families in each tract have children.
 The census has a
 [table](https://api.census.gov/data/2022/acs/acs1/groups/B11003.html) for this
 that reports how many families have no kids, kids under 6, kids 6-17, or both.
-The `hercacstables` package has a table, `FAMILIES_WITH_CHILDREN_METADATA`, that
+The `hercacstables` package has a table, `GLOSSARY_OF_FAMILIES_WITH_CHILDREN`, that
 describes the relationship between the ACS variables and the presence/absence of
 children.
 
 ```{r}
-#| label: show-families-with-children-metadata
+#| label: show-families-with-children-glossary
 #| echo: false
-hercacstables::FAMILIES_WITH_CHILDREN_METADATA |>
+hercacstables::GLOSSARY_OF_FAMILIES_WITH_CHILDREN |>
     dplyr::select(
         "Variable",
         "Adults",
@@ -188,7 +186,7 @@ about the same place.
 #| label: lookup-families-with-children
 #| cache: true
 
-RAW_FAMILIES_WITH_CHILDREN <- hercacstables::FAMILIES_WITH_CHILDREN_METADATA |>
+RAW_FAMILIES_WITH_CHILDREN <- hercacstables::GLOSSARY_OF_FAMILIES_WITH_CHILDREN |>
     dplyr::pull(
         "Variable"
     ) |>
@@ -212,7 +210,7 @@ We will aggregate the families into "Children Present" and "No Children."
 
 FAMILIES_WITH_CHILDREN <- RAW_FAMILIES_WITH_CHILDREN |>
     dplyr::inner_join(
-        hercacstables::FAMILIES_WITH_CHILDREN_METADATA,
+        hercacstables::GLOSSARY_OF_FAMILIES_WITH_CHILDREN,
         by = "Index"
     ) |>
     dplyr::count(
@@ -258,14 +256,14 @@ That would be true, except that the best we can get from the ACS is a
 that has detailed information about parents' birth origins but only distinguishes
 three income tiers: less than the Federal poverty level, 1x-2x, and more than 2x
 the Federal poverty level.
-The `hercacstables` package's table `CHILDREN_IN_POVERTY_METADATA` describes how
+The `hercacstables` package's table `GLOSSARY_OF_CHILDREN_IN_POVERTY` describes how
 the variables in that table map to parental place of birth and kid poverty.
 
 ```{r}
-#| label: show-children-in-poverty-metadata
+#| label: show-children-in-poverty-glossary
 #| echo: false
 
-hercacstables::CHILDREN_IN_POVERTY_METADATA |>
+hercacstables::GLOSSARY_OF_CHILDREN_IN_POVERTY |>
     dplyr::select(
         !c("Group", "Index")
     ) |>
@@ -278,7 +276,7 @@ Here's the query to get those data:
 #| label: lookup-children-in_poverty
 #| cache: true
 
-RAW_CHILDREN_IN_POVERTY <- hercacstables::CHILDREN_IN_POVERTY_METADATA |>
+RAW_CHILDREN_IN_POVERTY <- hercacstables::GLOSSARY_OF_CHILDREN_IN_POVERTY |>
     dplyr::pull(
         "Variable"
     ) |>
@@ -305,7 +303,7 @@ calling "Sustainable."
 
 CHILDREN_IN_POVERTY <- RAW_CHILDREN_IN_POVERTY |>
     dplyr::inner_join(
-        hercacstables::CHILDREN_IN_POVERTY_METADATA,
+        hercacstables::GLOSSARY_OF_CHILDREN_IN_POVERTY,
         by = "Index"
     ) |>
     dplyr::count(

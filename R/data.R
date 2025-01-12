@@ -10,7 +10,7 @@
 #'     \item{non-Hispanic}{The row in table `B03002` with counts of people with this racial identity and no Hispanic ethnic identity}
 #'     \item{Hispanic}{The row in table `B03002` with counts of people with this racial identity and a Hispanic ethnic identity}
 #'   }
-"RACE_ETHNICITY_SUBTABLE_METADATA"
+"RACE_ETHNICITY_SUBTABLES"
 
 #' Details about the groups in the most recent American Community Series
 #'
@@ -27,8 +27,8 @@
 #'   \item{ACS1}{Whether this group is available in the most recent 1-year dataset.}
 #'   \item{ACS5}{Whether this group is available in the most recent 5-year dataset.}
 #'   }
-#' @concept metadata
-"ACS_GROUP_METADATA"
+#' @concept GLOSSARY
+"GLOSSARY_OF_ACS_GROUPS"
 
 #' Details about variables in the most recent American Community Series
 #'
@@ -47,8 +47,8 @@
 #'   \item{Variable}{The full code for this variable, like "B01001B_002E" or "B25063_005E"}
 #'   \item{Details}{A vector of one or more strings describing what the variable actually represents.}
 #'   }
-#' @concept metadata
-"ACS_VARIABLE_METADATA"
+#' @concept GLOSSARY
+"GLOSSARY_OF_ACS_VARIABLES"
 
 #' Details about levels of geographic detail in the most recent American Community Series
 #'
@@ -70,8 +70,8 @@
 #'   \item{ACS1}{A reference date if this level is available in the 1-year dataset, otherwise `NA`.}
 #'   \item{ACS5}{A reference date if this level is available in the 5-year dataset, otherwise `NA`.}
 #' }
-#' @concept metadata
-"ACS_GEOGRAPHY_METADATA"
+#' @concept GLOSSARY
+"GLOSSARY_OF_ACS_GEOGRAPHIES"
 
 #' Variables from the Decennial censuses
 #'
@@ -164,11 +164,11 @@
 #'   * Age       : chr
 #'
 #' @source https://api.census.gov/data
-"EDUCATIONAL_ATTAINMENT_METADATA"
+"GLOSSARY_OF_EDUCATIONAL_ATTAINMENT"
 
 #' Factor values associated with specific rows within employment-related ACS tables
 #'
-#' @format ## EMPLOYMENT_STATUS_METADATA
+#' @format ## GLOSSARY_OF_EMPLOYMENT_STATUS
 #' A data frame with 439 rows and 12 columns:
 #' \describe{
 #'   \item{group}{&lt;chr&gt;}
@@ -185,7 +185,7 @@
 #'   \item{Poverty}{&lt;chr&gt;}
 #' }
 #' @source api.census.gov/data/acs/acs5/groups.html
-"EMPLOYMENT_STATUS_METADATA"
+"GLOSSARY_OF_EMPLOYMENT_STATUS"
 
 #' Categorize ACS variables about income : poverty level ratios by family sustainability
 #'
@@ -194,7 +194,7 @@
 #' A family-sustaining wage is widely considered to be three times the federal
 #' poverty level.
 #'
-#' @format ## STANDARD_OF_LIVING_METADATA
+#' @format ## GLOSSARY_OF_STANDARD_OF_LIVING
 #' A data frame with 13 rows and 6 columns
 #' \describe{
 #'   \item{Group}{&lt;chr&gt; The table, always "B17026"}
@@ -205,13 +205,13 @@
 #'   \item{Standard of Living}{&lt;chr&gt; One of "Everyone," "Unsustainable," or "Self-sustaining"}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B17026.html
-"STANDARD_OF_LIVING_METADATA"
+"GLOSSARY_OF_STANDARD_OF_LIVING"
 
 #' Categorize ACS variables counting families by number of children
 #'
 #' These data come from table B11003, "FAMILY TYPE BY PRESENCE AND AGE OF OWN CHILDREN UNDER 18 YEARS"
 #'
-#' @format ## FAMILIES_WITH_CHILDREN_METADATA
+#' @format ## GLOSSARY_OF_FAMILIES_WITH_CHILDREN
 #' A data frame with 12 rows and 6 columns
 #' \describe{
 #'   \item{Group}{&lt;chr&gt; The table, always "B11003"}
@@ -222,14 +222,14 @@
 #'   \item{Childr 6-17}{&lt;lgl&gt; Are there any children 6-17 in this family?}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B11003.html
-"FAMILIES_WITH_CHILDREN_METADATA"
+"GLOSSARY_OF_FAMILIES_WITH_CHILDREN"
 
 #' Categorize ACS variables about children per family
 #'
 #' These data come from table B17026, "OWN CHILDREN UNDER 18 YEARS BY FAMILY
 #' TYPE AND AGE"
 #'
-#' @format ## CHILDREN_PER_FAMILY_METADATA
+#' @format ## GLOSSARY_OF_CHILDREN_PER_FAMILY
 #' A data frame with 15 rows and 6 columns
 #' \describe{
 #'   \item{Group}{&lt;chr&gt; The table, always "B09002"}
@@ -240,7 +240,7 @@
 #'   \item{Upper Age}{&lt;int&gt; The age of the oldest children counted by this variable}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B09002.html
-"CHILDREN_PER_FAMILY_METADATA"
+"GLOSSARY_OF_CHILDREN_PER_FAMILY"
 
 #' Categorize ACS variables about children living in poverty and parents' birth origins
 #'
@@ -248,7 +248,7 @@
 #' PAST 12 MONTHS BY NATIVITY OF CHILDREN UNDER 18 YEARS IN FAMILIES AND
 #' SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS."
 #'
-#' @format ## CHILDREN_IN_POVERTY_METADATA
+#' @format ## GLOSSARY_OF_CHILDREN_IN_POVERTY
 #' A data frame with 15 rows and 8 columns
 #' \describe{
 #'   \item{Group}{&lt;chr&gt; The table, always "B05010"}
@@ -261,7 +261,7 @@
 #'   \item{Foreign-born Parents}{&lt;int&gt; How many of the parents in the household were not born in the USA.}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B05010.html
-"CHILDREN_IN_POVERTY_METADATA"
+"GLOSSARY_OF_CHILDREN_IN_POVERTY"
 
 #' The fundamental demographics of age and sex from table `B01001`
 #'
@@ -270,22 +270,22 @@
 #' is to add a second part to the table that maps from those tables' rows to
 #' age and sex.
 #'
-#' @format ## AGE_AND_SEX_METADATA
+#' @format ## GLOSSARY_OF_AGE_AND_SEX
 #' A data frame with 49 rows and 6 columns.
 #' \describe{
 #' \item{group}{&lt;chr&gt; Always "B01001"}
-#' \item{index}{&lt;int&gt; The row in the source table that this metadata row describes.}
+#' \item{index}{&lt;int&gt; The row in the source table that this GLOSSARY row describes.}
 #' \item{variable}{&lt;chr&gt; The full variable name, e.g. "B01001_001E"}
 #' \item{Sex}{&lt;chr&gt; One of "All," "Male," or "Female"}
 #' \item{Lower Age}{&lt;int&gt; inclusive, in \[-999, 85\]}
 #' \item{Upper Age}{&lt;int&gt; inclusive, in \[4, 999\]}
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B01001.html
-"AGE_AND_SEX_METADATA"
+"GLOSSARY_OF_AGE_AND_SEX"
 
 #' A Census table's ID always starts with an alphanumeric code for its type.
 #'
-#' @format ## TABLE_TYPES
+#' @format ## TYPES_OF_TABLE
 #' A data frame with 11 rows and 3 columns.
 #' \describe{
 #' \item{Table ID Characters}{&lt;chr&gt; The alphanumeric code for this type of table}
@@ -293,7 +293,7 @@
 #' \item{Contains}{&lt;chr&gt; A description of what information this type of table will contain.}
 #' }
 #' @source https://www.census.gov/programs-surveys/acs/data/data-tables/table-ids-explained.html
-"TABLE_TYPES"
+"TYPES_OF_TABLE"
 
 #' A code for the broad subject that a Census table covers.
 #'
@@ -302,31 +302,31 @@
 #' Profiles DP, NP, CP, and S0201 cover multiple topics, so they do not have any
 #' characters to indicate a subject.
 #'
-#' @format ## TABLE_TYPES
+#' @format ## TYPES_OF_SUBJECT
 #' A data frame with 31 rows and 2 columns.
 #' \describe{
 #' \item{Subject Number}{&lt;chr&gt; The zero-padded numeric code for this subject}
 #' \item{Subject Name}{&lt;chr&gt; A very short description of the subject.}
 #' }
 #' @source https://www.census.gov/programs-surveys/acs/data/data-tables/table-ids-explained.html
-"SUBJECT_TYPES"
+"TYPES_OF_SUBJECT"
 
 #' For selected tables, an alphabetic suffix follows to indicate that a table is repeated for the nine major race and Hispanic or Latino groups:
 #'
-#' @format ## RACE_OR_ETHNIC_GROUP_TYPES
+#' @format ## TYPES_OF_RACE_OR_ETHNICITY
 #' A data frame with 9 rows and 2 columns.
 #' \describe{
 #' \item{Code}{&lt;chr&gt; A one-letter suffix}
 #' \item{Race or Ethnic Group}{&lt;chr&gt; A racial or ethnic identity such as "Black Alone" or "Hispanic or Latino".}
 #' }
 #' @source https://www.census.gov/programs-surveys/acs/data/data-tables/table-ids-explained.html
-"RACE_OR_ETHNIC_GROUP_TYPES"
+"TYPES_OF_RACE_OR_ETHNICITY"
 
 #' ACS data contain variables ending in 1- or 2-letter codes.
 #'
 #' This table defines each variable type and its meaning.
 #'
-#' @format ## VARIABLE_TYPES
+#' @format ## TYPES_OF_VARIABLE
 #' A data frame with 7 rows and 4 columns.
 #' \describe{
 #' \item{Variable Type}{&lt;chr&gt; A 1- or 2-letter code}
@@ -335,4 +335,4 @@
 #' \item{Meaning}{&lt;chr&gt; A detailed explanation of what this kind of variable represents.}
 #' }
 #' @source https://www.census.gov/data/developers/data-sets/acs-1year/notes-on-acs-api-variable-types.html
-"VARIABLE_TYPES"
+"TYPES_OF_VARIABLE"

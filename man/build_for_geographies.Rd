@@ -7,7 +7,7 @@
 build_for_geographies(for_geo, ...)
 }
 \arguments{
-\item{for_geo}{E.g. "tract" or "county subdivision", if that's what you want.}
+\item{for_geo}{<chr> the geographical level the data will describe, e.g. \code{"tract"}}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> The specific items to search for, which will be all items if you leave them empty.}
 }

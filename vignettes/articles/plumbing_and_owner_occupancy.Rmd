@@ -186,15 +186,16 @@ RAW_PLUMBING <- tibble::tribble(
     "school district (unified)", "12360", list(state = 55)
 ) |>
     purrr::pmap(
-        \(geo, items, other) rlang::exec(
-            hercacstables::fetch_data,
-            variables = c("NAME", PLUMBING_VARIABLES$Variable),
-            year = YEAR,
-            for_geo = geo,
-            for_items = items,
-            survey_type = "acs",
-            table_or_survey_code = "acs5",
-            !!!other
+        \(geo, items, other) rlang::inject(
+            hercacstables::fetch_data(
+                variables = c("NAME", PLUMBING_VARIABLES$Variable),
+                year = YEAR,
+                for_geo = geo,
+                for_items = items,
+                survey_type = "acs",
+                table_or_survey_code = "acs5",
+                !!!other
+            )
         )
     )
 ```

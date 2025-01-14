@@ -7,9 +7,9 @@
 hoist_table_glossary(.glossary, .group, .fields)
 }
 \arguments{
-\item{.glossary}{\if{html}{\out{<data-frame>}} a table of glossary about Census API variables, e.g. \link{GLOSSARY_OF_ACS_VARIABLES}}
+\item{.glossary}{<data-frame> a table of glossary about Census API variables, e.g. \link{GLOSSARY_OF_ACS_VARIABLES}}
 
-\item{.group}{\if{html}{\out{<chr>}} the code for the group, e.g. "B01001"}
+\item{.group}{<chr> the code for the group, e.g. "B01001"}
 
 \item{.fields}{<chr[]> names for the new columns, e.g. c("Sex", "Age")}
 }

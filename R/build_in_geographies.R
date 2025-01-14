@@ -1,6 +1,6 @@
 #' Create the part of a Census API query that describes containing geographies
 #'
-#' @param ...  <[`dynamic-dots`][rlang::dyn-dots]> key-value pairs like "state=03"
+#' @param ...  &lt;[`dynamic-dots`][rlang::dyn-dots]&gt; key-value pairs like "state='03'"
 #'
 #' @return A string of ampersand-separated `in=geo:code` pairs
 #' @keywords internal

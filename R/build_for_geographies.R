@@ -1,7 +1,7 @@
 #' Use the `for` geography to specify the level that you are querying data for.
 #'
-#' @param for_geo E.g. "tract" or "county subdivision", if that's what you want.
-#' @param ...  <[`dynamic-dots`][rlang::dyn-dots]> The specific items to search for, which will be all items if you leave them empty.
+#' @param for_geo &lt;chr&gt; the geographical level the data will describe, e.g. `"tract"`
+#' @param ...  &lt;[`dynamic-dots`][rlang::dyn-dots]&gt; The specific items to search for, which will be all items if you leave them empty.
 #'
 #' @return a list with one element named `for` which is a "key:value" string
 #' @keywords internal

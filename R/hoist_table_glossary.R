@@ -1,8 +1,8 @@
 #' Hoist details about a Census data group from a list of strings to separate columns
 #'
-#' @param .glossary <data-frame> a table of glossary about Census API variables, e.g. [GLOSSARY_OF_ACS_VARIABLES]
-#' @param .group <chr> the code for the group, e.g. "B01001"
-#' @param .fields <chr\[\]> names for the new columns, e.g. c("Sex", "Age")
+#' @param .glossary &lt;data-frame&gt; a table of glossary about Census API variables, e.g. [GLOSSARY_OF_ACS_VARIABLES]
+#' @param .group &lt;chr&gt; the code for the group, e.g. "B01001"
+#' @param .fields &lt;chr\[\]&gt; names for the new columns, e.g. c("Sex", "Age")
 #'
 #' @return a new data frame with more columns
 #' @export

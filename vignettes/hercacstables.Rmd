@@ -20,16 +20,34 @@ knitr::opts_chunk$set(
 ## Welcome
 
 
-If this is your first time using `hercacstables` then you probably want to
-register with the Census.
+### For the newest R users:
+
+You may be new to R, but not data science, in which case I suggest checking out
+[R for Data Science](https://r4ds.hadley.nz/intro.html).
+If you're not coming from a data science perspective, I have heard good things
+about [this book](https://datascienceineducation.com/).
+
+### First-time users of `hercacstables`
+
+If this is your first time using this package then you probably want to register
+with the Census.
+Registering is important because it helps you make more queries to the API.
 The Census limits the number of anonymous API queries that it receives from any
 one IP address.
 The `vignette("set_up_your_api_key")` will guide you through the processs.
 
-Otherwise, welcome back!
+### Otherwise, welcome back!
 
 This package helps R users to access data from the United States Census Bureau,
 especially its American Community Survey.
+
+The American Community Survey (ACS) from the US Census's website provides a vast
+amount of useful data.
+
+However, it returns those data in a weirdly idiosyncratic way.
+Even though the output seems tabular, the data are really organized in a
+tree-like fashion.
+This package is intended to make it easy to access and use the ACS data with R.
 
 The database has an enormous amount of information, stored in a versatile but
 cumbersome format.
@@ -385,8 +403,8 @@ actually interested in.
 That computation involves subtracting either the cities' households from the
 county's, or the number of Hispanic households from the total number of
 households.
-This task turns up very frequently when dealing with Census data, so the
-package includes a helper function to do it for you:
+This task turns up very frequently when dealing with Census data, so here is a 
+helper function that you can use or adapt to do it for you:
 `hercacstables::subtract_parts_from_whole()`.
 That function does not remove the rows that contain the all-groups category.
 In our case, we must remove them so all of the calculations come out correctly.
@@ -402,8 +420,8 @@ households <- households |>
         part_names = c("Manchester", "Nashua"),
         remainder_name = "Suburbs"
     ) |>
-    dplyr::select(
-        !"County-wide"
+    dplyr::filter(
+        .data$Location != "County-wide"
     ) |>
     hercacstables::subtract_parts_from_whole(
         grouping_column = "Ethnicity",
@@ -412,8 +430,8 @@ households <- households |>
         part_names = "Hispanic or Latino",
         remainder_name = "Not Hispanic or Latino"
     ) |>
-    dplyr::select(
-        !"All"
+    dplyr::filter(
+        .data$Ethnicity != "All"
     )
 
 households |>
@@ -450,7 +468,7 @@ designate location with the color of points and lines.
 #| label: plot-the-results
 #| fig-width: 7
 #| fig-height: 6
-#| dpi: 72
+#| dpi: 96
 #| warning: false
 
 households |>

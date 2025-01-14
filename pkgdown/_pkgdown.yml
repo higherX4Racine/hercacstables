@@ -46,9 +46,7 @@ reference:
     These functions deal with technical aspects of accessing the Census API
   contents:
   - fetch_data
-  - fetch_decennial_block_pops_by_race
-  - fetch_acs5_tract_data
-  - safe_api_query
+  - fetch_decennial_pops_by_race
 
 - subtitle: The contents of the API
   desc: >
@@ -118,7 +116,6 @@ reference:
   desc: >
     Other functions, usually legacy ones, that might help with things
   contents:
-  - margins_by_demography_and_place
   - subtract_parts_from_whole
   - the_year_right_now
 

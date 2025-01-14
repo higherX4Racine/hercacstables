@@ -1,3 +1,5 @@
+## Copyright (C) 2025 by Higher Expectations for Racine County
+
 US_RACE_ETHNICITY_POPS_2022 <- purrr::list_rbind(
     list(broad = "extdata" |>
              system.file(

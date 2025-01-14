@@ -14,17 +14,17 @@ subtract_parts_from_whole(
 )
 }
 \arguments{
-\item{.data_frame}{\if{html}{\out{<dataframe>}} the input data}
+\item{.data_frame}{<dataframe> the input data}
 
-\item{grouping_column}{\if{html}{\out{<chr>}} the name of the column that defines the grouping}
+\item{grouping_column}{<chr> the name of the column that defines the grouping}
 
-\item{value_column}{\if{html}{\out{<chr>}} the name of the column that holds the values}
+\item{value_column}{<chr> the name of the column that holds the values}
 
-\item{whole_name}{\if{html}{\out{<chr>}} the level of the grouping that signifies the total}
+\item{whole_name}{<chr> the level of the grouping that signifies the total}
 
 \item{part_names}{<chr[]> the other levels of the grouping}
 
-\item{remainder_name}{\if{html}{\out{<chr>}} the new name for the difference between whole and parts}
+\item{remainder_name}{<chr> the new name for the difference between whole and parts}
 }
 \value{
 a new data frame with the same number of columns but extra rows and a new group level

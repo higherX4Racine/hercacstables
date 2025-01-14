@@ -7,7 +7,7 @@
 the_year_right_now()
 }
 \value{
-\if{html}{\out{<int>}} probably 2024 or later
+<int> probably 2024 or later
 }
 \description{
 Today's year in the Gregorian calendar.

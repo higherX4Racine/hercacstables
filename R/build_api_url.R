@@ -1,15 +1,13 @@
 #' Create an API call to send to api.census.gov
 #'
-#' @param variables a vector of variable names, like `"B01001_001E"`
-#' @param for_geo the geographical level the data will describe, e.g. `"tract"`
-#' @param for_items the specific instances of `for_geo` desired, e.g. `"*"` or `"000200"`
+#' @inheritParams build_query_parameters
 #' @param survey_type e.g. "acs" or "dec"
 #' @param table_or_survey_code e.g. "acs5" or "pl"
 #' @param year an integer year, e.g. `2021L`
-#' @param ... <[`dynamic dots`][rlang::dyn-dots]> other items to pass to the query
-#' @param use_key optional, should the query include a Census API key from the system environment. Defaults to `TRUE`
+#' @param ... &lt;[`dynamic dots`][rlang::dyn-dots]&gt; other items to pass to the query
 #'
 #' @return one URL, as a string
+#' @keywords internal
 #' @examples
 #' hercacstables:::build_api_url(paste0("B25003_00", 1:3, "E"),
 #'                               "tract",

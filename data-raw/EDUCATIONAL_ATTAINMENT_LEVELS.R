@@ -1,4 +1,4 @@
-## code to prepare `EDUCATIONAL_ATTAINMENT_LEVELS` dataset goes here
+## Copyright (C) 2025 by Higher Expectations for Racine County
 
 EDUCATIONAL_ATTAINMENT_LEVELS <- "extdata" |>
     system.file(

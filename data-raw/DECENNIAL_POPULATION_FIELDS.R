@@ -1,4 +1,4 @@
-## code to prepare `DECENNIAL_POPULATION_FIELDS` dataset goes here
+## Copyright (C) 2025 by Higher Expectations for Racine County
 
 DECENNIAL_RACES <- tibble::tribble(
     ~ Index, ~ `Race/Ethnicity`,

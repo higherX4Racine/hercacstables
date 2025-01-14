@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_info_url.R
 \name{build_info_url}
 \alias{build_info_url}
-\title{Get the URL for JSON metadata about one table of ACS data}
+\title{Get the URL for JSON glossary about one table of ACS data}
 \usage{
 build_info_url(.info_type, .year, .year_span)
 }
@@ -18,7 +18,7 @@ A string that contains a URL.
 }
 \description{
 This will be a complete URL, including protocol and file extension, for
-downloading metadata about geographies, groups of variables, or specific
+downloading glossary about geographies, groups of variables, or specific
 variables.
 }
 \examples{

@@ -3,30 +3,48 @@
 
 # hercacstables
 
+This package provides an R interface to the United States Census
+Bureau’s data API. The primary focus, as per its name, is pulling
+information from the [detailed tables of the American Community
+Survey](https://www.census.gov/programs-surveys/acs/data/data-tables.html).
+
 <!-- badges: start -->
 <!-- badges: end -->
 
-## Example
+## Installation
+
+You can install the development version from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("higherX4Racine/hercacstables")
+```
+
+## Examples
 
 The main way that one uses `hercacstables` to interact with the Census
 API is the `hercacstables::fetch_data()` function.
 
+### Population and number of households
+
 ``` r
 POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
-    # the database that we are fetching data from
+    # the API works one year at a time
+    year = hercacstables::most_recent_vintage("acs", "acs1"),
+    
+    # the API can only query one data source at a time
     survey_type = "acs",           # the American Community Survey
     table_or_survey_code = "acs1", # the 1-year dataset of the ACS
-    year = hercacstables::most_recent_vintage("acs", "acs1"),
-                                   # the API works one year at a time
     
-    # the geographic level of detail that we are fetching data for
+    # the API fetches values for one or more instances of a specific geography
     for_geo = "state",             # fetch values for entire states
     for_items = c(
         "11",                      # the District of Columbia
         "72"                       # Puerto Rico
     ),
     
-    # the specific data that we are fetching
+    # the codes for the specific data that we are fetching
     variables = c(
         "NAME",                    # the geographic area's name
         "B01001_001E",             # the total number of people
@@ -36,16 +54,48 @@ POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
 )
 ```
 
-| NAME                 | state | Group  | Index |   Value | Year |
-|:---------------------|:------|:-------|------:|--------:|-----:|
-| District of Columbia | 11    | B01001 |     1 |  678972 | 2023 |
-| District of Columbia | 11    | B11002 |     2 |  406283 | 2023 |
-| District of Columbia | 11    | B11002 |    12 |  235088 | 2023 |
-| Puerto Rico          | 72    | B01001 |     1 | 3205691 | 2023 |
-| Puerto Rico          | 72    | B11002 |     2 | 2613461 | 2023 |
-| Puerto Rico          | 72    | B11002 |    12 |  554557 | 2023 |
+| NAME                 | state | Group  | Index |     Value | Year |
+|:---------------------|------:|:-------|------:|----------:|-----:|
+| District of Columbia |    11 | B01001 |     1 |   678,972 | 2023 |
+| District of Columbia |    11 | B11002 |     2 |   406,283 | 2023 |
+| District of Columbia |    11 | B11002 |    12 |   235,088 | 2023 |
+| Puerto Rico          |    72 | B01001 |     1 | 3,205,691 | 2023 |
+| Puerto Rico          |    72 | B11002 |     2 | 2,613,461 | 2023 |
+| Puerto Rico          |    72 | B11002 |    12 |   554,557 | 2023 |
 
-## Overview
+### Decennial populations by race and ethnicity
+
+``` r
+POPS_BY_RACE <-
+    hercacstables::fetch_decennial_pops_by_race(
+        for_geo = "state", # one cannot fetch the whole nation from 2000 or 2010
+        for_items = "*"    # so we pull the data for every state
+    ) |>
+    dplyr::count( # then compute the nationwide populations for each vintage
+        .data$`Race/Ethnicity`,
+        .data$Vintage,
+        wt = .data$Population,
+        name = "Population"
+    ) |>
+    tidyr::pivot_wider( # and reshape the table for display
+        names_from = "Vintage",
+        values_from = "Population"
+    )
+```
+
+| Race/Ethnicity | 2000 | 2010 | 2020 |
+|:---|---:|---:|---:|
+| All | 285,230,516 | 312,471,327 | 334,735,155 |
+| American Indian and Alaska Native | 2,069,446 | 2,247,427 | 2,252,011 |
+| Asian | 10,126,044 | 14,468,054 | 19,621,465 |
+| Black or African American | 33,952,901 | 37,690,511 | 39,944,624 |
+| Hispanic or Latino | 39,068,564 | 54,166,049 | 65,329,087 |
+| Native Hawaiian and Other Pacific Islander | 353,874 | 481,653 | 622,109 |
+| Some other race | 468,155 | 605,291 | 1,692,341 |
+| Two or more races | 4,604,792 | 5,967,844 | 13,551,323 |
+| White | 194,586,740 | 196,844,498 | 191,722,195 |
+
+## Going farther
 
 Many questions that work with Census data follow a common pattern:
 
@@ -58,40 +108,11 @@ package provides tools for each of these four tasks. This site provides
 detailed articles for each task because each one can be
 [complex](https://www.census.gov/data/developers/guidance/api-user-guide.Core_Concepts.html).
 
-- Use one or more Census measurements:
-  `vignette("determine-measurement")`
-- Describe who or what has been measured:
-  `vignette("determine-demographies")`
-- Specify where the measurements were made:
-  `vignette("determine-geographies")`
-- Choose the year(s) that are relevant:
-  `vignette("determine-timeframes")`
-
-## For the newest R users:
-
-You may be new to R, but not data science, in which case I suggest
-checking out [R for Data Science](https://r4ds.hadley.nz/intro.html). If
-you’re not coming from a data science perspective, I have heard good
-things about [this book](https://datascienceineducation.com/).
-
-## Installation
-
-You can install the development version from
-[GitHub](https://github.com/) with:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("higherX4Racine/hercacstables")
-```
-
-## Motivation
-
-The American Community Survey (ACS) from the US Census’s website
-provides a vast amount of useful data.
-
-However, it returns those data in a weirdly idiosyncratic way. Even
-though the output seems tabular, the data are really organized in a
-tree-like fashion. This package is intended to make it easy to access
-and use the ACS data with R.
-
-## Example
+- [Use one or more Census
+  measurements](articles/determine_measurement.html)
+- [Describe who or what has been
+  measured](articles/determine_demographies.html)
+- [Specify where the measurements were
+  made](articles/determine_geographies.html)
+- [Choose the year(s) that are
+  relevant](articles/determine_timeframes.html)

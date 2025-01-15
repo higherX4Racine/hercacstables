@@ -25,7 +25,7 @@
 #'
 #' @examples
 #' hercacstables::search_in_glossary(
-#'   hercacstables::GLOSSARY_OF_ACS_GEOGRAPHIES,
+#'   hercacstables::METADATA_FOR_ACS_GEOGRAPHIES,
 #'   `Wildcard Option` = "."
 #' )
 search_in_glossary <- function(.glossary, ...) {

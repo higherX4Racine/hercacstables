@@ -56,9 +56,9 @@ reference:
   contents:
   - search_in_glossary
   - unpack_group_details
-  - GLOSSARY_OF_ACS_GROUPS
-  - GLOSSARY_OF_ACS_VARIABLES
-  - GLOSSARY_OF_ACS_GEOGRAPHIES
+  - METADATA_FOR_ACS_GROUPS
+  - METADATA_FOR_ACS_VARIABLES
+  - METADATA_FOR_ACS_GEOGRAPHIES
   - DECENNIAL_POPULATION_FIELDS
   - GEOGRAPHY_HIERARCHY_METADATA
   - RACE_ETHNICITY_SUBTABLES
@@ -130,6 +130,6 @@ reference:
   contents:
   - build_info_url
   - most_recent_vintage
-  - latest_acs_glossaries
-  - fetch_glossary_table
+  - latest_acs_metadata
+  - fetch_metadata_table
   - hoist_table_glossary

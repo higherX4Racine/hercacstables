@@ -1,6 +1,6 @@
 ## Copyright (C) 2025 by Higher Expectations for Racine County
 
-GLOSSARY_OF_STANDARD_OF_LIVING <- hercacstables::GLOSSARY_OF_ACS_VARIABLES |>
+GLOSSARY_OF_STANDARD_OF_LIVING <- hercacstables::METADATA_FOR_ACS_VARIABLES |>
     dplyr::filter(
         .data$Group == "B17026",
         .data$Dataset == "ACS5"

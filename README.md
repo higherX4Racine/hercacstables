@@ -78,7 +78,7 @@ want to use.
 
 A good first step is to search for tables that could be relevant with
 the `search_in_glossary()` function and the built-in
-[`GLOSSARY_OF_ACS_GROUPS`](reference/GLOSSARY_OF_ACS_GROUPS.html).
+[`METADATA_FOR_ACS_GROUPS`](reference/METADATA_FOR_ACS_GROUPS.html).
 
 The following example searches using three columns. The column “Group”
 needs to end in a digit. That will limit the results to tables that
@@ -90,7 +90,7 @@ results to tables about enrollment in school.
 
 ``` r
 EDUCATION_TABLES <- hercacstables::search_in_glossary(
-    hercacstables::GLOSSARY_OF_ACS_GROUPS,
+    hercacstables::METADATA_FOR_ACS_GROUPS,
     Group = "\\d$",
     Universe = "population",
     Description = c("^school", "enroll")
@@ -109,7 +109,7 @@ EDUCATION_TABLES <- hercacstables::search_in_glossary(
 Once you know the group that you are interested in, you will want to see
 what information is captured in each of its rows. The
 `unpack_group_details()` function searches the built-in
-[`GLOSSARY_OF_ACS_VARIABLES`](reference/GLOSSARY_OF_ACS_VARIABLES) for
+[`METADATA_FOR_ACS_VARIABLES`](reference/METADATA_FOR_ACS_VARIABLES) for
 all of the variables of one group. It then expands the Census’s
 description of each variable into columns. Users will need to identify
 the concepts that are captured by each column.

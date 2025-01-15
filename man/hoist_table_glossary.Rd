@@ -7,7 +7,7 @@
 hoist_table_glossary(.glossary, .group, .fields)
 }
 \arguments{
-\item{.glossary}{<data-frame> a table of glossary about Census API variables, e.g. \link{GLOSSARY_OF_ACS_VARIABLES}}
+\item{.glossary}{<data-frame> a table of glossary about Census API variables, e.g. \link{METADATA_FOR_ACS_VARIABLES}}
 
 \item{.group}{<chr> the code for the group, e.g. "B01001"}
 
@@ -20,6 +20,6 @@ a new data frame with more columns
 Hoist details about a Census data group from a list of strings to separate columns
 }
 \examples{
-hoist_table_glossary(GLOSSARY_OF_ACS_VARIABLES, "B06002", c("Median age", "Place of birth"))
+hoist_table_glossary(METADATA_FOR_ACS_VARIABLES, "B06002", c("Median age", "Place of birth"))
 }
 \concept{glossary}

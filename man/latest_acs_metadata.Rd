@@ -2,7 +2,7 @@
 % Please edit documentation in R/latest_acs_metadata.R
 \name{latest_acs_metadata}
 \alias{latest_acs_metadata}
-\title{Download metadata about the most recent versions of the 1- and 5-year ACS}
+\title{Download glossary about the most recent versions of the 1- and 5-year ACS}
 \usage{
 latest_acs_metadata(information_type)
 }
@@ -13,6 +13,6 @@ latest_acs_metadata(information_type)
 a tibble with dimensions that depend upon \code{information_type}
 }
 \description{
-Download metadata about the most recent versions of the 1- and 5-year ACS
+Download glossary about the most recent versions of the 1- and 5-year ACS
 }
-\concept{metadata}
+\concept{glossary}

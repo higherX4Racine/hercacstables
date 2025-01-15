@@ -1,6 +1,6 @@
 #' Today's year in the Gregorian calendar.
 #'
-#' @return <int> probably 2024 or later
+#' @return &lt;int&gt; probably 2024 or later
 #' @export
 #'
 #' @examples

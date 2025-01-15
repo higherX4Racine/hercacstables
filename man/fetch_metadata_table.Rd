@@ -2,7 +2,7 @@
 % Please edit documentation in R/fetch_metadata_table.R
 \name{fetch_metadata_table}
 \alias{fetch_metadata_table}
-\title{Fetch metadata about a specific ACS data set from the Census API.}
+\title{Fetch glossary about a specific ACS data set from the Census API.}
 \usage{
 fetch_metadata_table(.info_type, .year, .year_span)
 }
@@ -19,4 +19,4 @@ A tibble.
 \description{
 This function downloads a large JSON object and parses it into a tibble.
 }
-\concept{metadata}
+\concept{glossary}

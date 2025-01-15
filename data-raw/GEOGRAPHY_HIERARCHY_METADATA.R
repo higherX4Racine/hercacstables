@@ -1,3 +1,5 @@
+## Copyright (C) 2024 by Higher Expectations for Racine County
+
 GEOGRAPHY_HIERARCHY_METADATA <- tibble::tribble(
     ~ Label,                   ~ Code, ~ Geography,                 ~ `Parent Geos`,
     "Block",                  "100",  "block",                     c("state", "county", "tract"),

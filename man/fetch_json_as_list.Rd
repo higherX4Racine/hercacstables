@@ -16,13 +16,13 @@ fetch_json_as_list(
 )
 }
 \arguments{
-\item{variables}{a vector of variable names, like \code{"B01001_001E"}}
+\item{variables}{<chr[]> a vector of variable names, like \code{"B01001_001E"}}
 
 \item{year}{an integer year, e.g. \code{2021L}}
 
-\item{for_geo}{the geographical level the data will describe, e.g. \code{"tract"}}
+\item{for_geo}{<chr> the geographical level the data will describe, e.g. \code{"tract"}}
 
-\item{for_items}{the specific instances of \code{for_geo} desired, e.g. \code{"*"} or \code{"000200"}}
+\item{for_items}{<chr[]> one or more instances of \code{for_geo} desired, e.g. \code{"*"} or \code{"000200"}, passed on to \code{\link[=build_for_geographies]{build_for_geographies()}}}
 
 \item{survey_type}{e.g. "acs" or "dec"}
 
@@ -30,7 +30,7 @@ fetch_json_as_list(
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic dots}}> other items to pass to the query}
 
-\item{use_key}{optional, should the query include a Census API key from the system environment. Defaults to \code{TRUE}}
+\item{use_key}{<lgl?> optional, should the query include a Census API key from the system environment. Defaults to \code{TRUE}}
 }
 \value{
 a list of items read from json

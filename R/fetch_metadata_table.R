@@ -1,4 +1,4 @@
-#' Fetch metadata about a specific ACS data set from the Census API.
+#' Fetch glossary about a specific ACS data set from the Census API.
 #'
 #' This function downloads a large JSON object and parses it into a tibble.
 #'
@@ -7,13 +7,13 @@
 #' @return A tibble.
 #'
 #' @export
-#' @concept metadata
+#' @concept glossary
 fetch_metadata_table <- function(.info_type, .year, .year_span) {
     .list <- .info_type |>
         build_info_url(.year, .year_span) |>
         jsonlite::read_json() |>
         purrr::pluck(1) |>
-        purrr::map(.metadata_row_to_tibble)
+        purrr::map(.glossary_row_to_tibble)
 
     switch(
         .info_type,
@@ -27,7 +27,7 @@ fetch_metadata_table <- function(.info_type, .year, .year_span) {
     list(as.character(.list))
 }
 
-.metadata_row_to_tibble <- function(.element) {
+.glossary_row_to_tibble <- function(.element) {
     .element |>
         purrr::map_if(
             is.list, .lists_to_wrapped_chars

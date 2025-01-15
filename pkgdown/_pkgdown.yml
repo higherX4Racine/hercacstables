@@ -1,83 +1,129 @@
 url: https://higherx4racine.github.io/hercacstables/
+
 template:
   bootstrap: 5
+
+repo:
+  url:
+    home: https://github.com/higherX4Racine/hercacstables
+
+destination: pkgdown/docs/
+
+articles:
+
+- title: Learn how to use hercacstables
+  navbar: ~
+  contents:
+  - set_up_your_api_key
+  - race_ethnicity_categories
+  - reusability
+
+- title: Search for content
+  desc: >
+    hercacstables includes utilities for directly search the Census for things
+    like tract codes, which tables are broken down by race/ethnicity, which
+    tables deal with specific topics like income or housing, and whether data
+    are available at the decennial, 5-year, or 1-year time scales.
+  contents:
+  - starts_with("articles/determine")
+
+- title: Examples of analyses
+  desc: >
+    Several long demonstrations of using hercacstables to gather some data and
+    R to analyze that data.
+  contents:
+  - articles/children_in_poverty
+  - articles/plumbing_and_owner_occupancy
+  - articles/population_changes_in_school_districts
+
 reference:
+
 - title: Key functions and data tables
   desc: >
     you will call these to get American Community Survey data
+
 - subtitle: Getting data from the API
   desc: >
     These functions deal with technical aspects of accessing the Census API
   contents:
   - fetch_data
-  - fetch_decennial_block_pops_by_race
-  - fetch_acs5_tract_data
-  - safe_api_query
-- subtitle: API structure
-  desc: >
-    Metadata about abbreviations, codes, and other arcane shorthand that appear
-    in the Census API.
-  contents:
-  - TABLE_TYPES
-  - SUBJECT_TYPES
-  - RACE_OR_ETHNIC_GROUP_TYPES
-  - VARIABLE_TYPES
+  - fetch_decennial_pops_by_race
+
 - subtitle: The contents of the API
   desc: >
     These functions and tables will help you to look up information about which
     Census tables store which information.
   contents:
-  - ACS_GROUP_METADATA
+  - search_in_columns
   - unpack_group_details
-  - ACS_VARIABLE_METADATA
-  - ACS_GEOGRAPHY_METADATA
+  - METADATA_FOR_ACS_GROUPS
+  - METADATA_FOR_ACS_VARIABLES
+  - METADATA_FOR_ACS_GEOGRAPHIES
   - DECENNIAL_POPULATION_FIELDS
   - GEOGRAPHY_HIERARCHY_METADATA
-  - RACE_ETHNICITY_SUBTABLE_METADATA
+  - RACE_ETHNICITY_SUBTABLES
+
 - title: Useful descriptions of what is available
   desc: >
     These tables connect real-world meanings to the table-name-row-number codes
     that you need to pull data from the Census API.
   contents:
-  - AGE_AND_SEX_METADATA
+  - GLOSSARY_OF_AGE_AND_SEX
+
 - subtitle: Families
   contents:
-  - CHILDREN_IN_POVERTY_METADATA
-  - CHILDREN_PER_FAMILY_METADATA
-  - FAMILIES_WITH_CHILDREN_METADATA
+  - GLOSSARY_OF_CHILDREN_IN_POVERTY
+  - GLOSSARY_OF_CHILDREN_PER_FAMILY
+  - GLOSSARY_OF_FAMILIES_WITH_CHILDREN
+
 - subtitle: Education
   contents:
   - EDUCATIONAL_ATTAINMENT_LEVELS
-  - EDUCATIONAL_ATTAINMENT_METADATA
+  - GLOSSARY_OF_EDUCATIONAL_ATTAINMENT
+
 - subtitle: Sustainable Income
   contents:
-  - EMPLOYMENT_STATUS_METADATA
-  - STANDARD_OF_LIVING_METADATA
+  - GLOSSARY_OF_EMPLOYMENT_STATUS
+  - GLOSSARY_OF_STANDARD_OF_LIVING
+
 - title: Utilities
   desc: >
     Functions that a typical user won't need to bother with, but might be useful
     for someone working to extend the capabilities of the package.
+
 - subtitle: Constructing API calls
   desc: >
     These functions deal with technical aspects of accessing the Census API
   contents:
   - build_api_variable
   - build_api_url
+
+- subtitle: Codes and data structures in the API
+  desc: >
+    Glossary about abbreviations, codes, and other arcane shorthand that appear
+    in the Census API.
+  contents:
+  - TYPES_OF_TABLE
+  - TYPES_OF_SUBJECT
+  - TYPES_OF_RACE_OR_ETHNICITY
+  - TYPES_OF_VARIABLE
+
 - subtitle: API key
   desc: >
     These functions manage a key that the Census API uses to keep track of users.
   contents:
   - has_concept("API key")
+
 - subtitle: Miscellaneous
   desc: >
     Other functions, usually legacy ones, that might help with things
   contents:
-  - margins_by_demography_and_place
   - subtract_parts_from_whole
   - the_year_right_now
-- subtitle: Gathering Metadata
+
+- subtitle: Keeping the glossaries up-to-date
   desc: >
-    Functions for updating the metadata tables, generally functions that only
+    Functions for updating the glossary tables, generally functions that only
     the package maintainers should run when the Census updates the ACS. The
     logic of these functions might be helpful to someone who is looking to
     better understand how the API works, though.
@@ -86,4 +132,4 @@ reference:
   - most_recent_vintage
   - latest_acs_metadata
   - fetch_metadata_table
-  - hoist_table_metadata
+  - hoist_table_glossary

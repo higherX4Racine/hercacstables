@@ -1,7 +1,7 @@
-#' Get the URL for JSON metadata about one table of ACS data
+#' Get the URL for JSON glossary about one table of ACS data
 #'
 #' This will be a complete URL, including protocol and file extension, for
-#' downloading metadata about geographies, groups of variables, or specific
+#' downloading glossary about geographies, groups of variables, or specific
 #' variables.
 #'
 #' @param .info_type One of "geography", "groups", or "variables".

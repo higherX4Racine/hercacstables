@@ -7,7 +7,7 @@
 build_in_geographies(...)
 }
 \arguments{
-\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> key-value pairs like "state=03"}
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> key-value pairs like "state='03'"}
 }
 \value{
 A string of ampersand-separated \verb{in=geo:code} pairs

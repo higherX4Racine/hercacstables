@@ -1,7 +1,7 @@
 #' Take a wide-formatted response from the Census API and convert it to long
 #'
 #' @param .frame a data frame from the census with columns named like `B01001_001E`
-#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> named regular expressions for extracting fields from the column names
+#' @param ... &lt;[`dynamic-dots`][rlang::dyn-dots]&gt; named regular expressions for extracting fields from the column names
 #'
 #' @return a pivoted data frames where the columns that matched the regular expression are converted to rows that are described by the extracted fields.
 #' @keywords internal

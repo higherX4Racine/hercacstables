@@ -16,6 +16,7 @@ articles:
   contents:
   - set_up_your_api_key
   - race_ethnicity_categories
+  - reusability
 
 - title: Search for content
   desc: >
@@ -53,8 +54,9 @@ reference:
     These functions and tables will help you to look up information about which
     Census tables store which information.
   contents:
-  - GLOSSARY_OF_ACS_GROUPS
+  - search_in_glossary
   - unpack_group_details
+  - GLOSSARY_OF_ACS_GROUPS
   - GLOSSARY_OF_ACS_VARIABLES
   - GLOSSARY_OF_ACS_GEOGRAPHIES
   - DECENNIAL_POPULATION_FIELDS

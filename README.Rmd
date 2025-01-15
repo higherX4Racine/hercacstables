@@ -11,6 +11,12 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+commanism <- function(.) {
+    scales::label_comma(accuracy = 1)(.)
+}
+
+set.seed(42)
 ```
 
 # hercacstables
@@ -28,16 +34,19 @@ The primary focus, as per its name, is pulling information from the
 You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("higherX4Racine/hercacstables")
+# install.packages("remotes")
+remotes::install_github("higherX4Racine/hercacstables")
 ```
 
-## Examples
+## Fetching data from the API
 
 The main way that one uses `hercacstables` to interact with the Census API is
-the `hercacstables::fetch_data()` function.
+the `fetch_data()` function.
 
-### Population and number of households
+## A vanilla call to `fetch_data()`
+
+Here is a modestly complicated use of the function without any setup or
+post-processing.
 
 ```{r}
 #| label: fetch-pops-and-households
@@ -73,14 +82,86 @@ POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
 #| echo: false
 POPS_AND_HOUSEHOLDS |>
     dplyr::mutate(
-        Value = scales::label_comma(accuracy = 1)(.data$Value)
+        Value = commanism(.data$Value)
     ) |>
     knitr::kable(
         align = "lrlrrr"
     )
 ```
 
+## Identifying which items to fetch
+
+People working with the Census often know the topic that they are interested in,
+but not the specific variables that provide information about that topic.
+The `hercacstables` package has utilities that help you search for Census
+variables if you don't already know which ones you want to use.
+
+### Search for groups with keywords
+
+A good first step is to search for tables that could be relevant with the
+`search_in_glossary()` function and the built-in
+[`GLOSSARY_OF_ACS_GROUPS`](reference/GLOSSARY_OF_ACS_GROUPS.html).
+
+The following example searches using three columns.
+The column "Group" needs to end in a digit.
+That will limit the results to tables that report numbers for all races.
+The column "Universe" needs to include the string "population".
+That will limit the results to tables that report counts of people.
+The column "Description" needs to both start with the string "school" and
+include the string "enroll".
+This will limit the results to tables about enrollment in school.
+
+```{r}
+#| label: search-in-glossary
+EDUCATION_TABLES <- hercacstables::search_in_glossary(
+    hercacstables::GLOSSARY_OF_ACS_GROUPS,
+    Group = "\\d$",
+    Universe = "population",
+    Description = c("^school", "enroll")
+)
+```
+
+```{r}
+#| label: show-glossary_search-results
+#| echo: false
+knitr::kable(EDUCATION_TABLES)
+```
+
+### Unpack variables for a group
+
+Once you know the group that you are interested in, you will want to see what
+information is captured in each of its rows.
+The `unpack_group_details()` function searches the built-in
+[`GLOSSARY_OF_ACS_VARIABLES`](reference/GLOSSARY_OF_ACS_VARIABLES)
+for all of the variables of one group.
+It then expands the Census's description of each variable into columns.
+Users will need to identify the concepts that are captured by each column.
+
+The following example unpacks the variables in the [B14001](https://api.census.gov/data/2023/acs/acs1/B14001.html) table.
+
+```{r}
+#| label: unpack-B14001
+UNPACKED_B14001 <- hercacstables::unpack_group_details("B14001")
+```
+
+```{r}
+#| label: show-B14001
+#| echo: false
+UNPACKED_B14001 |>
+    dplyr::filter(.data$Dataset == "ACS1") |>
+    dplyr::select(!"Dataset") |>
+    knitr::kable()
+```
+
+## Shortcuts
+
+The package also includes functions for common special cases. 
+They are wrappers for `fetch_data()` with some arguments hard-coded.
+
 ### Decennial populations by race and ethnicity
+
+One example is pulling trends of racial/ethnic populations from the decennial
+census for some specific geographical units.
 
 ```{r}
 #| label: fetch-decennial-pops-by-race
@@ -108,28 +189,9 @@ POPS_BY_RACE <-
 POPS_BY_RACE |>
     dplyr::mutate(
         dplyr::across(tidyselect::ends_with("0"),
-                      \(.)scales::label_comma(accuracy = 1)(.))
+                      commanism)
     ) |>
     knitr::kable(
         align = "lrrr"
     )
 ```
-
-
-## Going farther
-
-Many questions that work with Census data follow a common pattern:
-
-> How did [measurement] differ among [demographic groups] and across
-[geographies] during [span of time]?
-
-To use this pattern, an investigator must determine some concrete definitions
-for each of the bracketed concepts.
-The `hercacstables` package provides tools for each of these four tasks.
-This site provides detailed articles for each task because each one can be
-[complex](https://www.census.gov/data/developers/guidance/api-user-guide.Core_Concepts.html).
-
-* [Use one or more Census measurements](articles/determine_measurement.html)
-* [Describe who or what has been measured](articles/determine_demographies.html)
-* [Specify where the measurements were made](articles/determine_geographies.html)
-* [Choose the year(s) that are relevant](articles/determine_timeframes.html)

@@ -1,0 +1,289 @@
+---
+title: "Reusability"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reusability}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+commanism <- function(.) {
+    scales::label_comma(accuracy = 1)(.)
+}
+
+```
+
+## Introduction
+
+A reusable approach incorporates setup and post-processing, which take place
+before and after calling for data from the API.
+Let's say that you are interested in the fraction of women who have given birth
+in the U.S., broken down by age.
+
+## The non-reusable part
+
+Use `search_in_glossary()` to find tables that are relevant to our question.
+
+```{r}
+#| label: search-for-women-and-births
+
+WB_TABLES <- hercacstables::search_in_glossary(
+    hercacstables::GLOSSARY_OF_ACS_GROUPS,
+    Group = "\\d$", # the group must end in a digit, so only "all races" tables
+    Universe = "wom[ae]n", # matches woman and women
+    Description = c("birth", "year") # the census doesn't use "age" much
+)
+```
+
+```{r}
+#| label: show-womens-and-birth-tables
+#| echo: false
+knitr::kable(WB_TABLES)
+```
+
+It looks like table
+[B13016](https://api.census.gov/data/2023/acs/acs5/groups/B13016.html) is
+exactly what we are looking for.
+
+## Setup
+
+### Define a glossary of variable meanings
+
+First, create a glossary table that maps from the Census variables you need to
+the real-world meanings that you actually care about.
+
+The following example glosses 12 variables from "B13016."
+Each specific variable encodes four columns' worth of data.
+
+```{r}
+#| label: setup-births-glossary
+GLOSSARY_OF_WOMEN_AND_BIRTHS <- "B13016" |>
+    hercacstables::unpack_group_details() |>
+    dplyr::filter(
+        .data$Dataset == "ACS1", # there are details for 1- and 5-year datasets
+        dplyr::if_all(c("A", "B"), \(.)nchar(.) > 0) #
+    ) |>
+    dplyr::mutate(
+        `Gave Birth` = stringr::str_detect(.data$A, "had"),
+        `Lower Age` = stringr::str_extract(.data$B, "^\\d{2}"),
+        `Upper Age` = stringr::str_extract(.data$B, "(?<!^)\\d{2}"),
+        dplyr::across(tidyselect::ends_with("Age"),
+                      as.integer)
+    ) |>
+    dplyr::select(
+        !tidyselect::any_of(c("A", "B"))
+    )
+```
+
+```{r}
+#| label: show-births-glossary
+#| echo: false
+
+knitr::kable(GLOSSARY_OF_WOMEN_AND_BIRTHS)
+```
+
+## Calling the API
+
+### Define a fetching function
+
+Having defined a reusable glossary, we can now define a reusable fetching
+function.
+
+```{r}
+#| label: define-fetch-births-data
+
+fetch_women_and_births <- function(...) {
+    hercacstables::fetch_data(
+        variables = GLOSSARY_OF_WOMEN_AND_BIRTHS$Variable,
+        survey_type = "acs",
+        table_or_survey_code = "acs1",
+        ...
+    )
+}
+```
+
+### Send the request to the API
+
+Run the `fetch_data()` command by itself so that you can cache it.
+In this example, we will ask for the most recent data for the whole country.
+
+```{r}
+#| label: fetch-births-data
+#| cache: true
+
+RAW_WOMEN_AND_BIRTHS <- fetch_women_and_births(
+    year = hercacstables::most_recent_vintage("acs", "acs1"),
+    for_geo = "us",
+    for_items = "*"
+)
+```
+
+```{r}
+#| label: show-raw-birth-data
+#| echo: false
+
+RAW_WOMEN_AND_BIRTHS |>
+    dplyr::mutate(
+        Value = commanism(.data$Value)
+    ) |>
+    knitr::kable(
+        align = "rlrrr"
+    )
+```
+
+## Postprocessing
+
+### Wrangle the result into a helpful format
+
+The raw data do not answer our question all by themselves.
+We are interested in rates, not counts.
+Using the `dplyr::summarize()` function will let us get rid of the superfluous
+information about marital status.
+
+```{r}
+#| label: wrangle-birth-data
+
+wrangle_women_and_births <- function(.raw_api_output, ...) {
+    .raw_api_output |>
+        dplyr::inner_join(
+            GLOSSARY_OF_WOMEN_AND_BIRTHS,
+            by = c("Group", "Index")
+        ) |>
+        dplyr::summarize(
+            `Recent Mothers` = sum(.data$Value * .data$`Gave Birth`),
+            `All Women` = sum(.data$Value),
+            Rate = .data$`Recent Mothers` / .data$`All Women`,
+            .by = tidyselect::all_of(c(..., "Lower Age", "Upper Age"))
+        )
+}
+
+WOMEN_AND_BIRTHS <- wrangle_women_and_births(RAW_WOMEN_AND_BIRTHS)
+```
+
+```{r}
+#| label: show-wrangled-births
+#| echo: false
+
+WOMEN_AND_BIRTHS |>
+    dplyr::mutate(
+        dplyr::across(c("Recent Mothers", "All Women"),
+                      commanism),
+        Rate = scales::label_percent(accuracy = 1)(.data$Rate)
+    ) |>
+    knitr::kable(
+        align = "r"
+    )
+
+```
+
+## Reusability
+
+The benefit of this approach is that we can reuse the fetching and wrangling
+functions.
+
+### Across Places
+
+In this example, we pull data for three different counties in Wisconsin.
+
+```{r}
+#| label: pull-se-wi-births
+#| cache: true
+
+SE_WI_WOMEN_AND_BIRTHS <- fetch_women_and_births(
+    state = 55,
+    for_geo = "county",
+    for_items = c("059", "079", "101"), # Kenosha, Racine, and Milwaukee
+    year = 2023
+) |>
+    wrangle_women_and_births(
+        "county"
+    ) |>
+    dplyr::mutate(
+        county = dplyr::case_match(.data$county,
+                                  "059" ~ "Kenosha",
+                                  "079" ~ "Milwaukee",
+                                  "101" ~ "Racine")
+    )
+```
+
+For a simpler table, we'll exclude the counts of mothers and women, then pivot
+the rate data by county.
+
+```{r}
+#| label: show-se-wi-wrangled-births
+#| echo: false
+
+SE_WI_WOMEN_AND_BIRTHS |>
+    dplyr::select(
+        "county",
+        "Lower Age",
+        "Upper Age",
+        "Rate"
+    ) |>
+    dplyr::mutate(
+        Rate = scales::label_percent(accuracy = 1)(.data$Rate)
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "county",
+        values_from = "Rate"
+    ) |>
+    knitr::kable(
+        align = "r"
+    )
+```
+
+### Through time
+
+In this example, we pull data about Texas from three years.
+We have to make three separate calls, one for each year.
+It's an idiosyncrasy of this particular API.
+
+```{r}
+#| label: pull-tx-births
+#| cache: true
+
+TEXAS_WOMEN_AND_BIRTHS <- 2021:2023 |>
+    purrr::map(
+        \(.y) fetch_women_and_births(
+            for_geo = "state",
+            for_items = 48L,
+            year = .y
+        )
+    ) |>
+    purrr::list_rbind() |>
+    wrangle_women_and_births(
+        "Year"
+    )
+```
+
+For a simpler table, we'll exclude the counts of mothers and women, then pivot
+the rate data by year.
+
+```{r}
+#| label: show-tx-wrangled-births
+#| echo: false
+
+TEXAS_WOMEN_AND_BIRTHS |>
+    dplyr::select(
+        "Year",
+        "Lower Age",
+        "Upper Age",
+        "Rate"
+    ) |>
+    dplyr::mutate(
+        Rate = scales::label_percent(accuracy = 1)(.data$Rate)
+    ) |>
+    tidyr::pivot_wider(
+        names_from = "Year",
+        values_from = "Rate"
+    ) |>
+    knitr::kable(
+        align = "r"
+    )
+```

@@ -19,7 +19,6 @@ knitr::opts_chunk$set(
 
 ## Welcome
 
-
 ### For the newest R users:
 
 You may be new to R, but not data science, in which case I suggest checking out

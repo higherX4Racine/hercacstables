@@ -17,16 +17,19 @@ You can install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("higherX4Racine/hercacstables")
+# install.packages("remotes")
+remotes::install_github("higherX4Racine/hercacstables")
 ```
 
-## Examples
+## Fetching data from the API
 
 The main way that one uses `hercacstables` to interact with the Census
-API is the `hercacstables::fetch_data()` function.
+API is the `fetch_data()` function.
 
-### Population and number of households
+## A vanilla call to `fetch_data()`
+
+Here is a modestly complicated use of the function without any setup or
+post-processing.
 
 ``` r
 POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
@@ -63,7 +66,83 @@ POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
 | Puerto Rico          |    72 | B11002 |     2 | 2,613,461 | 2023 |
 | Puerto Rico          |    72 | B11002 |    12 |   554,557 | 2023 |
 
+## Identifying which items to fetch
+
+People working with the Census often know the topic that they are
+interested in, but not the specific variables that provide information
+about that topic. The `hercacstables` package has utilities that help
+you search for Census variables if you don’t already know which ones you
+want to use.
+
+### Search for groups with keywords
+
+A good first step is to search for tables that could be relevant with
+the `search_in_glossary()` function and the built-in
+[`GLOSSARY_OF_ACS_GROUPS`](reference/GLOSSARY_OF_ACS_GROUPS.html).
+
+The following example searches using three columns. The column “Group”
+needs to end in a digit. That will limit the results to tables that
+report numbers for all races. The column “Universe” needs to include the
+string “population”. That will limit the results to tables that report
+counts of people. The column “Description” needs to both start with the
+string “school” and include the string “enroll”. This will limit the
+results to tables about enrollment in school.
+
+``` r
+EDUCATION_TABLES <- hercacstables::search_in_glossary(
+    hercacstables::GLOSSARY_OF_ACS_GROUPS,
+    Group = "\\d$",
+    Universe = "population",
+    Description = c("^school", "enroll")
+)
+```
+
+| Group | Universe | Description | ACS1 | ACS5 |
+|:---|:---|:---|:---|:---|
+| B14001 | Population 3 years and over | School Enrollment by Level of School for the Population 3 Years and Over | TRUE | TRUE |
+| B14007 | Population 3 years and over | School Enrollment by Detailed Level of School for the Population 3 Years and Over | TRUE | TRUE |
+| C14002 | Population 3 years and over | School Enrollment by Level of School by Type of School for the Population 3 Years and Over | TRUE | FALSE |
+| C14003 | Population 3 years and over | School Enrollment by Type of School by Age for the Population 3 Years and Over | TRUE | FALSE |
+
+### Unpack variables for a group
+
+Once you know the group that you are interested in, you will want to see
+what information is captured in each of its rows. The
+`unpack_group_details()` function searches the built-in
+[`GLOSSARY_OF_ACS_VARIABLES`](reference/GLOSSARY_OF_ACS_VARIABLES) for
+all of the variables of one group. It then expands the Census’s
+description of each variable into columns. Users will need to identify
+the concepts that are captured by each column.
+
+The following example unpacks the variables in the
+[B14001](https://api.census.gov/data/2023/acs/acs1/B14001.html) table.
+
+``` r
+UNPACKED_B14001 <- hercacstables::unpack_group_details("B14001")
+```
+
+| Group | Index | Variable | A | B |
+|:---|---:|:---|:---|:---|
+| B14001 | 1 | B14001_001E |  |  |
+| B14001 | 2 | B14001_002E | Enrolled in school |  |
+| B14001 | 3 | B14001_003E | Enrolled in school | Enrolled in nursery school, preschool |
+| B14001 | 4 | B14001_004E | Enrolled in school | Enrolled in kindergarten |
+| B14001 | 5 | B14001_005E | Enrolled in school | Enrolled in grade 1 to grade 4 |
+| B14001 | 6 | B14001_006E | Enrolled in school | Enrolled in grade 5 to grade 8 |
+| B14001 | 7 | B14001_007E | Enrolled in school | Enrolled in grade 9 to grade 12 |
+| B14001 | 8 | B14001_008E | Enrolled in school | Enrolled in college, undergraduate years |
+| B14001 | 9 | B14001_009E | Enrolled in school | Graduate or professional school |
+| B14001 | 10 | B14001_010E | Not enrolled in school |  |
+
+## Shortcuts
+
+The package also includes functions for common special cases. They are
+wrappers for `fetch_data()` with some arguments hard-coded.
+
 ### Decennial populations by race and ethnicity
+
+One example is pulling trends of racial/ethnic populations from the
+decennial census for some specific geographical units.
 
 ``` r
 POPS_BY_RACE <-
@@ -94,25 +173,3 @@ POPS_BY_RACE <-
 | Some other race | 468,155 | 605,291 | 1,692,341 |
 | Two or more races | 4,604,792 | 5,967,844 | 13,551,323 |
 | White | 194,586,740 | 196,844,498 | 191,722,195 |
-
-## Going farther
-
-Many questions that work with Census data follow a common pattern:
-
-> How did \[measurement\] differ among \[demographic groups\] and across
-> \[geographies\] during \[span of time\]?
-
-To use this pattern, an investigator must determine some concrete
-definitions for each of the bracketed concepts. The `hercacstables`
-package provides tools for each of these four tasks. This site provides
-detailed articles for each task because each one can be
-[complex](https://www.census.gov/data/developers/guidance/api-user-guide.Core_Concepts.html).
-
-- [Use one or more Census
-  measurements](articles/determine_measurement.html)
-- [Describe who or what has been
-  measured](articles/determine_demographies.html)
-- [Specify where the measurements were
-  made](articles/determine_geographies.html)
-- [Choose the year(s) that are
-  relevant](articles/determine_timeframes.html)

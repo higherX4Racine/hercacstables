@@ -1,7 +1,7 @@
 ## Copyright (C) 2024 by Higher Expectations for Racine County
 
-.GLOSSARY_OF_RAW_ACS_GROUP <- "groups" |>
-    latest_acs_glossaries() |>
+.RAW_GROUPS <- "groups" |>
+    latest_acs_metadata() |>
     dplyr::mutate(
         Description = stringr::str_remove(
             .data$Description,
@@ -9,7 +9,7 @@
         )
     )
 
-.GROUPS_WHEN_THEY_OCCUR <- .GLOSSARY_OF_RAW_ACS_GROUP |>
+.GROUPS_WHEN_THEY_OCCUR <- .RAW_GROUPS |>
     dplyr::count(
         .data$Group,
         .data$Dataset,
@@ -24,7 +24,7 @@
         values_fill = FALSE
     )
 
-.LONGEST_DESCRIPTIONS <- .GLOSSARY_OF_RAW_ACS_GROUP |>
+.LONGEST_DESCRIPTIONS <- .RAW_GROUPS |>
     dplyr::summarize(
         dplyr::across(c("Description", "Universe"),
                       \(.s) dplyr::last(.s, order_by = nchar(.s))
@@ -32,7 +32,7 @@
         .by = "Group"
     )
 
-GLOSSARY_OF_ACS_GROUPS <- .GROUPS_WHEN_THEY_OCCUR |>
+METADATA_FOR_ACS_GROUPS <- .GROUPS_WHEN_THEY_OCCUR |>
     dplyr::inner_join(
         .LONGEST_DESCRIPTIONS,
         by = "Group"
@@ -45,4 +45,4 @@ GLOSSARY_OF_ACS_GROUPS <- .GROUPS_WHEN_THEY_OCCUR |>
         "ACS5"
     )
 
-usethis::use_data(GLOSSARY_OF_ACS_GROUPS, overwrite = TRUE)
+usethis::use_data(METADATA_FOR_ACS_GROUPS, overwrite = TRUE)

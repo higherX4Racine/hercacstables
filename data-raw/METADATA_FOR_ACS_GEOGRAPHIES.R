@@ -1,7 +1,7 @@
 ## Copyright (C) 2025 by Higher Expectations for Racine County
 
-GLOSSARY_OF_ACS_GEOGRAPHIES <- "geography" |>
-    latest_acs_glossaries() |>
+METADATA_FOR_ACS_GEOGRAPHIES <- "geography" |>
+    latest_acs_metadata() |>
     dplyr::mutate(
         `Containing Geographies` = purrr::map_chr(
             .data$`Containing Geographies`,
@@ -22,4 +22,4 @@ GLOSSARY_OF_ACS_GEOGRAPHIES <- "geography" |>
         values_from = "Reference Date"
     )
 
-usethis::use_data(GLOSSARY_OF_ACS_GEOGRAPHIES, overwrite = TRUE)
+usethis::use_data(METADATA_FOR_ACS_GEOGRAPHIES, overwrite = TRUE)

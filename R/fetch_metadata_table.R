@@ -8,7 +8,7 @@
 #'
 #' @export
 #' @concept glossary
-fetch_glossary_table <- function(.info_type, .year, .year_span) {
+fetch_metadata_table <- function(.info_type, .year, .year_span) {
     .list <- .info_type |>
         build_info_url(.year, .year_span) |>
         jsonlite::read_json() |>

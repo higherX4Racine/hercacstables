@@ -81,7 +81,7 @@ Nevertheless, it occurs throughout the American Community Survey.
 #| label: find-subtables-with-ethnicity
 #| echo: false
 
-broad_subtables <- hercacstables::GLOSSARY_OF_ACS_GROUPS |>
+broad_subtables <- hercacstables::METADATA_FOR_ACS_GROUPS |>
     dplyr::filter(stringr::str_detect(.data$Group, "I$")) |>
     dplyr::select("Group", "Description") |>
     dplyr::mutate(
@@ -122,7 +122,7 @@ hercacstables::RACE_ETHNICITY_SUBTABLES |>
 #| label: find-race-in-table-descriptions
 #| echo: false
 
-tables_that_name_race <- hercacstables::GLOSSARY_OF_ACS_GROUPS |>
+tables_that_name_race <- hercacstables::METADATA_FOR_ACS_GROUPS |>
     dplyr::filter(
         stringr::str_detect(.data$Group, "\\d$"),
         stringr::str_detect(.data$Description,
@@ -132,7 +132,7 @@ tables_that_name_race <- hercacstables::GLOSSARY_OF_ACS_GROUPS |>
         "Group", "Description"
     ) |>
     dplyr::left_join(
-        dplyr::count(hercacstables::GLOSSARY_OF_ACS_VARIABLES,
+        dplyr::count(hercacstables::METADATA_FOR_ACS_VARIABLES,
                      .data$Group,
                      name = "rows"),
         by = "Group"

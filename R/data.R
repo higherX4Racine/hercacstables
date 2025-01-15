@@ -27,8 +27,9 @@
 #'   \item{ACS1}{Whether this group is available in the most recent 1-year dataset.}
 #'   \item{ACS5}{Whether this group is available in the most recent 5-year dataset.}
 #'   }
-#' @concept GLOSSARY
-"GLOSSARY_OF_ACS_GROUPS"
+#' @concept metadata
+#' @source https://www.census.gov/programs-surveys/acs/technical-documentation/table-shells.html
+"METADATA_FOR_ACS_GROUPS"
 
 #' Details about variables in the most recent American Community Series
 #'
@@ -47,8 +48,9 @@
 #'   \item{Variable}{The full code for this variable, like "B01001B_002E" or "B25063_005E"}
 #'   \item{Details}{A vector of one or more strings describing what the variable actually represents.}
 #'   }
-#' @concept GLOSSARY
-"GLOSSARY_OF_ACS_VARIABLES"
+#' @concept metadata
+#' @source https://www.census.gov/programs-surveys/acs/technical-documentation/table-shells.html
+"METADATA_FOR_ACS_VARIABLES"
 
 #' Details about levels of geographic detail in the most recent American Community Series
 #'
@@ -70,8 +72,9 @@
 #'   \item{ACS1}{A reference date if this level is available in the 1-year dataset, otherwise `NA`.}
 #'   \item{ACS5}{A reference date if this level is available in the 5-year dataset, otherwise `NA`.}
 #' }
-#' @concept GLOSSARY
-"GLOSSARY_OF_ACS_GEOGRAPHIES"
+#' @concept metadata
+#' @source https://www.census.gov/programs-surveys/acs/geography-acs/concepts-definitions.html
+"METADATA_FOR_ACS_GEOGRAPHIES"
 
 #' Variables from the Decennial censuses
 #'

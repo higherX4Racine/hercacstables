@@ -5,7 +5,7 @@
 #' @return a tibble with dimensions that depend upon `information_type`
 #' @export
 #' @concept glossary
-latest_acs_glossaries <- function(information_type) {
+latest_acs_metadata <- function(information_type) {
     rlang::arg_match(
         information_type,
         c("geography", "groups", "variables")
@@ -24,7 +24,7 @@ latest_acs_glossaries <- function(information_type) {
                                        paste0("acs", .ys)
                     )),
             Glossary = purrr::pmap(dplyr::pick(tidyselect::everything()),
-                                   fetch_glossary_table),
+                                   fetch_metadata_table),
             Dataset = paste0("ACS", .data$.year_span)
         ) |>
         dplyr::select(

@@ -20,11 +20,11 @@ essentially identical to the local school district's,
 [Racine Unified](https://www.rusd.org).
 
 You look for geographical levels related to schools in
-`hercacstables::GLOSSARY_OF_ACS_GEOGRAPHIES`.
+`hercacstables::METADATA_FOR_ACS_GEOGRAPHIES`.
 
 ```{r}
 #| label: look-for-school-geographies
-SCHOOL_GEOGRAPHIES <- dplyr::filter(hercacstables::GLOSSARY_OF_ACS_GEOGRAPHIES,
+SCHOOL_GEOGRAPHIES <- dplyr::filter(hercacstables::METADATA_FOR_ACS_GEOGRAPHIES,
                                     grepl("school", .data$`Geographic Level`))
 ```
 
@@ -72,7 +72,7 @@ With `hercacstables`, you would search within its glossary about ACS groups:
 ```{r}
 #| label: search-for-group-about-plumbing
 
-PLUMBING_GROUPS <- hercacstables::GLOSSARY_OF_ACS_GROUPS |>
+PLUMBING_GROUPS <- hercacstables::METADATA_FOR_ACS_GROUPS |>
     dplyr::filter(
         grepl("plumbing",         # search for the term "plumbing"
               .data$Description,  # within the "Description" column
@@ -108,7 +108,7 @@ You can search it to see details about each variable in group `r GROUP`.
 ```{r}
 #| label: search-for-variables-in-group
 
-PLUMBING_VARIABLES <- hercacstables::GLOSSARY_OF_ACS_VARIABLES |>
+PLUMBING_VARIABLES <- hercacstables::METADATA_FOR_ACS_VARIABLES |>
     dplyr::filter(
         .data$Dataset == "ACS5", # use the 1-year dataset only
         .data$Group == GROUP     # pull all of the variables for this group
@@ -127,7 +127,7 @@ knitr::kable(PLUMBING_VARIABLES)
 You can see that group `r GROUP` reports the number of households that have, or
 do not have, plumbing facilities.
 It further breaks those households down into renters and owner-occupants.
-The raw glossary from the Census, and in `hercacstables::GLOSSARY_OF_ACS_VARIABLES`,
+The raw glossary from the Census, and in `hercacstables::METADATA_FOR_ACS_VARIABLES`,
 packs all of that information into the "Details" column.
 
 It would be more useful if we actually had separate columns for the types of

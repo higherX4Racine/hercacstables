@@ -28,12 +28,12 @@ in the U.S., broken down by age.
 
 ## The non-reusable part
 
-Use `search_in_glossary()` to find tables that are relevant to our question.
+Use `search_in_columns()` to find tables that are relevant to our question.
 
 ```{r}
 #| label: search-for-women-and-births
 
-WB_TABLES <- hercacstables::search_in_glossary(
+WB_TABLES <- hercacstables::search_in_columns(
     hercacstables::METADATA_FOR_ACS_GROUPS,
     Group = "\\d$", # the group must end in a digit, so only "all races" tables
     Universe = "wom[ae]n", # matches woman and women

@@ -26,7 +26,7 @@ remotes::install_github("higherX4Racine/hercacstables")
 The main way that one uses `hercacstables` to interact with the Census
 API is the `fetch_data()` function.
 
-## A vanilla call to `fetch_data()`
+### A vanilla call to `fetch_data()`
 
 Here is a modestly complicated use of the function without any setup or
 post-processing.
@@ -66,6 +66,12 @@ POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
 | Puerto Rico          |    72 | B11002 |     2 | 2,613,461 | 2023 |
 | Puerto Rico          |    72 | B11002 |    12 |   554,557 | 2023 |
 
+### Best practice
+
+The previous example is good enough for a README file. An [approach
+centered on reusability](articles/reusability.html) is better for actual
+practice.
+
 ## Identifying which items to fetch
 
 People working with the Census often know the topic that they are
@@ -77,29 +83,27 @@ want to use.
 ### Search for groups with keywords
 
 A good first step is to search for tables that could be relevant with
-the `search_in_glossary()` function and the built-in
+the `search_in_columns()` function and the built-in
 [`METADATA_FOR_ACS_GROUPS`](reference/METADATA_FOR_ACS_GROUPS.html).
 
-The following example searches using three columns. The column “Group”
-needs to end in a digit. That will limit the results to tables that
-report numbers for all races. The column “Universe” needs to include the
-string “population”. That will limit the results to tables that report
-counts of people. The column “Description” needs to both start with the
-string “school” and include the string “enroll”. This will limit the
-results to tables about enrollment in school.
-
 ``` r
-EDUCATION_TABLES <- hercacstables::search_in_glossary(
+EDUCATION_TABLES <- hercacstables::search_in_columns(
     hercacstables::METADATA_FOR_ACS_GROUPS,
-    Group = "\\d$",
-    Universe = "population",
-    Description = c("^school", "enroll")
+    Group = "\\d$",          # "Group" values need to end in a digit.
+    Universe = "population", # "Universe" values need to include "population".
+    Description = "enroll",  # "Description values need to include "enroll"
+    `-Description` = c("sex",        # but not "sex", that's too much detail
+                       "computer",   # or "computer", also too detailed
+                       "quarters",   # or "quarters", also too detailed
+                       "insur",      # or "insur", not health care enrollments
+                       "allocation") # or "allocation", these are metadata
 )
 ```
 
 | Group | Universe | Description | ACS1 | ACS5 |
 |:---|:---|:---|:---|:---|
 | B14001 | Population 3 years and over | School Enrollment by Level of School for the Population 3 Years and Over | TRUE | TRUE |
+| B14006 | Population 3 years and over for whom poverty status is determined | Poverty Status in the Past 12 Months by School Enrollment by Level of School for the Population 3 Years and Over | TRUE | TRUE |
 | B14007 | Population 3 years and over | School Enrollment by Detailed Level of School for the Population 3 Years and Over | TRUE | TRUE |
 | C14002 | Population 3 years and over | School Enrollment by Level of School by Type of School for the Population 3 Years and Over | TRUE | FALSE |
 | C14003 | Population 3 years and over | School Enrollment by Type of School by Age for the Population 3 Years and Over | TRUE | FALSE |

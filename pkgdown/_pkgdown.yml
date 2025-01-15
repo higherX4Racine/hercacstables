@@ -54,7 +54,7 @@ reference:
     These functions and tables will help you to look up information about which
     Census tables store which information.
   contents:
-  - search_in_glossary
+  - search_in_columns
   - unpack_group_details
   - METADATA_FOR_ACS_GROUPS
   - METADATA_FOR_ACS_VARIABLES

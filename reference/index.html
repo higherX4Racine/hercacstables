@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hercacstables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,18 +19,15 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
-    <li><a class="dropdown-item" href="../articles/determine_geographies.html">determine_geographies</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-demographies.html">determine-demographies</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-measurement.html">determine-measurement</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-timeframes.html">determine-timeframes</a></li>
-    <li><a class="dropdown-item" href="../articles/plumbing-and-owner-occupancy.html">Plumbing and Owner-occupancy</a></li>
-    <li><a class="dropdown-item" href="../articles/Population-changes-in-school-districts.html">Population changes in school districts</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/set_up_your_api_key.html">Set up your API key</a></li>
     <li><a class="dropdown-item" href="../articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
-    <li><a class="dropdown-item" href="../articles/set-up-your-api-key.html">Set up your API key</a></li>
+    <li><a class="dropdown-item" href="../articles/reusability.html">Reusability</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/higherX4Racine/hercacstables" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -67,57 +64,10 @@
         <dd>Download a set of data from the US Census API</dd>
       </dl><dl><dt>
 
-          <code><a href="fetch_decennial_block_pops_by_race.html">fetch_decennial_block_pops_by_race()</a></code>
+          <code><a href="fetch_decennial_pops_by_race.html">fetch_decennial_pops_by_race()</a></code>
 
         </dt>
         <dd>Get decennial census estimates of per-block populations by race/ethnicity</dd>
-      </dl><dl><dt>
-
-          <code><a href="fetch_acs5_tract_data.html">fetch_acs5_tract_data()</a></code>
-
-        </dt>
-        <dd>Pull data from the 5-year American Community Survey</dd>
-      </dl><dl><dt>
-
-          <code><a href="safe_api_query.html">safe_api_query()</a></code>
-
-        </dt>
-        <dd>Split a census query into fewer than 50 variables per query</dd>
-      </dl></div><div class="section level2">
-
-      <h3 id="api-structure">API structure<a class="anchor" aria-label="anchor" href="#api-structure"></a></h3>
-      <div class="section-desc"><p>Metadata about abbreviations, codes, and other arcane shorthand that appear in the Census API.</p></div>
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="TABLE_TYPES.html">TABLE_TYPES</a></code>
-
-        </dt>
-        <dd>A Census table's ID always starts with an alphanumeric code for its type.</dd>
-      </dl><dl><dt>
-
-          <code><a href="SUBJECT_TYPES.html">SUBJECT_TYPES</a></code>
-
-        </dt>
-        <dd>A code for the broad subject that a Census table covers.</dd>
-      </dl><dl><dt>
-
-          <code><a href="RACE_OR_ETHNIC_GROUP_TYPES.html">RACE_OR_ETHNIC_GROUP_TYPES</a></code>
-
-        </dt>
-        <dd>For selected tables, an alphabetic suffix follows to indicate that a table is repeated for the nine major race and Hispanic or Latino groups:</dd>
-      </dl><dl><dt>
-
-          <code><a href="VARIABLE_TYPES.html">VARIABLE_TYPES</a></code>
-
-        </dt>
-        <dd>ACS data contain variables ending in 1- or 2-letter codes.</dd>
       </dl></div><div class="section level2">
 
       <h3 id="the-contents-of-the-api">The contents of the API<a class="anchor" aria-label="anchor" href="#the-contents-of-the-api"></a></h3>
@@ -131,10 +81,10 @@
 
       <dl><dt>
 
-          <code><a href="ACS_GROUP_METADATA.html">ACS_GROUP_METADATA</a></code>
+          <code><a href="search_in_columns.html">search_in_columns()</a></code>
 
         </dt>
-        <dd>Details about the groups in the most recent American Community Series</dd>
+        <dd>Search for terms in a glossary in case-insensitive ways</dd>
       </dl><dl><dt>
 
           <code><a href="unpack_group_details.html">unpack_group_details()</a></code>
@@ -143,13 +93,19 @@
         <dd>Pull apart the lists of details for one group of ACS data</dd>
       </dl><dl><dt>
 
-          <code><a href="ACS_VARIABLE_METADATA.html">ACS_VARIABLE_METADATA</a></code>
+          <code><a href="METADATA_FOR_ACS_GROUPS.html">METADATA_FOR_ACS_GROUPS</a></code>
+
+        </dt>
+        <dd>Details about the groups in the most recent American Community Series</dd>
+      </dl><dl><dt>
+
+          <code><a href="METADATA_FOR_ACS_VARIABLES.html">METADATA_FOR_ACS_VARIABLES</a></code>
 
         </dt>
         <dd>Details about variables in the most recent American Community Series</dd>
       </dl><dl><dt>
 
-          <code><a href="ACS_GEOGRAPHY_METADATA.html">ACS_GEOGRAPHY_METADATA</a></code>
+          <code><a href="METADATA_FOR_ACS_GEOGRAPHIES.html">METADATA_FOR_ACS_GEOGRAPHIES</a></code>
 
         </dt>
         <dd>Details about levels of geographic detail in the most recent American Community Series</dd>
@@ -167,7 +123,7 @@
         <dd>Geographic levels of organization for data from the US Census Bureau's API</dd>
       </dl><dl><dt>
 
-          <code><a href="RACE_ETHNICITY_SUBTABLE_METADATA.html">RACE_ETHNICITY_SUBTABLE_METADATA</a></code>
+          <code><a href="RACE_ETHNICITY_SUBTABLES.html">RACE_ETHNICITY_SUBTABLES</a></code>
 
         </dt>
         <dd>Race and ethnicity codes and labels used by the U.S. Census Bureau</dd>
@@ -184,7 +140,7 @@
 
       <dl><dt>
 
-          <code><a href="AGE_AND_SEX_METADATA.html">AGE_AND_SEX_METADATA</a></code>
+          <code><a href="GLOSSARY_OF_AGE_AND_SEX.html">GLOSSARY_OF_AGE_AND_SEX</a></code>
 
         </dt>
         <dd>The fundamental demographics of age and sex from table <code>B01001</code></dd>
@@ -201,19 +157,19 @@
 
       <dl><dt>
 
-          <code><a href="CHILDREN_IN_POVERTY_METADATA.html">CHILDREN_IN_POVERTY_METADATA</a></code>
+          <code><a href="GLOSSARY_OF_CHILDREN_IN_POVERTY.html">GLOSSARY_OF_CHILDREN_IN_POVERTY</a></code>
 
         </dt>
         <dd>Categorize ACS variables about children living in poverty and parents' birth origins</dd>
       </dl><dl><dt>
 
-          <code><a href="CHILDREN_PER_FAMILY_METADATA.html">CHILDREN_PER_FAMILY_METADATA</a></code>
+          <code><a href="GLOSSARY_OF_CHILDREN_PER_FAMILY.html">GLOSSARY_OF_CHILDREN_PER_FAMILY</a></code>
 
         </dt>
         <dd>Categorize ACS variables about children per family</dd>
       </dl><dl><dt>
 
-          <code><a href="FAMILIES_WITH_CHILDREN_METADATA.html">FAMILIES_WITH_CHILDREN_METADATA</a></code>
+          <code><a href="GLOSSARY_OF_FAMILIES_WITH_CHILDREN.html">GLOSSARY_OF_FAMILIES_WITH_CHILDREN</a></code>
 
         </dt>
         <dd>Categorize ACS variables counting families by number of children</dd>
@@ -236,7 +192,7 @@
         <dd>Census labels for different levels of educational achievement</dd>
       </dl><dl><dt>
 
-          <code><a href="EDUCATIONAL_ATTAINMENT_METADATA.html">EDUCATIONAL_ATTAINMENT_METADATA</a></code>
+          <code><a href="GLOSSARY_OF_EDUCATIONAL_ATTAINMENT.html">GLOSSARY_OF_EDUCATIONAL_ATTAINMENT</a></code>
 
         </dt>
         <dd>Census variables for different levels of educational achievement</dd>
@@ -253,13 +209,13 @@
 
       <dl><dt>
 
-          <code><a href="EMPLOYMENT_STATUS_METADATA.html">EMPLOYMENT_STATUS_METADATA</a></code>
+          <code><a href="GLOSSARY_OF_EMPLOYMENT_STATUS.html">GLOSSARY_OF_EMPLOYMENT_STATUS</a></code>
 
         </dt>
         <dd>Factor values associated with specific rows within employment-related ACS tables</dd>
       </dl><dl><dt>
 
-          <code><a href="STANDARD_OF_LIVING_METADATA.html">STANDARD_OF_LIVING_METADATA</a></code>
+          <code><a href="GLOSSARY_OF_STANDARD_OF_LIVING.html">GLOSSARY_OF_STANDARD_OF_LIVING</a></code>
 
         </dt>
         <dd>Categorize ACS variables about income : poverty level ratios by family sustainability</dd>
@@ -292,6 +248,41 @@
 
         </dt>
         <dd>Create an API call to send to api.census.gov</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="codes-and-data-structures-in-the-api">Codes and data structures in the API<a class="anchor" aria-label="anchor" href="#codes-and-data-structures-in-the-api"></a></h3>
+      <div class="section-desc"><p>Glossary about abbreviations, codes, and other arcane shorthand that appear in the Census API.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="TYPES_OF_TABLE.html">TYPES_OF_TABLE</a></code>
+
+        </dt>
+        <dd>A Census table's ID always starts with an alphanumeric code for its type.</dd>
+      </dl><dl><dt>
+
+          <code><a href="TYPES_OF_SUBJECT.html">TYPES_OF_SUBJECT</a></code>
+
+        </dt>
+        <dd>A code for the broad subject that a Census table covers.</dd>
+      </dl><dl><dt>
+
+          <code><a href="TYPES_OF_RACE_OR_ETHNICITY.html">TYPES_OF_RACE_OR_ETHNICITY</a></code>
+
+        </dt>
+        <dd>For selected tables, an alphabetic suffix follows to indicate that a table is repeated for the nine major race and Hispanic or Latino groups:</dd>
+      </dl><dl><dt>
+
+          <code><a href="TYPES_OF_VARIABLE.html">TYPES_OF_VARIABLE</a></code>
+
+        </dt>
+        <dd>ACS data contain variables ending in 1- or 2-letter codes.</dd>
       </dl></div><div class="section level2">
 
       <h3 id="api-key">API key<a class="anchor" aria-label="anchor" href="#api-key"></a></h3>
@@ -334,12 +325,6 @@
 
       <dl><dt>
 
-          <code><a href="margins_by_demography_and_place.html">margins_by_demography_and_place()</a></code>
-
-        </dt>
-        <dd>Determine the relative contribution of different demographic groups to the populations of a set of areas.</dd>
-      </dl><dl><dt>
-
           <code><a href="subtract_parts_from_whole.html">subtract_parts_from_whole()</a></code>
 
         </dt>
@@ -352,8 +337,8 @@
         <dd>Today's year in the Gregorian calendar.</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="gathering-metadata">Gathering Metadata<a class="anchor" aria-label="anchor" href="#gathering-metadata"></a></h3>
-      <div class="section-desc"><p>Functions for updating the metadata tables, generally functions that only the package maintainers should run when the Census updates the ACS. The logic of these functions might be helpful to someone who is looking to better understand how the API works, though.</p></div>
+      <h3 id="keeping-the-glossaries-up-to-date">Keeping the glossaries up-to-date<a class="anchor" aria-label="anchor" href="#keeping-the-glossaries-up-to-date"></a></h3>
+      <div class="section-desc"><p>Functions for updating the glossary tables, generally functions that only the package maintainers should run when the Census updates the ACS. The logic of these functions might be helpful to someone who is looking to better understand how the API works, though.</p></div>
 
 
     </div><div class="section level2">
@@ -366,7 +351,7 @@
           <code><a href="build_info_url.html">build_info_url()</a></code>
 
         </dt>
-        <dd>Get the URL for JSON metadata about one table of ACS data</dd>
+        <dd>Get the URL for JSON glossary about one table of ACS data</dd>
       </dl><dl><dt>
 
           <code><a href="most_recent_vintage.html">most_recent_vintage()</a></code>
@@ -378,16 +363,16 @@
           <code><a href="latest_acs_metadata.html">latest_acs_metadata()</a></code>
 
         </dt>
-        <dd>Download metadata about the most recent versions of the 1- and 5-year ACS</dd>
+        <dd>Download glossary about the most recent versions of the 1- and 5-year ACS</dd>
       </dl><dl><dt>
 
           <code><a href="fetch_metadata_table.html">fetch_metadata_table()</a></code>
 
         </dt>
-        <dd>Fetch metadata about a specific ACS data set from the Census API.</dd>
+        <dd>Fetch glossary about a specific ACS data set from the Census API.</dd>
       </dl><dl><dt>
 
-          <code><a href="hoist_table_metadata.html">hoist_table_metadata()</a></code>
+          <code><a href="hoist_table_glossary.html">hoist_table_glossary()</a></code>
 
         </dt>
         <dd>Hoist details about a Census data group from a list of strings to separate columns</dd>

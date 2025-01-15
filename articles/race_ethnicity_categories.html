@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hercacstables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,15 +34,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
-    <li><a class="dropdown-item" href="../articles/determine_geographies.html">determine_geographies</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-demographies.html">determine-demographies</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-measurement.html">determine-measurement</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-timeframes.html">determine-timeframes</a></li>
-    <li><a class="dropdown-item" href="../articles/plumbing-and-owner-occupancy.html">Plumbing and Owner-occupancy</a></li>
-    <li><a class="dropdown-item" href="../articles/Population-changes-in-school-districts.html">Population changes in school districts</a></li>
+<li><a class="dropdown-item" href="../articles/set_up_your_api_key.html">Set up your API key</a></li>
     <li><a class="dropdown-item" href="../articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
-    <li><a class="dropdown-item" href="../articles/set-up-your-api-key.html">Set up your API key</a></li>
+    <li><a class="dropdown-item" href="../articles/reusability.html">Reusability</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul>
 </li>
       </ul>
@@ -50,6 +46,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/higherX4Racine/hercacstables" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -97,7 +94,7 @@ number.</p>
 <p>While packing information is efficient for storing and transmitting
 data, it means that users of Census information must unpack things in
 order to be clear. The <code>hercacstables</code> package has many tools
-and metadata tables that should make it easier and more convenient to
+and glossary tables that should make it easier and more convenient to
 unpack Census data.</p>
 </div>
 <div class="section level2">
@@ -132,10 +129,10 @@ of a table’s name. In other words, all of the values from a table with
 one of these suffixes in its name will pertain to people of just one
 racial/ethnic category.</p>
 <p>Since the case is so common, <code>hercacstables</code> describes it
-with the metadata table
-<code><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA</a></code>. It maps
-from the suffix in a table’s name to the racial/ethnic category the
-table describes.</p>
+with the glossary table
+<code><a href="../reference/RACE_ETHNICITY_SUBTABLES.html">hercacstables::RACE_ETHNICITY_SUBTABLES</a></code>. It maps from the
+suffix in a table’s name to the racial/ethnic category the table
+describes.</p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Census Race</th>
@@ -548,8 +545,8 @@ who identified with more than one category will be counted in each
 corresponding table.</p>
 <p>These tables correspond to six of the ten broad categories of
 race/ethnicity, so they are actually already in
-<code>RACE_ETHNICITY_SUBTABLE_METADATA</code>. I just hid them before
-because it would have been confusing.</p>
+<code>RACE_ETHNICITY_SUBTABLES</code>. I just hid them before because it
+would have been confusing.</p>
 <table class="table">
 <colgroup>
 <col width="68%">
@@ -621,7 +618,7 @@ use <code>hercacstables</code> to check this, too.</p>
 <h5 id="census-variables-for-inclusive-and-exclusive-counts">Census variables for inclusive and exclusive counts<a class="anchor" aria-label="anchor" href="#census-variables-for-inclusive-and-exclusive-counts"></a>
 </h5>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">incl_excl_pop_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">RACE_ETHNICITY_SUBTABLE_METADATA</a></span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">incl_excl_pop_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/RACE_ETHNICITY_SUBTABLES.html">RACE_ETHNICITY_SUBTABLES</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Inclusive Group`</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -858,10 +855,9 @@ of non-Hispanic and Hispanic people. Rows 10, 11, 20, and 21 contain
 subgroupings that distinguish between people who identify as biracial
 and those who identify as multiracial.</p>
 <p>That means that we can take rows one through eight of
-<code><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA</a></code> and map
-them onto rows in <code>B03002</code>. In fact, this is so useful that
-it is also included in
-<code><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">hercacstables::RACE_ETHNICITY_SUBTABLE_METADATA</a></code>.</p>
+<code><a href="../reference/RACE_ETHNICITY_SUBTABLES.html">hercacstables::RACE_ETHNICITY_SUBTABLES</a></code> and map them onto
+rows in <code>B03002</code>. In fact, this is so useful that it is also
+included in <code><a href="../reference/RACE_ETHNICITY_SUBTABLES.html">hercacstables::RACE_ETHNICITY_SUBTABLES</a></code>.</p>
 <table class="table">
 <colgroup>
 <col width="66%">
@@ -918,9 +914,9 @@ it is also included in
 </table>
 <p>Let’s use these to look at nationwide trends across racial identities
 in their percentages of Hispanic ethnicity.</p>
-<p>First, we will define our metadata table.</p>
+<p>First, we will define our glossary table.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/RACE_ETHNICITY_SUBTABLE_METADATA.html">RACE_ETHNICITY_SUBTABLE_METADATA</a></span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_variables</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/RACE_ETHNICITY_SUBTABLES.html">RACE_ETHNICITY_SUBTABLES</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`non-Hispanic`</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>

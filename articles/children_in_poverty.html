@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hercacstables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,15 +34,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/children_in_poverty.html">Children in Poverty</a></li>
-    <li><a class="dropdown-item" href="../articles/determine_geographies.html">determine_geographies</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-demographies.html">determine-demographies</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-measurement.html">determine-measurement</a></li>
-    <li><a class="dropdown-item" href="../articles/determine-timeframes.html">determine-timeframes</a></li>
-    <li><a class="dropdown-item" href="../articles/plumbing-and-owner-occupancy.html">Plumbing and Owner-occupancy</a></li>
-    <li><a class="dropdown-item" href="../articles/Population-changes-in-school-districts.html">Population changes in school districts</a></li>
+<li><a class="dropdown-item" href="../articles/set_up_your_api_key.html">Set up your API key</a></li>
     <li><a class="dropdown-item" href="../articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
-    <li><a class="dropdown-item" href="../articles/set-up-your-api-key.html">Set up your API key</a></li>
+    <li><a class="dropdown-item" href="../articles/reusability.html">Reusability</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul>
 </li>
       </ul>
@@ -50,6 +46,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/higherX4Racine/hercacstables" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -90,7 +87,7 @@ to death</a>. For that reason, Higher Expectations for Racine County
 uses <strong>three times the Federal poverty level</strong> as its
 threshold for a <a href="https://selfsufficiencystandard.org/wisconsin/" class="external-link">family-sustaining
 income</a>. The <code>hercacstables</code> package provides a table,
-<code>STANDARD_OF_LIVING_METADATA</code>, that describes this
+<code>GLOSSARY_OF_STANDARD_OF_LIVING</code>, that describes this
 classification.</p>
 <table class="table">
 <caption>Income ratios from ACS table B17026, classified into standards
@@ -191,7 +188,7 @@ of living</caption>
 <p>We use that table and the Census API look up how many families in
 each tract are in each Census income bracket.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">RAW_STANDARD_OF_LIVING</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/STANDARD_OF_LIVING_METADATA.html">STANDARD_OF_LIVING_METADATA</a></span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">RAW_STANDARD_OF_LIVING</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/GLOSSARY_OF_STANDARD_OF_LIVING.html">GLOSSARY_OF_STANDARD_OF_LIVING</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span></span>
 <span>        <span class="st">"Variable"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -250,7 +247,7 @@ will next look up how many families in each tract have children. The
 census has a <a href="https://api.census.gov/data/2022/acs/acs1/groups/B11003.html" class="external-link">table</a>
 for this that reports how many families have no kids, kids under 6, kids
 6-17, or both. The <code>hercacstables</code> package has a table,
-<code>FAMILIES_WITH_CHILDREN_METADATA</code>, that describes the
+<code>GLOSSARY_OF_FAMILIES_WITH_CHILDREN</code>, that describes the
 relationship between the ACS variables and the presence/absence of
 children.</p>
 <table style="width:100%;" class="table">
@@ -349,7 +346,7 @@ is which variables we are asking for. The whole point of the
 when you are asking for many different pieces of census information
 about the same place.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">RAW_FAMILIES_WITH_CHILDREN</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/FAMILIES_WITH_CHILDREN_METADATA.html">FAMILIES_WITH_CHILDREN_METADATA</a></span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">RAW_FAMILIES_WITH_CHILDREN</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/GLOSSARY_OF_FAMILIES_WITH_CHILDREN.html">GLOSSARY_OF_FAMILIES_WITH_CHILDREN</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span></span>
 <span>        <span class="st">"Variable"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -405,8 +402,8 @@ that has detailed information about parents’ birth origins but only
 distinguishes three income tiers: less than the Federal poverty level,
 1x-2x, and more than 2x the Federal poverty level. The
 <code>hercacstables</code> package’s table
-<code>CHILDREN_IN_POVERTY_METADATA</code> describes how the variables in
-that table map to parental place of birth and kid poverty.</p>
+<code>GLOSSARY_OF_CHILDREN_IN_POVERTY</code> describes how the variables
+in that table map to parental place of birth and kid poverty.</p>
 <table class="table">
 <colgroup>
 <col width="10%">
@@ -549,7 +546,7 @@ that table map to parental place of birth and kid poverty.</p>
 </table>
 <p>Here’s the query to get those data:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">RAW_CHILDREN_IN_POVERTY</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/CHILDREN_IN_POVERTY_METADATA.html">CHILDREN_IN_POVERTY_METADATA</a></span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">RAW_CHILDREN_IN_POVERTY</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/GLOSSARY_OF_CHILDREN_IN_POVERTY.html">GLOSSARY_OF_CHILDREN_IN_POVERTY</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span></span>
 <span>        <span class="st">"Variable"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>

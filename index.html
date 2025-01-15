@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">hercacstables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,15 +36,11 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/children_in_poverty.html">Children in Poverty</a></li>
-    <li><a class="dropdown-item" href="articles/determine_geographies.html">determine_geographies</a></li>
-    <li><a class="dropdown-item" href="articles/determine-demographies.html">determine-demographies</a></li>
-    <li><a class="dropdown-item" href="articles/determine-measurement.html">determine-measurement</a></li>
-    <li><a class="dropdown-item" href="articles/determine-timeframes.html">determine-timeframes</a></li>
-    <li><a class="dropdown-item" href="articles/plumbing-and-owner-occupancy.html">Plumbing and Owner-occupancy</a></li>
-    <li><a class="dropdown-item" href="articles/Population-changes-in-school-districts.html">Population changes in school districts</a></li>
+<li><a class="dropdown-item" href="articles/set_up_your_api_key.html">Set up your API key</a></li>
     <li><a class="dropdown-item" href="articles/race_ethnicity_categories.html">Race/Ethnicity Categories in ACS Tables</a></li>
-    <li><a class="dropdown-item" href="articles/set-up-your-api-key.html">Set up your API key</a></li>
+    <li><a class="dropdown-item" href="articles/reusability.html">Reusability</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="articles/index.html">More articles...</a></li>
   </ul>
 </li>
       </ul>
@@ -52,6 +48,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/higherX4Racine/hercacstables" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -62,28 +59,43 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="hercacstables">hercacstables<a class="anchor" aria-label="anchor" href="#hercacstables"></a>
 </h1></div>
+<p>This package provides an R interface to the United States Census Bureau’s data API. The primary focus, as per its name, is pulling information from the <a href="https://www.census.gov/programs-surveys/acs/data/data-tables.html" class="external-link">detailed tables of the American Community Survey</a>.</p>
 <!-- badges: start -->
 <!-- badges: end -->
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>The main way that one uses <code>hercacstables</code> to interact with the Census API is the <code><a href="reference/fetch_data.html">hercacstables::fetch_data()</a></code> function.</p>
+<p>You can install the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"higherX4Racine/hercacstables"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="fetching-data-from-the-api">Fetching data from the API<a class="anchor" aria-label="anchor" href="#fetching-data-from-the-api"></a>
+</h2>
+<p>The main way that one uses <code>hercacstables</code> to interact with the Census API is the <code><a href="reference/fetch_data.html">fetch_data()</a></code> function.</p>
+<div class="section level3">
+<h3 id="a-vanilla-call-to-fetch_data">A vanilla call to <code>fetch_data()</code>
+<a class="anchor" aria-label="anchor" href="#a-vanilla-call-to-fetch_data"></a>
+</h3>
+<p>Here is a modestly complicated use of the function without any setup or post-processing.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">POPS_AND_HOUSEHOLDS</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
-<span>    <span class="co"># the database that we are fetching data from</span></span>
+<span>    <span class="co"># the API works one year at a time</span></span>
+<span>    year <span class="op">=</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/most_recent_vintage.html">most_recent_vintage</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acs1"</span><span class="op">)</span>,</span>
+<span>    </span>
+<span>    <span class="co"># the API can only query one data source at a time</span></span>
 <span>    survey_type <span class="op">=</span> <span class="st">"acs"</span>,           <span class="co"># the American Community Survey</span></span>
 <span>    table_or_survey_code <span class="op">=</span> <span class="st">"acs1"</span>, <span class="co"># the 1-year dataset of the ACS</span></span>
-<span>    year <span class="op">=</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/most_recent_vintage.html">most_recent_vintage</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acs1"</span><span class="op">)</span>,</span>
-<span>                                   <span class="co"># the API works one year at a time</span></span>
 <span>    </span>
-<span>    <span class="co"># the geographic level of detail that we are fetching data for</span></span>
+<span>    <span class="co"># the API fetches values for one or more instances of a specific geography</span></span>
 <span>    for_geo <span class="op">=</span> <span class="st">"state"</span>,             <span class="co"># fetch values for entire states</span></span>
 <span>    for_items <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>        <span class="st">"11"</span>,                      <span class="co"># the District of Columbia</span></span>
 <span>        <span class="st">"72"</span>                       <span class="co"># Puerto Rico</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    </span>
-<span>    <span class="co"># the specific data that we are fetching</span></span>
+<span>    <span class="co"># the codes for the specific data that we are fetching</span></span>
 <span>    variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>        <span class="st">"NAME"</span>,                    <span class="co"># the geographic area's name</span></span>
 <span>        <span class="st">"B01001_001E"</span>,             <span class="co"># the total number of people</span></span>
@@ -94,7 +106,7 @@
 <table class="table">
 <thead><tr class="header">
 <th align="left">NAME</th>
-<th align="left">state</th>
+<th align="right">state</th>
 <th align="left">Group</th>
 <th align="right">Index</th>
 <th align="right">Value</th>
@@ -103,99 +115,337 @@
 <tbody>
 <tr class="odd">
 <td align="left">District of Columbia</td>
-<td align="left">11</td>
+<td align="right">11</td>
 <td align="left">B01001</td>
 <td align="right">1</td>
-<td align="right">678972</td>
+<td align="right">678,972</td>
 <td align="right">2023</td>
 </tr>
 <tr class="even">
 <td align="left">District of Columbia</td>
-<td align="left">11</td>
+<td align="right">11</td>
 <td align="left">B11002</td>
 <td align="right">2</td>
-<td align="right">406283</td>
+<td align="right">406,283</td>
 <td align="right">2023</td>
 </tr>
 <tr class="odd">
 <td align="left">District of Columbia</td>
-<td align="left">11</td>
+<td align="right">11</td>
 <td align="left">B11002</td>
 <td align="right">12</td>
-<td align="right">235088</td>
+<td align="right">235,088</td>
 <td align="right">2023</td>
 </tr>
 <tr class="even">
 <td align="left">Puerto Rico</td>
-<td align="left">72</td>
+<td align="right">72</td>
 <td align="left">B01001</td>
 <td align="right">1</td>
-<td align="right">3205691</td>
+<td align="right">3,205,691</td>
 <td align="right">2023</td>
 </tr>
 <tr class="odd">
 <td align="left">Puerto Rico</td>
-<td align="left">72</td>
+<td align="right">72</td>
 <td align="left">B11002</td>
 <td align="right">2</td>
-<td align="right">2613461</td>
+<td align="right">2,613,461</td>
 <td align="right">2023</td>
 </tr>
 <tr class="even">
 <td align="left">Puerto Rico</td>
-<td align="left">72</td>
+<td align="right">72</td>
 <td align="left">B11002</td>
 <td align="right">12</td>
-<td align="right">554557</td>
+<td align="right">554,557</td>
 <td align="right">2023</td>
 </tr>
 </tbody>
 </table>
 </div>
+<div class="section level3">
+<h3 id="best-practice">Best practice<a class="anchor" aria-label="anchor" href="#best-practice"></a>
+</h3>
+<p>The previous example is good enough for a README file. An <a href="articles/reusability.html">approach centered on reusability</a> is better for actual practice.</p>
+</div>
+</div>
 <div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+<h2 id="identifying-which-items-to-fetch">Identifying which items to fetch<a class="anchor" aria-label="anchor" href="#identifying-which-items-to-fetch"></a>
 </h2>
-<p>Many questions that work with Census data follow a common pattern:</p>
-<blockquote>
-<p>How did [measurement] differ among [demographic groups] and across [geographies] during [span of time]?</p>
-</blockquote>
-<p>To use this pattern, an investigator must determine some concrete definitions for each of the bracketed concepts. The <code>hercacstables</code> package provides tools for each of these four tasks. This site provides detailed articles for each task because each one can be <a href="https://www.census.gov/data/developers/guidance/api-user-guide.Core_Concepts.html" class="external-link">complex</a>.</p>
-<ul>
-<li>Use one or more Census measurements: <code>vignette("determine-measurement")</code>
-</li>
-<li>Describe who or what has been measured: <code>vignette("determine-demographies")</code>
-</li>
-<li>Specify where the measurements were made: <code>vignette("determine-geographies")</code>
-</li>
-<li>Choose the year(s) that are relevant: <code>vignette("determine-timeframes")</code>
-</li>
+<p>People working with the Census often know the topic that they are interested in, but not the specific variables that provide information about that topic. The <code>hercacstables</code> package has utilities that help you search for Census variables if you don’t already know which ones you want to use.</p>
+<div class="section level3">
+<h3 id="search-for-groups-with-keywords">Search for groups with keywords<a class="anchor" aria-label="anchor" href="#search-for-groups-with-keywords"></a>
+</h3>
+<p>A good first step is to search for tables that could be relevant with the <code><a href="reference/search_in_columns.html">search_in_columns()</a></code> function and the built-in <a href="reference/METADATA_FOR_ACS_GROUPS.html"><code>METADATA_FOR_ACS_GROUPS</code></a>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">EDUCATION_TABLES</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/search_in_columns.html">search_in_columns</a></span><span class="op">(</span></span>
+<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="reference/METADATA_FOR_ACS_GROUPS.html">METADATA_FOR_ACS_GROUPS</a></span>,</span>
+<span>    Group <span class="op">=</span> <span class="st">"\\d$"</span>,          <span class="co"># "Group" values need to end in a digit.</span></span>
+<span>    Universe <span class="op">=</span> <span class="st">"population"</span>, <span class="co"># "Universe" values need to include "population".</span></span>
+<span>    Description <span class="op">=</span> <span class="st">"enroll"</span>,  <span class="co"># "Description values need to include "enroll"</span></span>
+<span>    `-Description` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span>,        <span class="co"># but not "sex", that's too much detail</span></span>
+<span>                       <span class="st">"computer"</span>,   <span class="co"># or "computer", also too detailed</span></span>
+<span>                       <span class="st">"quarters"</span>,   <span class="co"># or "quarters", also too detailed</span></span>
+<span>                       <span class="st">"insur"</span>,      <span class="co"># or "insur", not health care enrollments</span></span>
+<span>                       <span class="st">"allocation"</span><span class="op">)</span> <span class="co"># or "allocation", these are metadata</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Group</th>
+<th align="left">Universe</th>
+<th align="left">Description</th>
+<th align="left">ACS1</th>
+<th align="left">ACS5</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">B14001</td>
+<td align="left">Population 3 years and over</td>
+<td align="left">School Enrollment by Level of School for the Population 3 Years and Over</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">B14006</td>
+<td align="left">Population 3 years and over for whom poverty status is determined</td>
+<td align="left">Poverty Status in the Past 12 Months by School Enrollment by Level of School for the Population 3 Years and Over</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">B14007</td>
+<td align="left">Population 3 years and over</td>
+<td align="left">School Enrollment by Detailed Level of School for the Population 3 Years and Over</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">C14002</td>
+<td align="left">Population 3 years and over</td>
+<td align="left">School Enrollment by Level of School by Type of School for the Population 3 Years and Over</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">C14003</td>
+<td align="left">Population 3 years and over</td>
+<td align="left">School Enrollment by Type of School by Age for the Population 3 Years and Over</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="unpack-variables-for-a-group">Unpack variables for a group<a class="anchor" aria-label="anchor" href="#unpack-variables-for-a-group"></a>
+</h3>
+<p>Once you know the group that you are interested in, you will want to see what information is captured in each of its rows. The <code><a href="reference/unpack_group_details.html">unpack_group_details()</a></code> function searches the built-in <a href="reference/METADATA_FOR_ACS_VARIABLES"><code>METADATA_FOR_ACS_VARIABLES</code></a> for all of the variables of one group. It then expands the Census’s description of each variable into columns. Users will need to identify the concepts that are captured by each column.</p>
+<p>The following example unpacks the variables in the <a href="https://api.census.gov/data/2023/acs/acs1/B14001.html" class="external-link">B14001</a> table.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">UNPACKED_B14001</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/unpack_group_details.html">unpack_group_details</a></span><span class="op">(</span><span class="st">"B14001"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Group</th>
+<th align="right">Index</th>
+<th align="left">Variable</th>
+<th align="left">A</th>
+<th align="left">B</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">B14001</td>
+<td align="right">1</td>
+<td align="left">B14001_001E</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">B14001</td>
+<td align="right">2</td>
+<td align="left">B14001_002E</td>
+<td align="left">Enrolled in school</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">B14001</td>
+<td align="right">3</td>
+<td align="left">B14001_003E</td>
+<td align="left">Enrolled in school</td>
+<td align="left">Enrolled in nursery school, preschool</td>
+</tr>
+<tr class="even">
+<td align="left">B14001</td>
+<td align="right">4</td>
+<td align="left">B14001_004E</td>
+<td align="left">Enrolled in school</td>
+<td align="left">Enrolled in kindergarten</td>
+</tr>
+<tr class="odd">
+<td align="left">B14001</td>
+<td align="right">5</td>
+<td align="left">B14001_005E</td>
+<td align="left">Enrolled in school</td>
+<td align="left">Enrolled in grade 1 to grade 4</td>
+</tr>
+<tr class="even">
+<td align="left">B14001</td>
+<td align="right">6</td>
+<td align="left">B14001_006E</td>
+<td align="left">Enrolled in school</td>
+<td align="left">Enrolled in grade 5 to grade 8</td>
+</tr>
+<tr class="odd">
+<td align="left">B14001</td>
+<td align="right">7</td>
+<td align="left">B14001_007E</td>
+<td align="left">Enrolled in school</td>
+<td align="left">Enrolled in grade 9 to grade 12</td>
+</tr>
+<tr class="even">
+<td align="left">B14001</td>
+<td align="right">8</td>
+<td align="left">B14001_008E</td>
+<td align="left">Enrolled in school</td>
+<td align="left">Enrolled in college, undergraduate years</td>
+</tr>
+<tr class="odd">
+<td align="left">B14001</td>
+<td align="right">9</td>
+<td align="left">B14001_009E</td>
+<td align="left">Enrolled in school</td>
+<td align="left">Graduate or professional school</td>
+</tr>
+<tr class="even">
+<td align="left">B14001</td>
+<td align="right">10</td>
+<td align="left">B14001_010E</td>
+<td align="left">Not enrolled in school</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section level2">
+<h2 id="shortcuts">Shortcuts<a class="anchor" aria-label="anchor" href="#shortcuts"></a>
+</h2>
+<p>The package also includes functions for common special cases. They are wrappers for <code><a href="reference/fetch_data.html">fetch_data()</a></code> with some arguments hard-coded.</p>
+<div class="section level3">
+<h3 id="decennial-populations-by-race-and-ethnicity">Decennial populations by race and ethnicity<a class="anchor" aria-label="anchor" href="#decennial-populations-by-race-and-ethnicity"></a>
+</h3>
+<p>One example is pulling trends of racial/ethnic populations from the decennial census for some specific geographical units.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">POPS_BY_RACE</span> <span class="op">&lt;-</span></span>
+<span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/fetch_decennial_pops_by_race.html">fetch_decennial_pops_by_race</a></span><span class="op">(</span></span>
+<span>        for_geo <span class="op">=</span> <span class="st">"state"</span>, <span class="co"># one cannot fetch the whole nation from 2000 or 2010</span></span>
+<span>        for_items <span class="op">=</span> <span class="st">"*"</span>    <span class="co"># so we pull the data for every state</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span> <span class="co"># then compute the nationwide populations for each vintage</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">`Race/Ethnicity`</span>,</span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Vintage</span>,</span>
+<span>        wt <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Population</span>,</span>
+<span>        name <span class="op">=</span> <span class="st">"Population"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span> <span class="co"># and reshape the table for display</span></span>
+<span>        names_from <span class="op">=</span> <span class="st">"Vintage"</span>,</span>
+<span>        values_from <span class="op">=</span> <span class="st">"Population"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Race/Ethnicity</th>
+<th align="right">2000</th>
+<th align="right">2010</th>
+<th align="right">2020</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">All</td>
+<td align="right">285,230,516</td>
+<td align="right">312,471,327</td>
+<td align="right">334,735,155</td>
+</tr>
+<tr class="even">
+<td align="left">American Indian and Alaska Native</td>
+<td align="right">2,069,446</td>
+<td align="right">2,247,427</td>
+<td align="right">2,252,011</td>
+</tr>
+<tr class="odd">
+<td align="left">Asian</td>
+<td align="right">10,126,044</td>
+<td align="right">14,468,054</td>
+<td align="right">19,621,465</td>
+</tr>
+<tr class="even">
+<td align="left">Black or African American</td>
+<td align="right">33,952,901</td>
+<td align="right">37,690,511</td>
+<td align="right">39,944,624</td>
+</tr>
+<tr class="odd">
+<td align="left">Hispanic or Latino</td>
+<td align="right">39,068,564</td>
+<td align="right">54,166,049</td>
+<td align="right">65,329,087</td>
+</tr>
+<tr class="even">
+<td align="left">Native Hawaiian and Other Pacific Islander</td>
+<td align="right">353,874</td>
+<td align="right">481,653</td>
+<td align="right">622,109</td>
+</tr>
+<tr class="odd">
+<td align="left">Some other race</td>
+<td align="right">468,155</td>
+<td align="right">605,291</td>
+<td align="right">1,692,341</td>
+</tr>
+<tr class="even">
+<td align="left">Two or more races</td>
+<td align="right">4,604,792</td>
+<td align="right">5,967,844</td>
+<td align="right">13,551,323</td>
+</tr>
+<tr class="odd">
+<td align="left">White</td>
+<td align="right">194,586,740</td>
+<td align="right">196,844,498</td>
+<td align="right">191,722,195</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/higherX4Racine/hercacstables" class="external-link">Browse source code</a></li>
 </ul>
 </div>
-<div class="section level2">
-<h2 id="for-the-newest-r-users">For the newest R users:<a class="anchor" aria-label="anchor" href="#for-the-newest-r-users"></a>
-</h2>
-<p>You may be new to R, but not data science, in which case I suggest checking out <a href="https://r4ds.hadley.nz/intro.html" class="external-link">R for Data Science</a>. If you’re not coming from a data science perspective, I have heard good things about <a href="https://datascienceineducation.com/" class="external-link">this book</a>.</p>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<p>You can install the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"higherX4Racine/hercacstables"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
-</h2>
-<p>The American Community Survey (ACS) from the US Census’s website provides a vast amount of useful data.</p>
-<p>However, it returns those data in a weirdly idiosyncratic way. Even though the output seems tabular, the data are really organized in a tree-like fashion. This package is intended to make it easy to access and use the ACS data with R.</p>
-</div>
-<div class="section level2">
-<h2 id="example-1">Example<a class="anchor" aria-label="anchor" href="#example-1"></a>
-</h2>
-</div>
-</div>
-  </main><aside class="col-md-3"><div class="license">
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>

@@ -3,16 +3,17 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   articles/children_in_poverty: children_in_poverty.html
+  articles/determine_demographies: determine_demographies.html
   articles/determine_geographies: determine_geographies.html
-  articles/determine-demographies: determine-demographies.html
-  articles/determine-measurement: determine-measurement.html
-  articles/determine-timeframes: determine-timeframes.html
+  articles/determine_measurement: determine_measurement.html
+  articles/determine_timeframes: determine_timeframes.html
   hercacstables: hercacstables.html
-  articles/plumbing-and-owner-occupancy: plumbing-and-owner-occupancy.html
-  articles/Population-changes-in-school-districts: Population-changes-in-school-districts.html
+  articles/plumbing_and_owner_occupancy: plumbing_and_owner_occupancy.html
+  articles/population_changes_in_school_districts: population_changes_in_school_districts.html
   race_ethnicity_categories: race_ethnicity_categories.html
-  set-up-your-api-key: set-up-your-api-key.html
-last_built: 2025-01-10T18:10Z
+  reusability: reusability.html
+  set_up_your_api_key: set_up_your_api_key.html
+last_built: 2025-01-15T15:50Z
 urls:
   reference: https://higherx4racine.github.io/hercacstables/reference
   article: https://higherx4racine.github.io/hercacstables/articles

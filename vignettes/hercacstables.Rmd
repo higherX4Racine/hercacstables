@@ -21,9 +21,9 @@ knitr::opts_chunk$set(
 
 ### For the newest R users:
 
-You may be new to R, but not data science, in which case I suggest checking out
+If you are new to R, but not data science, then I suggest checking out
 [R for Data Science](https://r4ds.hadley.nz/intro.html).
-If you're not coming from a data science perspective, I have heard good things
+If have a background that is not data science, then I have heard good things
 about [this book](https://datascienceineducation.com/).
 
 ### First-time users of `hercacstables`
@@ -33,7 +33,7 @@ with the Census.
 Registering is important because it helps you make more queries to the API.
 The Census limits the number of anonymous API queries that it receives from any
 one IP address.
-The `vignette("set_up_your_api_key")` will guide you through the processs.
+The `vignette("set_up_your_api_key")` will guide you through the process.
 
 ### Otherwise, welcome back!
 
@@ -123,26 +123,28 @@ counties.
      of `hercacstables::METADATA_FOR_ACS_GROUPS`.
    * Identify specific variables with `hercacstables::METADATA_FOR_ACS_VARIABLES`:
      filter by the `Group` field and examine the `Details` field.
-   * Create a lookup table that maps from the Census variable name to your
+   * Create a glossary that maps from the Census variable name to your
      variables.
      * You may need several if you are pulling data from several groups.
 2. Define the geographies that you will use
-   * Use `hercacstables::METADATA_FOR_ACS_GEOGRAPHIES` for this, too!
+   * Use `hercacstables::METADATA_FOR_ACS_GEOGRAPHIES` for this.
    * You need to know at least two levels of geography:
      * The one that you want to pull data for, your level of interest
        * This is often small, like tract or county subdivision.
      * Any and all levels that contain your level of interest
        * These will be larger, like state or county.
-   * Create a lookup table that maps from geographic ids to meaningful names.
+   * Create a glossary that maps from geographic ids to meaningful names.
 3. Write fetching functions that call `hercacstables::fetch_data()`
    * they will often always use the same variables (from step 1)
    * they may need to be parameterized by geography if you're pulling from
      multiple levels
-   * they should always be parameterized by year so that you can reuse them
+   * they should always be parameterized by year so that you can use them to
+     look at trends and/or reuse them in subsequent years.
 4. Write wrangling functions that for turning fetched tables into useful ones.
    * These will probably involve using `dplyr::inner_join()` between the fetched
-     data and your lookup tables.
+     data and your glossaries.
    * You can also perform calculations like aggregating or finding remainders.
+   * You will probably only have to write these functions once per question.
 5. Run the workflow in two stages.
    * Use `purrr::map()` and `purrr::list_rbind()` to download all of the data into
    one data frame.
@@ -221,7 +223,7 @@ that are related to the geographic areas and levels.
 We need to know the FIPS code for the state, county, and two cities.
 We also need to know that the geographic level that we're working with is
 "county subdivision."
-As the last part of this step, we define a lookup table to translate from the
+As the last part of this step, we define a glossary to translate from the
 FIPS codes for the different geographies to a human-readable name.
 
 ```{r}

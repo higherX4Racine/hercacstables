@@ -7,8 +7,13 @@ This package provides an R interface to the United States Census
 Bureau’s data API. The primary focus, as per its name, is pulling
 information from the [detailed tables of the American Community
 Survey](https://www.census.gov/programs-surveys/acs/data/data-tables.html).
+However, it will work for pulling data from any dataset in the [Census
+API](https://api.census.gov/data.html). A great resource for
+understanding the complexities of Census data is
+<https://censusreporter.org/>.
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 ## Installation
@@ -146,7 +151,7 @@ wrappers for `fetch_data()` with some arguments hard-coded.
 ### Decennial populations by race and ethnicity
 
 One example is pulling trends of racial/ethnic populations from the
-decennial census for some specific geographical units.
+decennial census for some specific level of geography.
 
 ``` r
 POPS_BY_RACE <-

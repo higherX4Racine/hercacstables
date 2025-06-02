@@ -59,7 +59,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="hercacstables">hercacstables<a class="anchor" aria-label="anchor" href="#hercacstables"></a>
 </h1></div>
-<p>This package provides an R interface to the United States Census Bureau’s data API. The primary focus, as per its name, is pulling information from the <a href="https://www.census.gov/programs-surveys/acs/data/data-tables.html" class="external-link">detailed tables of the American Community Survey</a>.</p>
+<p>This package provides an R interface to the United States Census Bureau’s data API. The primary focus, as per its name, is pulling information from the <a href="https://www.census.gov/programs-surveys/acs/data/data-tables.html" class="external-link">detailed tables of the American Community Survey</a>. However, it will work for pulling data from any dataset in the <a href="https://api.census.gov/data.html" class="external-link">Census API</a>. A great resource for understanding the complexities of Census data is <a href="https://censusreporter.org/" class="external-link uri">https://censusreporter.org/</a>.</p>
 <!-- badges: start -->
 <!-- badges: end -->
 <div class="section level2">
@@ -348,7 +348,7 @@
 <div class="section level3">
 <h3 id="decennial-populations-by-race-and-ethnicity">Decennial populations by race and ethnicity<a class="anchor" aria-label="anchor" href="#decennial-populations-by-race-and-ethnicity"></a>
 </h3>
-<p>One example is pulling trends of racial/ethnic populations from the decennial census for some specific geographical units.</p>
+<p>One example is pulling trends of racial/ethnic populations from the decennial census for some specific level of geography.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">POPS_BY_RACE</span> <span class="op">&lt;-</span></span>
 <span>    <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="reference/fetch_decennial_pops_by_race.html">fetch_decennial_pops_by_race</a></span><span class="op">(</span></span>
@@ -464,8 +464,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Higher Expectations for Racine County <br><small class="roles"> Copyright holder, funder </small>  </li>
-<li>Ben Taft <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Higher Expectations for Racine County <br><small class="roles"> Copyright holder, funder </small>   </li>
+<li>Ben Taft <br><small class="roles"> Author, maintainer </small>   </li>
 </ul>
 </div>
 
@@ -480,7 +480,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

@@ -75,10 +75,11 @@
 <div class="section level3">
 <h3 id="for-the-newest-r-users">For the newest R users:<a class="anchor" aria-label="anchor" href="#for-the-newest-r-users"></a>
 </h3>
-<p>You may be new to R, but not data science, in which case I suggest
-checking out <a href="https://r4ds.hadley.nz/intro.html" class="external-link">R for Data
-Science</a>. If you’re not coming from a data science perspective, I
-have heard good things about <a href="https://datascienceineducation.com/" class="external-link">this book</a>.</p>
+<p>If you are new to R, but not data science, then I suggest checking
+out <a href="https://r4ds.hadley.nz/intro.html" class="external-link">R for Data Science</a>.
+If have a background that is not data science, then I have heard good
+things about <a href="https://datascienceineducation.com/" class="external-link">this
+book</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="first-time-users-of-hercacstables">First-time users of <code>hercacstables</code><a class="anchor" aria-label="anchor" href="#first-time-users-of-hercacstables"></a>
@@ -88,7 +89,7 @@ to register with the Census. Registering is important because it helps
 you make more queries to the API. The Census limits the number of
 anonymous API queries that it receives from any one IP address. The
 <code><a href="../articles/set_up_your_api_key.html">vignette("set_up_your_api_key")</a></code> will guide you through the
-processs.</p>
+process.</p>
 </div>
 <div class="section level3">
 <h3 id="otherwise-welcome-back">Otherwise, welcome back!<a class="anchor" aria-label="anchor" href="#otherwise-welcome-back"></a>
@@ -168,8 +169,8 @@ places, and counties.</p>
 <code><a href="../reference/METADATA_FOR_ACS_VARIABLES.html">hercacstables::METADATA_FOR_ACS_VARIABLES</a></code>: filter by the
 <code>Group</code> field and examine the <code>Details</code>
 field.</li>
-<li>Create a lookup table that maps from the Census variable name to
-your variables.
+<li>Create a glossary that maps from the Census variable name to your
+variables.
 <ul>
 <li>You may need several if you are pulling data from several
 groups.</li>
@@ -180,7 +181,7 @@ groups.</li>
 <li>Define the geographies that you will use
 <ul>
 <li>Use <code><a href="../reference/METADATA_FOR_ACS_GEOGRAPHIES.html">hercacstables::METADATA_FOR_ACS_GEOGRAPHIES</a></code> for
-this, too!</li>
+this.</li>
 <li>You need to know at least two levels of geography:
 <ul>
 <li>The one that you want to pull data for, your level of interest
@@ -195,7 +196,7 @@ this, too!</li>
 </li>
 </ul>
 </li>
-<li>Create a lookup table that maps from geographic ids to meaningful
+<li>Create a glossary that maps from geographic ids to meaningful
 names.</li>
 </ul>
 </li>
@@ -205,17 +206,19 @@ names.</li>
 <li>they will often always use the same variables (from step 1)</li>
 <li>they may need to be parameterized by geography if you’re pulling
 from multiple levels</li>
-<li>they should always be parameterized by year so that you can reuse
-them</li>
+<li>they should always be parameterized by year so that you can use them
+to look at trends and/or reuse them in subsequent years.</li>
 </ul>
 </li>
 <li>Write wrangling functions that for turning fetched tables into
 useful ones.
 <ul>
 <li>These will probably involve using <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join()</a></code>
-between the fetched data and your lookup tables.</li>
+between the fetched data and your glossaries.</li>
 <li>You can also perform calculations like aggregating or finding
 remainders.</li>
+<li>You will probably only have to write these functions once per
+question.</li>
 </ul>
 </li>
 <li>Run the workflow in two stages.
@@ -421,9 +424,9 @@ area</strong><a class="anchor" aria-label="anchor" href="#find-the-geographic-le
 the codes</a> that are related to the geographic areas and levels. We
 need to know the FIPS code for the state, county, and two cities. We
 also need to know that the geographic level that we’re working with is
-“county subdivision.” As the last part of this step, we define a lookup
-table to translate from the FIPS codes for the different geographies to
-a human-readable name.</p>
+“county subdivision.” As the last part of this step, we define a
+glossary to translate from the FIPS codes for the different geographies
+to a human-readable name.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">NEW_HAMPSHIRE</span> <span class="op">&lt;-</span> <span class="st">"33"</span></span>
 <span><span class="va">COUNTY_LEVEL</span> <span class="op">&lt;-</span> <span class="st">"county"</span></span>
@@ -476,7 +479,7 @@ was no survey in 2020.</p>
 <code class="sourceCode R"><span><span class="va">BUILD_DATE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">LATEST_YEAR</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/most_recent_vintage.html">most_recent_vintage</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acs1"</span><span class="op">)</span></span>
 <span><span class="va">TEN_YEARS_AGO</span> <span class="op">&lt;-</span> <span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">11L</span></span></code></pre></div>
-<p>The last ten years available from the Census are, as of 2025-01-15,
+<p>The last ten years available from the Census are, as of 2025-06-02,
 2012 through 2023.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">YEARS_INCLUDED</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">TEN_YEARS_AGO</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span></span></code></pre></div>
@@ -1124,7 +1127,7 @@ patterns are corroborated by significant statistics?</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

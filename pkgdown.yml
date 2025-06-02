@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   articles/children_in_poverty: children_in_poverty.html
@@ -13,7 +13,7 @@ articles:
   race_ethnicity_categories: race_ethnicity_categories.html
   reusability: reusability.html
   set_up_your_api_key: set_up_your_api_key.html
-last_built: 2025-01-15T15:50Z
+last_built: 2025-06-02T20:48Z
 urls:
   reference: https://higherx4racine.github.io/hercacstables/reference
   article: https://higherx4racine.github.io/hercacstables/articles

@@ -339,3 +339,21 @@
 #' }
 #' @source https://www.census.gov/data/developers/data-sets/acs-1year/notes-on-acs-api-variable-types.html
 "TYPES_OF_VARIABLE"
+
+#' ACS data on sex, age, and labor force status
+#'
+#' @format ## GLOSSARY_OF_LABOR_FORCE_PARTICIPATION
+#' A data frame with 172 rows and 10 columns
+#' \describe{
+#' \item{Dataset}{"ACS1" or "ACS5"}
+#' \item{Group}{Always "B23001"}
+#' \item{Index}{&lt;int&gt; the row number of the variable}
+#' \item{Variable{the full variable}
+#' \item{Sex}{"Male" or "Female"}
+#' \item{Lower Age}{&lt;int&gt; between 16 and 75, inclusive}
+#' \item{Upper Age}{&lt;int&gt; between 19 and 999, inclusive}
+#' \item{Labor Force}{&lt;lgl&gt;}
+#' \item{Civilian}{&lt;lgl&gt;}
+#' \item{Employed"}{&lt;lgl&gt;}
+#' }
+"GLOSSARY_OF_LABOR_FORCE_PARTICIPATION"

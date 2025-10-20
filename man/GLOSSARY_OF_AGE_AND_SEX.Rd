@@ -3,18 +3,17 @@
 \docType{data}
 \name{GLOSSARY_OF_AGE_AND_SEX}
 \alias{GLOSSARY_OF_AGE_AND_SEX}
-\title{The fundamental demographics of age and sex from table \code{B01001}}
+\title{The fundamental demographics of age and sex from tables \code{B01001[ A-H]}}
 \format{
 \subsection{GLOSSARY_OF_AGE_AND_SEX}{
 
-A data frame with 49 rows and 6 columns.
+A data frame with 80 rows and 5 columns.
 \describe{
-\item{group}{<chr> Always "B01001"}
-\item{index}{<int> The row in the source table that this GLOSSARY row describes.}
-\item{variable}{<chr> The full variable name, e.g. "B01001_001E"}
-\item{Sex}{<chr> One of "All," "Male," or "Female"}
-\item{Lower Age}{<int> inclusive, in [-999, 85]}
-\item{Upper Age}{<int> inclusive, in [4, 999]}
+\item{Suffix}{\verb{<lgl>} TRUE for race-specific tables and FALSE for the all-races table.}
+\item{Index}{\verb{<int>} The row in the source table that this GLOSSARY row describes.}
+\item{Sex}{\verb{<chr>} One of "All," "Male," or "Female"}
+\item{Lower Age}{\verb{<int>} the least age in the range, inclusive}
+\item{Upper Age}{\verb{<int>} the greatest age in the range, inclusive}
 }
 }
 }
@@ -26,8 +25,6 @@ GLOSSARY_OF_AGE_AND_SEX
 }
 \description{
 The age splits are more detailed in the whole-population table than they are
-in the tables that pertain to specific racial identities. A future project
-is to add a second part to the table that maps from those tables' rows to
-age and sex.
+in the tables that pertain to specific racial identities.
 }
 \keyword{datasets}

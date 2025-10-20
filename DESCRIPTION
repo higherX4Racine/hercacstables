@@ -15,7 +15,7 @@ Description: The American Community Survey (ACS) from the US Census's
     make it easy to access and use the ACS data with R.
 License: MIT + file LICENSE
 Depends: 
-    R (>= 3.5)
+    R (>= 4.2.0)
 Imports: 
     dplyr,
     httr,

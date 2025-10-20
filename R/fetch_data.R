@@ -29,7 +29,7 @@ fetch_data <- function(variables,
             Group = "^[^_]+", # this hard-codes the separator and could be a problem
             "_?",             # same as previous comment
             Index = "\\d{3}",
-            ".*"
+            Measure = ".*"
         ) |>
         dplyr::mutate(
             Year = year,

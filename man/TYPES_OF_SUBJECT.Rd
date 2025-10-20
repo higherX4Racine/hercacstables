@@ -9,8 +9,8 @@
 
 A data frame with 31 rows and 2 columns.
 \describe{
-\item{Subject Number}{<chr> The zero-padded numeric code for this subject}
-\item{Subject Name}{<chr> A very short description of the subject.}
+\item{Subject Number}{\verb{<chr>} The zero-padded numeric code for this subject}
+\item{Subject Name}{\verb{<chr>} A very short description of the subject.}
 }
 }
 }

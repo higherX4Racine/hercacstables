@@ -9,16 +9,16 @@
 
 A data frame with 172 rows and 10 columns
 \describe{
-\item{Dataset}{"ACS1" or "ACS5"}
-\item{Group}{Always "B23001"}
-\item{Index}{<int> the row number of the variable}
-\item{Variable{the full variable}
-\item{Sex}{"Male" or "Female"}
-\item{Lower Age}{<int> between 16 and 75, inclusive}
-\item{Upper Age}{<int> between 19 and 999, inclusive}
-\item{Labor Force}{<lgl>}
-\item{Civilian}{<lgl>}
-\item{Employed"}{<lgl>}
+\item{Dataset}{\verb{<chr>} "ACS1" or "ACS5"}
+\item{Group}{\verb{<chr>} Always "B23001"}
+\item{Index}{\verb{<int>} the row number of the variable}
+\item{Variable}{\verb{<chr>} the full variable}
+\item{Sex}{\verb{<chr>} "Male" or "Female"}
+\item{Lower Age}{\verb{<int>} between 16 and 75, inclusive}
+\item{Upper Age}{\verb{<int>} between 19 and 999, inclusive}
+\item{Labor Force}{\verb{<lgl>}}
+\item{Civilian}{\verb{<lgl>}}
+\item{Employed"}{\verb{<lgl>}}
 }
 }
 }

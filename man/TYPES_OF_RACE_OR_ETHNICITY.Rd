@@ -9,8 +9,8 @@
 
 A data frame with 9 rows and 2 columns.
 \describe{
-\item{Code}{<chr> A one-letter suffix}
-\item{Race or Ethnic Group}{<chr> A racial or ethnic identity such as "Black Alone" or "Hispanic or Latino".}
+\item{Code}{\verb{<chr>} A one-letter suffix}
+\item{Race or Ethnic Group}{\verb{<chr>} A racial or ethnic identity such as "Black Alone" or "Hispanic or Latino".}
 }
 }
 }

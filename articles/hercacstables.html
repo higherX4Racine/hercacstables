@@ -479,8 +479,8 @@ was no survey in 2020.</p>
 <code class="sourceCode R"><span><span class="va">BUILD_DATE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">LATEST_YEAR</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/most_recent_vintage.html">most_recent_vintage</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acs1"</span><span class="op">)</span></span>
 <span><span class="va">TEN_YEARS_AGO</span> <span class="op">&lt;-</span> <span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">11L</span></span></code></pre></div>
-<p>The last ten years available from the Census are, as of 2025-06-02,
-2012 through 2023.</p>
+<p>The last ten years available from the Census are, as of 2025-10-20,
+2013 through 2024.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">YEARS_INCLUDED</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">TEN_YEARS_AGO</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -549,13 +549,24 @@ especially for reports that you just need to update once a year.</p>
 <span>        align <span class="op">=</span> <span class="st">"lllrrrl"</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="8%">
+<col width="10%">
+<col width="11%">
+<col width="8%">
+<col width="11%">
+<col width="11%">
+<col width="7%">
+<col width="28%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">state</th>
 <th align="left">county</th>
 <th align="left">Group</th>
 <th align="right">Index</th>
+<th align="right">Measure</th>
 <th align="right">Value</th>
-<th align="right">Year</th>
+<th align="left">Year</th>
 <th align="left">county subdivision</th>
 </tr></thead>
 <tbody>
@@ -564,8 +575,9 @@ especially for reports that you just need to update once a year.</p>
 <td align="left">011</td>
 <td align="left">B11001I</td>
 <td align="right">1</td>
-<td align="right">11,255</td>
-<td align="right">2023</td>
+<td align="right">E</td>
+<td align="right">11,591</td>
+<td align="left">2024</td>
 <td align="left">NA</td>
 </tr>
 <tr class="even">
@@ -573,8 +585,9 @@ especially for reports that you just need to update once a year.</p>
 <td align="left">011</td>
 <td align="left">B11001</td>
 <td align="right">1</td>
-<td align="right">170,761</td>
-<td align="right">2023</td>
+<td align="right">E</td>
+<td align="right">171,415</td>
+<td align="left">2024</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
@@ -582,8 +595,9 @@ especially for reports that you just need to update once a year.</p>
 <td align="left">011</td>
 <td align="left">B11001I</td>
 <td align="right">1</td>
-<td align="right">4,511</td>
-<td align="right">2023</td>
+<td align="right">E</td>
+<td align="right">4,742</td>
+<td align="left">2024</td>
 <td align="left">45140</td>
 </tr>
 <tr class="even">
@@ -591,8 +605,9 @@ especially for reports that you just need to update once a year.</p>
 <td align="left">011</td>
 <td align="left">B11001</td>
 <td align="right">1</td>
-<td align="right">50,053</td>
-<td align="right">2023</td>
+<td align="right">E</td>
+<td align="right">48,163</td>
+<td align="left">2024</td>
 <td align="left">45140</td>
 </tr>
 <tr class="odd">
@@ -600,8 +615,9 @@ especially for reports that you just need to update once a year.</p>
 <td align="left">011</td>
 <td align="left">B11001I</td>
 <td align="right">1</td>
-<td align="right">4,770</td>
-<td align="right">2023</td>
+<td align="right">E</td>
+<td align="right">4,700</td>
+<td align="left">2024</td>
 <td align="left">50260</td>
 </tr>
 <tr class="even">
@@ -609,8 +625,9 @@ especially for reports that you just need to update once a year.</p>
 <td align="left">011</td>
 <td align="left">B11001</td>
 <td align="right">1</td>
-<td align="right">36,451</td>
-<td align="right">2023</td>
+<td align="right">E</td>
+<td align="right">41,039</td>
+<td align="left">2024</td>
 <td align="left">50260</td>
 </tr>
 </tbody>
@@ -669,39 +686,39 @@ values.</p>
 <tbody>
 <tr class="odd">
 <td align="right">County-wide</td>
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">11,255</td>
+<td align="right">11,591</td>
 </tr>
 <tr class="even">
 <td align="right">County-wide</td>
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="left">All</td>
-<td align="right">170,761</td>
+<td align="right">171,415</td>
 </tr>
 <tr class="odd">
 <td align="right">Manchester</td>
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">4,511</td>
+<td align="right">4,742</td>
 </tr>
 <tr class="even">
 <td align="right">Manchester</td>
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="left">All</td>
-<td align="right">50,053</td>
+<td align="right">48,163</td>
 </tr>
 <tr class="odd">
 <td align="right">Nashua</td>
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="left">Hispanic or Latino</td>
-<td align="right">4,770</td>
+<td align="right">4,700</td>
 </tr>
 <tr class="even">
 <td align="right">Nashua</td>
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="left">All</td>
-<td align="right">36,451</td>
+<td align="right">41,039</td>
 </tr>
 </tbody>
 </table>
@@ -760,39 +777,39 @@ correctly.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="right">Manchester</td>
-<td align="left">4,511</td>
+<td align="left">4,742</td>
 <td align="right">Hispanic or Latino</td>
 </tr>
 <tr class="even">
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="right">Manchester</td>
-<td align="left">45,542</td>
+<td align="left">43,421</td>
 <td align="right">Not Hispanic or Latino</td>
 </tr>
 <tr class="odd">
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="right">Nashua</td>
-<td align="left">4,770</td>
+<td align="left">4,700</td>
 <td align="right">Hispanic or Latino</td>
 </tr>
 <tr class="even">
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="right">Nashua</td>
-<td align="left">31,681</td>
+<td align="left">36,339</td>
 <td align="right">Not Hispanic or Latino</td>
 </tr>
 <tr class="odd">
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="right">Suburbs</td>
-<td align="left">1,974</td>
+<td align="left">2,149</td>
 <td align="right">Hispanic or Latino</td>
 </tr>
 <tr class="even">
-<td align="left">2023</td>
+<td align="left">2024</td>
 <td align="right">Suburbs</td>
-<td align="left">82,283</td>
+<td align="left">80,064</td>
 <td align="right">Not Hispanic or Latino</td>
 </tr>
 </tbody>
@@ -859,8 +876,8 @@ in the cities.</p>
 <div class="section level4">
 <h4 id="analyze">Analyze<a class="anchor" aria-label="anchor" href="#analyze"></a>
 </h4>
-<p>Let’s test this with an ANCOVA. We’ll subtract 2012 from the year so
-that the intercept estimate gives us the value in 2012, not AD 0.</p>
+<p>Let’s test this with an ANCOVA. We’ll subtract 2013 from the year so
+that the intercept estimate gives us the value in 2013, not AD 0.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">household_model</span> <span class="op">&lt;-</span> <span class="va">households</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -916,64 +933,64 @@ view before I try to interpret specific parameters.</p>
 <tr class="odd">
 <td align="left">Year</td>
 <td align="right">1</td>
-<td align="right">18,087,730</td>
-<td align="right">18,087,730</td>
-<td align="right">16.080</td>
-<td align="right">0.0002</td>
+<td align="right">15,150,455</td>
+<td align="right">15,150,455</td>
+<td align="right">11.880</td>
+<td align="right">0.0011</td>
 </tr>
 <tr class="even">
 <td align="left">Ethnicity</td>
 <td align="right">1</td>
-<td align="right">37,636,191,674</td>
-<td align="right">37,636,191,674</td>
-<td align="right">33460.000</td>
+<td align="right">37,914,542,334</td>
+<td align="right">37,914,542,334</td>
+<td align="right">29720.000</td>
 <td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">Location</td>
 <td align="right">2</td>
-<td align="right">5,417,599,914</td>
-<td align="right">2,708,799,957</td>
-<td align="right">2408.000</td>
+<td align="right">5,481,169,698</td>
+<td align="right">2,740,584,849</td>
+<td align="right">2148.000</td>
 <td align="right">0.0000</td>
 </tr>
 <tr class="even">
 <td align="left">Year:Ethnicity</td>
 <td align="right">1</td>
-<td align="right">6,301,756</td>
-<td align="right">6,301,756</td>
-<td align="right">5.602</td>
-<td align="right">0.0216</td>
+<td align="right">5,758,105</td>
+<td align="right">5,758,105</td>
+<td align="right">4.514</td>
+<td align="right">0.0383</td>
 </tr>
 <tr class="odd">
 <td align="left">Year:Location</td>
 <td align="right">2</td>
-<td align="right">6,733,309</td>
-<td align="right">3,366,655</td>
-<td align="right">2.993</td>
-<td align="right">0.0587</td>
+<td align="right">4,704,530</td>
+<td align="right">2,352,265</td>
+<td align="right">1.844</td>
+<td align="right">0.1682</td>
 </tr>
 <tr class="even">
 <td align="left">Ethnicity:Location</td>
 <td align="right">2</td>
-<td align="right">6,202,912,707</td>
-<td align="right">3,101,456,353</td>
-<td align="right">2757.000</td>
+<td align="right">6,354,184,575</td>
+<td align="right">3,177,092,287</td>
+<td align="right">2491.000</td>
 <td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">Year:Ethnicity:Location</td>
 <td align="right">2</td>
-<td align="right">30,349,623</td>
-<td align="right">15,174,812</td>
-<td align="right">13.490</td>
-<td align="right">0.0000</td>
+<td align="right">21,930,681</td>
+<td align="right">10,965,341</td>
+<td align="right">8.596</td>
+<td align="right">0.0006</td>
 </tr>
 <tr class="even">
 <td align="left">Residuals</td>
 <td align="right">53</td>
-<td align="right">59,619,254</td>
-<td align="right">1,124,892</td>
+<td align="right">67,607,911</td>
+<td align="right">1,275,621</td>
 <td align="right">NA</td>
 <td align="right">NA</td>
 </tr>
@@ -1016,88 +1033,88 @@ parameters that were in the near-significant range.</p>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">72600.0</td>
-<td align="right">576.10</td>
-<td align="right">126.000</td>
-<td align="right">0e+00</td>
+<td align="right">73410.0</td>
+<td align="right">614.10</td>
+<td align="right">119.600</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="even">
 <td align="left">Year</td>
-<td align="right">806.5</td>
-<td align="right">90.89</td>
-<td align="right">8.873</td>
-<td align="right">0e+00</td>
+<td align="right">753.8</td>
+<td align="right">95.27</td>
+<td align="right">7.912</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">EthnicityHispanic or Latino</td>
-<td align="right">-71030.0</td>
-<td align="right">814.80</td>
-<td align="right">-87.190</td>
-<td align="right">0e+00</td>
+<td align="right">-71850.0</td>
+<td align="right">868.40</td>
+<td align="right">-82.740</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="even">
 <td align="left">LocationManchester</td>
-<td align="right">-31210.0</td>
-<td align="right">814.80</td>
-<td align="right">-38.310</td>
-<td align="right">0e+00</td>
+<td align="right">-32000.0</td>
+<td align="right">868.40</td>
+<td align="right">-36.850</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">LocationNashua</td>
-<td align="right">-39680.0</td>
-<td align="right">814.80</td>
-<td align="right">-48.700</td>
-<td align="right">0e+00</td>
+<td align="right">-40800.0</td>
+<td align="right">868.40</td>
+<td align="right">-46.990</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="even">
 <td align="left">Year:EthnicityHispanic or Latino</td>
-<td align="right">-787.6</td>
-<td align="right">128.50</td>
-<td align="right">-6.127</td>
-<td align="right">0e+00</td>
+<td align="right">-723.8</td>
+<td align="right">134.70</td>
+<td align="right">-5.372</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">Year:LocationManchester</td>
-<td align="right">-543.7</td>
-<td align="right">128.50</td>
-<td align="right">-4.230</td>
-<td align="right">1e-04</td>
+<td align="right">-484.8</td>
+<td align="right">134.70</td>
+<td align="right">-3.599</td>
+<td align="right">0.0007</td>
 </tr>
 <tr class="even">
 <td align="left">Year:LocationNashua</td>
-<td align="right">-754.5</td>
-<td align="right">128.50</td>
-<td align="right">-5.871</td>
-<td align="right">0e+00</td>
+<td align="right">-588.4</td>
+<td align="right">134.70</td>
+<td align="right">-4.367</td>
+<td align="right">0.0001</td>
 </tr>
 <tr class="odd">
 <td align="left">EthnicityHispanic or Latino:LocationManchester</td>
-<td align="right">32360.0</td>
-<td align="right">1152.00</td>
-<td align="right">28.090</td>
-<td align="right">0e+00</td>
+<td align="right">33350.0</td>
+<td align="right">1228.00</td>
+<td align="right">27.160</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="even">
 <td align="left">EthnicityHispanic or Latino:LocationNashua</td>
-<td align="right">40430.0</td>
-<td align="right">1180.00</td>
-<td align="right">34.270</td>
-<td align="right">0e+00</td>
+<td align="right">41660.0</td>
+<td align="right">1272.00</td>
+<td align="right">32.760</td>
+<td align="right">0.0000</td>
 </tr>
 <tr class="odd">
 <td align="left">Year:EthnicityHispanic or
 Latino:LocationManchester</td>
-<td align="right">683.2</td>
-<td align="right">181.80</td>
-<td align="right">3.758</td>
-<td align="right">4e-04</td>
+<td align="right">611.0</td>
+<td align="right">190.50</td>
+<td align="right">3.207</td>
+<td align="right">0.0023</td>
 </tr>
 <tr class="even">
 <td align="left">Year:EthnicityHispanic or Latino:LocationNashua</td>
-<td align="right">914.8</td>
-<td align="right">183.90</td>
-<td align="right">4.974</td>
-<td align="right">0e+00</td>
+<td align="right">751.7</td>
+<td align="right">194.70</td>
+<td align="right">3.862</td>
+<td align="right">0.0003</td>
 </tr>
 </tbody>
 </table>
@@ -1106,7 +1123,7 @@ Latino:LocationManchester</td>
 <h4 id="summarize">Summarize<a class="anchor" aria-label="anchor" href="#summarize"></a>
 </h4>
 <p>The number of households in Hillsborough county overall grew from
-2012-2023. The number of Hispanic households was much higher in the two
+2013-2024. The number of Hispanic households was much higher in the two
 cities than in the suburban parts of the county. This difference became
 more pronounced over the decade, for two reasons. The number of Hispanic
 households grew more quickly in Nashua and Manchester than in the
@@ -1123,7 +1140,7 @@ patterns are corroborated by significant statistics?</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Higher Expectations for Racine County, Ben Taft.</p>
+  <p>Developed by Higher Expectations for Racine County.</p>
 </div>
 
 <div class="pkgdown-footer-right">

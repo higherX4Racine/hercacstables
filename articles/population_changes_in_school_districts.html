@@ -94,64 +94,59 @@ built-in table <code><a href="../reference/GLOSSARY_OF_AGE_AND_SEX.html">hercacs
 <code class="sourceCode R"><span><span class="va">school_children_glossary</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="va"><a href="../reference/GLOSSARY_OF_AGE_AND_SEX.html">GLOSSARY_OF_AGE_AND_SEX</a></span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>        <span class="va">.data</span><span class="op">$</span><span class="va">`Lower Age`</span> <span class="op">&gt;=</span> <span class="fl">5</span>,</span>
-<span>        <span class="va">.data</span><span class="op">$</span><span class="va">`Upper Age`</span> <span class="op">&lt;=</span> <span class="fl">18</span></span>
-<span>    <span class="op">)</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">`Upper Age`</span> <span class="op">&lt;=</span> <span class="fl">18</span>,</span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Suffix</span> <span class="op">==</span> <span class="cn">FALSE</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">school_children_glossary</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
-<th align="left">group</th>
-<th align="right">index</th>
-<th align="left">variable</th>
+<th align="left">Suffix</th>
+<th align="right">Index</th>
 <th align="left">Sex</th>
 <th align="right">Lower Age</th>
 <th align="right">Upper Age</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">B01001</td>
+<td align="left">FALSE</td>
 <td align="right">4</td>
-<td align="left">B01001_004E</td>
 <td align="left">Male</td>
 <td align="right">5</td>
 <td align="right">9</td>
 </tr>
 <tr class="even">
-<td align="left">B01001</td>
+<td align="left">FALSE</td>
 <td align="right">5</td>
-<td align="left">B01001_005E</td>
 <td align="left">Male</td>
 <td align="right">10</td>
 <td align="right">14</td>
 </tr>
 <tr class="odd">
-<td align="left">B01001</td>
+<td align="left">FALSE</td>
 <td align="right">6</td>
-<td align="left">B01001_006E</td>
 <td align="left">Male</td>
 <td align="right">15</td>
 <td align="right">17</td>
 </tr>
 <tr class="even">
-<td align="left">B01001</td>
+<td align="left">FALSE</td>
 <td align="right">28</td>
-<td align="left">B01001_028E</td>
 <td align="left">Female</td>
 <td align="right">5</td>
 <td align="right">9</td>
 </tr>
 <tr class="odd">
-<td align="left">B01001</td>
+<td align="left">FALSE</td>
 <td align="right">29</td>
-<td align="left">B01001_029E</td>
 <td align="left">Female</td>
 <td align="right">10</td>
 <td align="right">14</td>
 </tr>
 <tr class="even">
-<td align="left">B01001</td>
+<td align="left">FALSE</td>
 <td align="right">30</td>
-<td align="left">B01001_030E</td>
 <td align="left">Female</td>
 <td align="right">15</td>
 <td align="right">17</td>
@@ -161,7 +156,10 @@ built-in table <code><a href="../reference/GLOSSARY_OF_AGE_AND_SEX.html">hercacs
 <p>From this table we can see that we will need to include six variables
 in our API query.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">SCHOOL_CHILDREN_VARIABLES</span> <span class="op">&lt;-</span> <span class="va">school_children_glossary</span><span class="op">$</span><span class="va">variable</span></span>
+<code class="sourceCode R"><span><span class="va">SCHOOL_CHILDREN_VARIABLES</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/build_api_variable.html">build_api_variable</a></span><span class="op">(</span></span>
+<span>    <span class="st">"B01001"</span>,</span>
+<span>    <span class="va">school_children_glossary</span><span class="op">$</span><span class="va">Index</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">SCHOOL_CHILDREN_VARIABLES</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "B01001_004E" "B01001_005E" "B01001_006E" "B01001_028E" "B01001_029E"</span></span>
 <span><span class="co">#&gt; [6] "B01001_030E"</span></span></code></pre></div>
@@ -301,11 +299,12 @@ available.</p>
 <span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="47%">
+<col width="44%">
 <col width="5%">
-<col width="24%">
+<col width="22%">
 <col width="6%">
 <col width="5%">
+<col width="6%">
 <col width="5%">
 <col width="4%">
 </colgroup>
@@ -315,6 +314,7 @@ available.</p>
 <th align="left">school district (unified)</th>
 <th align="left">Group</th>
 <th align="right">Index</th>
+<th align="left">Measure</th>
 <th align="right">Value</th>
 <th align="right">Year</th>
 </tr></thead>
@@ -325,6 +325,7 @@ available.</p>
 <td align="left">04490</td>
 <td align="left">B01001</td>
 <td align="right">6</td>
+<td align="left">E</td>
 <td align="right">3872</td>
 <td align="right">2023</td>
 </tr>
@@ -334,6 +335,7 @@ available.</p>
 <td align="left">04380</td>
 <td align="left">B01001</td>
 <td align="right">29</td>
+<td align="left">E</td>
 <td align="right">14856</td>
 <td align="right">2023</td>
 </tr>
@@ -343,6 +345,7 @@ available.</p>
 <td align="left">04635</td>
 <td align="left">B01001</td>
 <td align="right">28</td>
+<td align="left">E</td>
 <td align="right">2916</td>
 <td align="right">2023</td>
 </tr>
@@ -352,6 +355,7 @@ available.</p>
 <td align="left">04610</td>
 <td align="left">B01001</td>
 <td align="right">6</td>
+<td align="left">E</td>
 <td align="right">1314</td>
 <td align="right">2023</td>
 </tr>
@@ -361,6 +365,7 @@ available.</p>
 <td align="left">04490</td>
 <td align="left">B01001</td>
 <td align="right">29</td>
+<td align="left">E</td>
 <td align="right">6601</td>
 <td align="right">2023</td>
 </tr>
@@ -370,6 +375,7 @@ available.</p>
 <td align="left">04463</td>
 <td align="left">B01001</td>
 <td align="right">4</td>
+<td align="left">E</td>
 <td align="right">2072</td>
 <td align="right">2023</td>
 </tr>
@@ -379,6 +385,7 @@ available.</p>
 <td align="left">04611</td>
 <td align="left">B01001</td>
 <td align="right">5</td>
+<td align="left">E</td>
 <td align="right">3350</td>
 <td align="right">2023</td>
 </tr>
@@ -388,6 +395,7 @@ available.</p>
 <td align="left">04635</td>
 <td align="left">B01001</td>
 <td align="right">4</td>
+<td align="left">E</td>
 <td align="right">2016</td>
 <td align="right">2023</td>
 </tr>
@@ -610,7 +618,7 @@ so that they can be easily rerun for comparable places and times.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Higher Expectations for Racine County, Ben Taft.</p>
+  <p>Developed by Higher Expectations for Racine County.</p>
 </div>
 
 <div class="pkgdown-footer-right">

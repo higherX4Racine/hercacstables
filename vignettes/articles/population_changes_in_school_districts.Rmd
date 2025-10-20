@@ -35,8 +35,10 @@ We can do this with the built-in table `hercacstables::GLOSSARY_OF_AGE_AND_SEX`.
 school_children_glossary <- hercacstables::GLOSSARY_OF_AGE_AND_SEX |>
     dplyr::filter(
         .data$`Lower Age` >= 5,
-        .data$`Upper Age` <= 18
-    )
+        .data$`Upper Age` <= 18,
+        .data$Suffix == FALSE
+    ) |>
+    dplyr::distinct()
 
 knitr::kable(school_children_glossary)
 ```
@@ -46,7 +48,10 @@ query.
 
 ```{r}
 #| label: variables-for-query
-SCHOOL_CHILDREN_VARIABLES <- school_children_glossary$variable
+SCHOOL_CHILDREN_VARIABLES <- hercacstables::build_api_variable(
+    "B01001",
+    school_children_glossary$Index
+)
 print(SCHOOL_CHILDREN_VARIABLES)
 ```
 

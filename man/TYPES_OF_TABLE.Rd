@@ -9,9 +9,9 @@
 
 A data frame with 11 rows and 3 columns.
 \describe{
-\item{Table ID Characters}{<chr> The alphanumeric code for this type of table}
-\item{Type of Table}{<chr> A human-readable name for the type of table.}
-\item{Contains}{<chr> A description of what information this type of table will contain.}
+\item{Table ID Characters}{\verb{<chr>} The alphanumeric code for this type of table}
+\item{Type of Table}{\verb{<chr>} A human-readable name for the type of table.}
+\item{Contains}{\verb{<chr>} A description of what information this type of table will contain.}
 }
 }
 }

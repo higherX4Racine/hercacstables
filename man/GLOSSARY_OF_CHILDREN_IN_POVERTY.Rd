@@ -9,14 +9,14 @@
 
 A data frame with 15 rows and 8 columns
 \describe{
-\item{Group}{<chr> The table, always "B05010"}
-\item{Variable}{<chr> The full variable name, e.g. "B05010_001E"}
-\item{Index}{<int> The row of this variable in the table}
-\item{Least Poverty Ratio}{<dbl> The lowest ratio of income to poverty level in this tier}
-\item{Greatest Poverty Ratio}{<dbl> The highest ratio of income to poverty level in this tier}
-\item{Standard of Living}{<chr> One of "Unsustainable," or "Mixed"}
-\item{Native-born Parents}{<int> How many of the parents in the household were born in the USA.}
-\item{Foreign-born Parents}{<int> How many of the parents in the household were not born in the USA.}
+\item{Group}{\verb{<chr>} The table, always "B05010"}
+\item{Variable}{\verb{<chr>} The full variable name, e.g. "B05010_001E"}
+\item{Index}{\verb{<int>} The row of this variable in the table}
+\item{Least Poverty Ratio}{\verb{<dbl>} The lowest ratio of income to poverty level in this tier}
+\item{Greatest Poverty Ratio}{\verb{<dbl>} The highest ratio of income to poverty level in this tier}
+\item{Standard of Living}{\verb{<chr>} One of "Unsustainable," or "Mixed"}
+\item{Native-born Parents}{\verb{<int>} How many of the parents in the household were born in the USA.}
+\item{Foreign-born Parents}{\verb{<int>} How many of the parents in the household were not born in the USA.}
 }
 }
 }

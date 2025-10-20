@@ -9,12 +9,12 @@
 
 A data frame with 13 rows and 6 columns
 \describe{
-\item{Group}{<chr> The table, always "B17026"}
-\item{Variable}{<chr> The full variable name, e.g. "B17026_001E"}
-\item{Index}{<int> The row of this variable in the table}
-\item{Least Poverty Ratio}{<dbl> The lowest ratio of income to poverty level in this tier}
-\item{Greatest Poverty Ratio}{<dbl> The highest ratio of income to poverty level in this tier}
-\item{Standard of Living}{<chr> One of "Everyone," "Unsustainable," or "Self-sustaining"}
+\item{Group}{\verb{<chr>} The table, always "B17026"}
+\item{Variable}{\verb{<chr>} The full variable name, e.g. "B17026_001E"}
+\item{Index}{\verb{<int>} The row of this variable in the table}
+\item{Least Poverty Ratio}{\verb{<dbl>} The lowest ratio of income to poverty level in this tier}
+\item{Greatest Poverty Ratio}{\verb{<dbl>} The highest ratio of income to poverty level in this tier}
+\item{Standard of Living}{\verb{<chr>} One of "Everyone," "Unsustainable," or "Self-sustaining"}
 }
 }
 }

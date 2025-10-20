@@ -7,6 +7,12 @@ repo:
   url:
     home: https://github.com/higherX4Racine/hercacstables
 
+authors:
+  sidebar:
+    roles: [aut, cph]
+  footer:
+    roles: [cph]
+
 destination: pkgdown/docs/
 
 articles:
@@ -85,6 +91,7 @@ reference:
   contents:
   - GLOSSARY_OF_EMPLOYMENT_STATUS
   - GLOSSARY_OF_STANDARD_OF_LIVING
+  - GLOSSARY_OF_LABOR_FORCE_PARTICIPATION
 
 - title: Utilities
   desc: >

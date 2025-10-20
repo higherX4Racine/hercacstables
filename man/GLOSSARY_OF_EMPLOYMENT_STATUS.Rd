@@ -9,18 +9,18 @@
 
 A data frame with 439 rows and 12 columns:
 \describe{
-\item{group}{<chr>}
-\item{index}{<int>}
-\item{variable}{<chr>}
-\item{Sex}{<chr>}
-\item{Lower Age}{<int>}
-\item{Upper Age}{<int>}
-\item{Labor Force}{<chr>}
-\item{Enlistment}{<chr>}
-\item{Employment}{<chr>}
-\item{Suffix}{<chr>}
-\item{Census Race/Ethnicity}{<chr>}
-\item{Poverty}{<chr>}
+\item{group}{\verb{<chr>}}
+\item{index}{\verb{<int>}}
+\item{variable}{\verb{<chr>}}
+\item{Sex}{\verb{<chr>}}
+\item{Lower Age}{\verb{<int>}}
+\item{Upper Age}{\verb{<int>}}
+\item{Labor Force}{\verb{<chr>}}
+\item{Enlistment}{\verb{<chr>}}
+\item{Employment}{\verb{<chr>}}
+\item{Suffix}{\verb{<chr>}}
+\item{Census Race/Ethnicity}{\verb{<chr>}}
+\item{Poverty}{\verb{<chr>}}
 }
 }
 }

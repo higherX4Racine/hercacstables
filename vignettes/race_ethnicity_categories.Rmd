@@ -228,7 +228,7 @@ isolate them and run them as few times as possible.
 ```{r, cache=TRUE}
 #| label: check-values-for-convenience-tables
 
-LATEST_YEAR <- hercacstables::most_recent_vintage("acs", "acs1")
+LATEST_YEAR <- hercacstables::most_recent_vintage("acs", "acs5")
 
 convenience_check_values_raw <- hercacstables::fetch_data(
     convenience_check_variables$Variable,

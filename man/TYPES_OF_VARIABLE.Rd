@@ -9,10 +9,10 @@
 
 A data frame with 7 rows and 4 columns.
 \describe{
-\item{Variable Type}{<chr> A 1- or 2-letter code}
-\item{Title}{<chr> A human-readable name for the type of variable.}
-\item{Related Products}{<chr> The types of Census data that contain this kind of variable.}
-\item{Meaning}{<chr> A detailed explanation of what this kind of variable represents.}
+\item{Variable Type}{\verb{<chr>} A 1- or 2-letter code}
+\item{Title}{\verb{<chr>} A human-readable name for the type of variable.}
+\item{Related Products}{\verb{<chr>} The types of Census data that contain this kind of variable.}
+\item{Meaning}{\verb{<chr>} A detailed explanation of what this kind of variable represents.}
 }
 }
 }

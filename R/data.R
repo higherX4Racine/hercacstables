@@ -283,6 +283,24 @@
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B01001.html
 "GLOSSARY_OF_AGE_AND_SEX"
 
+#' Counts of people in income brackets, by sex and employment status.
+#'
+#' The rows in this glossary apply to both table `B19325` AND `B20005`. The
+#' difference is that `B19325` deals with all income and `B20005` just earnings.
+#'
+#' @format ## GLOSSARY_OF_SEX_BY_INCEM
+#' A data frame with 43 rows and 5 columns.
+#' \describe{
+#'   \item{Index}{`<int>` The row in the source table that this GLOSSARY row describes.}
+#'   \item{Sex}{`<chr>` One of NA, "Male," or "Female"}
+#'   \item{Full-time}{`<lgl>` `TRUE` if employed full-time for the past year.}
+#'   \item{Lower Bound}{`<dbl>` the lowest income in the range, inclusive}
+#'   \item{Upper Bound}{`<dbl>` the greatest income in the range, inclusive}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs1/groups/B19325.html
+#' @source https://api.census.gov/data/2024/acs/acs1/groups/B20005.html
+"GLOSSARY_OF_SEX_BY_INCOME"
+
 #' A Census table's ID always starts with an alphanumeric code for its type.
 #'
 #' @format ## TYPES_OF_TABLE

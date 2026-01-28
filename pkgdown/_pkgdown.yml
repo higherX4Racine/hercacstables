@@ -39,6 +39,7 @@ articles:
     R to analyze that data.
   contents:
   - articles/children_in_poverty
+  - articles/community-reinvestment-act
   - articles/plumbing_and_owner_occupancy
   - articles/population_changes_in_school_districts
 
@@ -75,6 +76,7 @@ reference:
     that you need to pull data from the Census API.
   contents:
   - GLOSSARY_OF_AGE_AND_SEX
+  - GLOSSARY_OF_SEX_BY_INCOME
 
 - subtitle: Families
   contents:

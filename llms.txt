@@ -1,0 +1,382 @@
+# hercacstables
+
+This package provides an R interface to the United States Census
+Bureau’s data API. The primary focus, as per its name, is pulling
+information from the [detailed tables of the American Community
+Survey](https://www.census.gov/programs-surveys/acs/data/data-tables.html).
+However, it will work for pulling data from any dataset in the [Census
+API](https://api.census.gov/data.html). A great resource for
+understanding the complexities of Census data is
+<https://censusreporter.org/>.
+
+## Installation
+
+You can install the development version from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("higherX4Racine/hercacstables")
+```
+
+## Fetching data from the API
+
+The main way that one uses `hercacstables` to interact with the Census
+API is the
+[`fetch_data()`](https://higherx4racine.github.io/hercacstables/reference/fetch_data.md)
+function.
+
+### A vanilla call to `fetch_data()`
+
+Here is a modestly complicated use of the function without any setup or
+post-processing.
+
+``` r
+POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
+    # the API works one year at a time
+    year = hercacstables::most_recent_vintage("acs", "acs1"),
+    
+    # the API can only query one data source at a time
+    survey_type = "acs",           # the American Community Survey
+    table_or_survey_code = "acs1", # the 1-year dataset of the ACS
+    
+    # the API fetches values for one or more instances of a specific geography
+    for_geo = "state",             # fetch values for entire states
+    for_items = c(
+        "11",                      # the District of Columbia
+        "72"                       # Puerto Rico
+    ),
+    
+    # the codes for the specific data that we are fetching
+    variables = c(
+        "NAME",                    # the geographic area's name
+        "B01001_001E",             # the total number of people
+        "B11002_002E",             # people in family households
+        "B11002_012E"              # people in nonfamily households
+    )
+)
+```
+
+| NAME                 | state | Group  | Index |     Value | Year |
+|:---------------------|------:|:-------|------:|----------:|-----:|
+| District of Columbia |    11 | B01001 |     1 |   678,972 | 2023 |
+| District of Columbia |    11 | B11002 |     2 |   406,283 | 2023 |
+| District of Columbia |    11 | B11002 |    12 |   235,088 | 2023 |
+| Puerto Rico          |    72 | B01001 |     1 | 3,205,691 | 2023 |
+| Puerto Rico          |    72 | B11002 |     2 | 2,613,461 | 2023 |
+| Puerto Rico          |    72 | B11002 |    12 |   554,557 | 2023 |
+
+### Best practice
+
+The previous example is good enough for a README file. An [approach
+centered on
+reusability](https://higherx4racine.github.io/hercacstables/articles/reusability.md)
+is better for actual practice.
+
+## Identifying which items to fetch
+
+People working with the Census often know the topic that they are
+interested in, but not the specific variables that provide information
+about that topic. The `hercacstables` package has utilities that help
+you search for Census variables if you don’t already know which ones you
+want to use.
+
+### Search for groups with keywords
+
+A good first step is to search for tables that could be relevant with
+the
+[`search_in_columns()`](https://higherx4racine.github.io/hercacstables/reference/search_in_columns.md)
+function and the built-in
+[`METADATA_FOR_ACS_GROUPS`](https://higherx4racine.github.io/hercacstables/reference/METADATA_FOR_ACS_GROUPS.md).
+
+``` r
+EDUCATION_TABLES <- hercacstables::search_in_columns(
+    hercacstables::METADATA_FOR_ACS_GROUPS,
+    Group = "\\d$",          # "Group" values need to end in a digit.
+    Universe = "population", # "Universe" values need to include "population".
+    Description = "enroll",  # "Description values need to include "enroll"
+    `-Description` = c("sex",        # but not "sex", that's too much detail
+                       "computer",   # or "computer", also too detailed
+                       "quarters",   # or "quarters", also too detailed
+                       "insur",      # or "insur", not health care enrollments
+                       "allocation") # or "allocation", these are metadata
+)
+```
+
+| Group  | Universe                                                          | Description                                                                                                      | ACS1 | ACS5  |
+|:-------|:------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------|:-----|:------|
+| B14001 | Population 3 years and over                                       | School Enrollment by Level of School for the Population 3 Years and Over                                         | TRUE | TRUE  |
+| B14006 | Population 3 years and over for whom poverty status is determined | Poverty Status in the Past 12 Months by School Enrollment by Level of School for the Population 3 Years and Over | TRUE | TRUE  |
+| B14007 | Population 3 years and over                                       | School Enrollment by Detailed Level of School for the Population 3 Years and Over                                | TRUE | TRUE  |
+| C14002 | Population 3 years and over                                       | School Enrollment by Level of School by Type of School for the Population 3 Years and Over                       | TRUE | FALSE |
+| C14003 | Population 3 years and over                                       | School Enrollment by Type of School by Age for the Population 3 Years and Over                                   | TRUE | FALSE |
+
+### Unpack variables for a group
+
+Once you know the group that you are interested in, you will want to see
+what information is captured in each of its rows. The
+[`unpack_group_details()`](https://higherx4racine.github.io/hercacstables/reference/unpack_group_details.md)
+function searches the built-in
+[`METADATA_FOR_ACS_VARIABLES`](https://higherx4racine.github.io/hercacstables/reference/METADATA_FOR_ACS_VARIABLES)
+for all of the variables of one group. It then expands the Census’s
+description of each variable into columns. Users will need to identify
+the concepts that are captured by each column.
+
+The following example unpacks the variables in the
+[B14001](https://api.census.gov/data/2023/acs/acs1/B14001.html) table.
+
+``` r
+UNPACKED_B14001 <- hercacstables::unpack_group_details("B14001")
+```
+
+| Group  | Index | Variable    | A                      | B                                        |
+|:-------|------:|:------------|:-----------------------|:-----------------------------------------|
+| B14001 |     1 | B14001_001E |                        |                                          |
+| B14001 |     2 | B14001_002E | Enrolled in school     |                                          |
+| B14001 |     3 | B14001_003E | Enrolled in school     | Enrolled in nursery school, preschool    |
+| B14001 |     4 | B14001_004E | Enrolled in school     | Enrolled in kindergarten                 |
+| B14001 |     5 | B14001_005E | Enrolled in school     | Enrolled in grade 1 to grade 4           |
+| B14001 |     6 | B14001_006E | Enrolled in school     | Enrolled in grade 5 to grade 8           |
+| B14001 |     7 | B14001_007E | Enrolled in school     | Enrolled in grade 9 to grade 12          |
+| B14001 |     8 | B14001_008E | Enrolled in school     | Enrolled in college, undergraduate years |
+| B14001 |     9 | B14001_009E | Enrolled in school     | Graduate or professional school          |
+| B14001 |    10 | B14001_010E | Not enrolled in school |                                          |
+
+## Shortcuts
+
+The package also includes functions for common special cases. They are
+wrappers for
+[`fetch_data()`](https://higherx4racine.github.io/hercacstables/reference/fetch_data.md)
+with some arguments hard-coded.
+
+### Decennial populations by race and ethnicity
+
+One example is pulling trends of racial/ethnic populations from the
+decennial census for some specific level of geography.
+
+``` r
+POPS_BY_RACE <-
+    hercacstables::fetch_decennial_pops_by_race(
+        for_geo = "state", # one cannot fetch the whole nation from 2000 or 2010
+        for_items = "*"    # so we pull the data for every state
+    ) |>
+    dplyr::count( # then compute the nationwide populations for each vintage
+        .data$`Race/Ethnicity`,
+        .data$Vintage,
+        wt = .data$Population,
+        name = "Population"
+    ) |>
+    tidyr::pivot_wider( # and reshape the table for display
+        names_from = "Vintage",
+        values_from = "Population"
+    )
+```
+
+| Race/Ethnicity                             |        2000 |        2010 |        2020 |
+|:-------------------------------------------|------------:|------------:|------------:|
+| All                                        | 285,230,516 | 312,471,327 | 334,735,155 |
+| American Indian and Alaska Native          |   2,069,446 |   2,247,427 |   2,252,011 |
+| Asian                                      |  10,126,044 |  14,468,054 |  19,621,465 |
+| Black or African American                  |  33,952,901 |  37,690,511 |  39,944,624 |
+| Hispanic or Latino                         |  39,068,564 |  54,166,049 |  65,329,087 |
+| Native Hawaiian and Other Pacific Islander |     353,874 |     481,653 |     622,109 |
+| Some other race                            |     468,155 |     605,291 |   1,692,341 |
+| Two or more races                          |   4,604,792 |   5,967,844 |  13,551,323 |
+| White                                      | 194,586,740 | 196,844,498 | 191,722,195 |
+
+# Package index
+
+## Key functions and data tables
+
+you will call these to get American Community Survey data
+
+### Getting data from the API
+
+These functions deal with technical aspects of accessing the Census API
+
+- [`fetch_data()`](https://higherx4racine.github.io/hercacstables/reference/fetch_data.md)
+  : Download a set of data from the US Census API
+- [`fetch_decennial_pops_by_race()`](https://higherx4racine.github.io/hercacstables/reference/fetch_decennial_pops_by_race.md)
+  : Get decennial census estimates of per-block populations by
+  race/ethnicity
+
+### The contents of the API
+
+These functions and tables will help you to look up information about
+which Census tables store which information.
+
+- [`search_in_columns()`](https://higherx4racine.github.io/hercacstables/reference/search_in_columns.md)
+  : Search for terms in a glossary in case-insensitive ways
+- [`unpack_group_details()`](https://higherx4racine.github.io/hercacstables/reference/unpack_group_details.md)
+  : Pull apart the lists of details for one group of ACS data
+- [`METADATA_FOR_ACS_GROUPS`](https://higherx4racine.github.io/hercacstables/reference/METADATA_FOR_ACS_GROUPS.md)
+  : Details about the groups in the most recent American Community
+  Series
+- [`METADATA_FOR_ACS_VARIABLES`](https://higherx4racine.github.io/hercacstables/reference/METADATA_FOR_ACS_VARIABLES.md)
+  : Details about variables in the most recent American Community Series
+- [`METADATA_FOR_ACS_GEOGRAPHIES`](https://higherx4racine.github.io/hercacstables/reference/METADATA_FOR_ACS_GEOGRAPHIES.md)
+  : Details about levels of geographic detail in the most recent
+  American Community Series
+- [`DECENNIAL_POPULATION_FIELDS`](https://higherx4racine.github.io/hercacstables/reference/DECENNIAL_POPULATION_FIELDS.md)
+  : Variables from the Decennial censuses
+- [`GEOGRAPHY_HIERARCHY_METADATA`](https://higherx4racine.github.io/hercacstables/reference/GEOGRAPHY_HIERARCHY_METADATA.md)
+  : Geographic levels of organization for data from the US Census
+  Bureau's API
+- [`RACE_ETHNICITY_SUBTABLES`](https://higherx4racine.github.io/hercacstables/reference/RACE_ETHNICITY_SUBTABLES.md)
+  : Race and ethnicity codes and labels used by the U.S. Census Bureau
+
+## Useful descriptions of what is available
+
+These tables connect real-world meanings to the table-name-row-number
+codes that you need to pull data from the Census API.
+
+- [`GLOSSARY_OF_AGE_AND_SEX`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_AGE_AND_SEX.md)
+  :
+
+  The fundamental demographics of age and sex from tables `B01001[ A-H]`
+
+- [`GLOSSARY_OF_SEX_BY_INCOME`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_SEX_BY_INCOME.md)
+  : Counts of people in income brackets, by sex and employment status.
+
+### Families
+
+- [`GLOSSARY_OF_CHILDREN_IN_POVERTY`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_CHILDREN_IN_POVERTY.md)
+  : Categorize ACS variables about children living in poverty and
+  parents' birth origins
+- [`GLOSSARY_OF_CHILDREN_PER_FAMILY`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_CHILDREN_PER_FAMILY.md)
+  : Categorize ACS variables about children per family
+- [`GLOSSARY_OF_FAMILIES_WITH_CHILDREN`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_FAMILIES_WITH_CHILDREN.md)
+  : Categorize ACS variables counting families by number of children
+
+### Education
+
+- [`EDUCATIONAL_ATTAINMENT_LEVELS`](https://higherx4racine.github.io/hercacstables/reference/EDUCATIONAL_ATTAINMENT_LEVELS.md)
+  : Census labels for different levels of educational achievement
+- [`GLOSSARY_OF_EDUCATIONAL_ATTAINMENT`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_EDUCATIONAL_ATTAINMENT.md)
+  : Census variables for different levels of educational achievement
+
+### Sustainable Income
+
+- [`GLOSSARY_OF_EMPLOYMENT_STATUS`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_EMPLOYMENT_STATUS.md)
+  : Factor values associated with specific rows within
+  employment-related ACS tables
+- [`GLOSSARY_OF_STANDARD_OF_LIVING`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_STANDARD_OF_LIVING.md)
+  : Categorize ACS variables about income : poverty level ratios by
+  family sustainability
+- [`GLOSSARY_OF_LABOR_FORCE_PARTICIPATION`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_LABOR_FORCE_PARTICIPATION.md)
+  : ACS data on sex, age, and labor force status
+
+## Utilities
+
+Functions that a typical user won’t need to bother with, but might be
+useful for someone working to extend the capabilities of the package.
+
+### Constructing API calls
+
+These functions deal with technical aspects of accessing the Census API
+
+- [`build_api_variable()`](https://higherx4racine.github.io/hercacstables/reference/build_api_variable.md)
+  : Vectorized Creation of Census ACS Variables
+- [`build_api_url()`](https://higherx4racine.github.io/hercacstables/reference/build_api_url.md)
+  : Create an API call to send to api.census.gov
+
+### Codes and data structures in the API
+
+Glossary about abbreviations, codes, and other arcane shorthand that
+appear in the Census API.
+
+- [`TYPES_OF_TABLE`](https://higherx4racine.github.io/hercacstables/reference/TYPES_OF_TABLE.md)
+  : A Census table's ID always starts with an alphanumeric code for its
+  type.
+- [`TYPES_OF_SUBJECT`](https://higherx4racine.github.io/hercacstables/reference/TYPES_OF_SUBJECT.md)
+  : A code for the broad subject that a Census table covers.
+- [`TYPES_OF_RACE_OR_ETHNICITY`](https://higherx4racine.github.io/hercacstables/reference/TYPES_OF_RACE_OR_ETHNICITY.md)
+  : For selected tables, an alphabetic suffix follows to indicate that a
+  table is repeated for the nine major race and Hispanic or Latino
+  groups:
+- [`TYPES_OF_VARIABLE`](https://higherx4racine.github.io/hercacstables/reference/TYPES_OF_VARIABLE.md)
+  : ACS data contain variables ending in 1- or 2-letter codes.
+
+### API key
+
+These functions manage a key that the Census API uses to keep track of
+users.
+
+- [`api_key_is_set()`](https://higherx4racine.github.io/hercacstables/reference/api_key_is_set.md)
+  : Check if the local environment contains an expected constant
+  defining an API key
+- [`api_key_setup()`](https://higherx4racine.github.io/hercacstables/reference/api_key_setup.md)
+  : Guide a new user at setting up a Census API key
+- [`api_key_value()`](https://higherx4racine.github.io/hercacstables/reference/api_key_value.md)
+  : Get the current value of the local Census API key
+
+### Miscellaneous
+
+Other functions, usually legacy ones, that might help with things
+
+- [`subtract_parts_from_whole()`](https://higherx4racine.github.io/hercacstables/reference/subtract_parts_from_whole.md)
+  : Computes a remainder values from measures of some subgroups and one
+  all-group
+- [`the_year_right_now()`](https://higherx4racine.github.io/hercacstables/reference/the_year_right_now.md)
+  : Today's year in the Gregorian calendar.
+
+### Keeping the glossaries up-to-date
+
+Functions for updating the glossary tables, generally functions that
+only the package maintainers should run when the Census updates the ACS.
+The logic of these functions might be helpful to someone who is looking
+to better understand how the API works, though.
+
+- [`build_info_url()`](https://higherx4racine.github.io/hercacstables/reference/build_info_url.md)
+  : Get the URL for JSON glossary about one table of ACS data
+- [`most_recent_vintage()`](https://higherx4racine.github.io/hercacstables/reference/most_recent_vintage.md)
+  : Query the Census API for the most recent release year of a dataset.
+- [`latest_acs_metadata()`](https://higherx4racine.github.io/hercacstables/reference/latest_acs_metadata.md)
+  : Download glossary about the most recent versions of the 1- and
+  5-year ACS
+- [`fetch_metadata_table()`](https://higherx4racine.github.io/hercacstables/reference/fetch_metadata_table.md)
+  : Fetch glossary about a specific ACS data set from the Census API.
+- [`hoist_table_glossary()`](https://higherx4racine.github.io/hercacstables/reference/hoist_table_glossary.md)
+  : Hoist details about a Census data group from a list of strings to
+  separate columns
+
+# Articles
+
+### Learn how to use hercacstables
+
+- [Set up your API
+  key](https://higherx4racine.github.io/hercacstables/articles/set_up_your_api_key.md):
+- [Race/Ethnicity Categories in ACS
+  Tables](https://higherx4racine.github.io/hercacstables/articles/race_ethnicity_categories.md):
+- [Reusability](https://higherx4racine.github.io/hercacstables/articles/reusability.md):
+
+### Search for content
+
+hercacstables includes utilities for directly search the Census for
+things like tract codes, which tables are broken down by race/ethnicity,
+which tables deal with specific topics like income or housing, and
+whether data are available at the decennial, 5-year, or 1-year time
+scales.
+
+- [Determine
+  demographies](https://higherx4racine.github.io/hercacstables/articles/determine_demographies.md):
+- [Determine
+  geographies](https://higherx4racine.github.io/hercacstables/articles/determine_geographies.md):
+- [Determine
+  measurement](https://higherx4racine.github.io/hercacstables/articles/determine_measurement.md):
+- [Determine
+  timeframes](https://higherx4racine.github.io/hercacstables/articles/determine_timeframes.md):
+
+### Examples of analyses
+
+Several long demonstrations of using hercacstables to gather some data
+and R to analyze that data.
+
+- [Children in
+  Poverty](https://higherx4racine.github.io/hercacstables/articles/children_in_poverty.md):
+- [Income Brackets for the Community Reinvestment
+  Act](https://higherx4racine.github.io/hercacstables/articles/community-reinvestment-act.md):
+- [Plumbing and
+  Owner-occupancy](https://higherx4racine.github.io/hercacstables/articles/plumbing_and_owner_occupancy.md):
+- [Population changes in school
+  districts](https://higherx4racine.github.io/hercacstables/articles/population_changes_in_school_districts.md):

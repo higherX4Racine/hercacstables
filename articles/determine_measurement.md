@@ -1,0 +1,9 @@
+# Determine measurement
+
+A **Measurement** is any of the huge number of things that the Census
+keeps track of. Measurements are arranged in tables (called “groups”)
+and rows. If you were drawing maps, this would be what determines the
+color of each area. Examples include population size (table B01001 and
+others), median household income (table B19013 and others), types of
+computers in a household (table B28001), number of vehicles used while
+commuting (table B08015).

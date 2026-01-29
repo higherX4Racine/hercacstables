@@ -80,8 +80,8 @@ Your organization's impact area will be more customized to your case.
 According to the article above, you should define it in terms of one or more
 entire Census Tracts.
 
-For this article, we are going to use two Unified School Districts in
-southeastern Wisconsin: the Kenosha and Racine Unified School Districts.
+For this article, we are going to use two cities in southeastern Wisconsin:
+Kenosha and Racine.
 
 ```{r}
 #| label: impact-areas
@@ -268,9 +268,11 @@ GLOSSARY_OF_INCOME_BRACKETS <- GLOSSARY_OF_SEX_BY_INCOME |>
         .data$Overlap > 0.0
     ) |>
     dplyr::mutate(
-        Proportion = .data$Overlap /
-            (.data$`Upper Bound Census` -
-                 .data$`Lower Bound Census`)
+        Proportion = dplyr::coalesce(
+            .data$Overlap / 
+                (.data$`Upper Bound Census` - .data$`Lower Bound Census`),
+            1.0
+        )
     ) |>
     dplyr::arrange(
         .data$Index,
@@ -310,8 +312,10 @@ Census.
 RAW_COUNTS_BY_INCOME_BRACKET <- fetch_data(
     variables = "group(B19325)",
     year = 2024L,
-    for_geo = "school district (unified)", # "place",
-    for_items = IMPACT_AREAS$district,     # city,
+    for_geo = "place",
+    for_items = IMPACT_AREAS$city,
+#    for_geo = "school district (unified)",
+#    for_items = IMPACT_AREAS$district,
     survey_type = "acs",
     table_or_survey_code = "acs1",
     state = "55"
@@ -319,14 +323,31 @@ RAW_COUNTS_BY_INCOME_BRACKET <- fetch_data(
 ```
 
 ```{r}
+#| label: wrangle-counts-by-bracket
+COUNTS_BY_INCOME_BRACKET <- RAW_COUNTS_BY_INCOME_BRACKET |>
+    dplyr::filter(
+        .data$Measure == "E"
+    ) |>
+    dplyr::semi_join(
+        GLOSSARY_OF_INCOME_BRACKETS,
+        by = "Index"
+    ) |>
+    dplyr::inner_join(
+        IMPACT_AREAS,
+#        by = c(`school district (unified)` = "district")
+        by = c(place = "city")
+    ) |>
+    dplyr::left_join(
+        GLOSSARY_OF_INCOME_BRACKETS,
+        by = c("Area", "Index"),
+        relationship = "many-to-many"
+    )
+```
+
+```{r}
 #| label: compute-counts-by-bracket
 
-POPULATIONS_PER_BRACKET <- GLOSSARY_OF_INCOME_BRACKETS |>
-    dplyr::left_join(
-        RAW_COUNTS_BY_INCOME_BRACKET,
-        by = "Index",
-        relationship = "many-to-many"
-    ) |>
+POPULATIONS_PER_BRACKET <- COUNTS_BY_INCOME_BRACKET |>
     dplyr::summarize(
         People = sum(.data$Proportion * .data$Value, na.rm = TRUE),
         .by = c("Area", "Bracket")
@@ -345,7 +366,7 @@ POPULATIONS_PER_BRACKET |>
     dplyr::mutate(
         Percent = .data$People / sum(.data$People),
         People = scales::label_comma(accuracy = 1)(.data$People),
-        Percent = scales::label_percent(accuracy = 1.1)(.data$Percent),
+        Percent = scales::label_percent(accuracy = 1)(.data$Percent),
         .by = "Area"
     ) |>
     knitr::kable(
@@ -353,17 +374,16 @@ POPULATIONS_PER_BRACKET |>
     )
 ```
 
-The distribution of personal incomes are similar in each of the unified school
-districts of Racine and Kenosha.
-In both areas, a little more than 30% of the population were in the low-income
-bracket.
-A slightly smaller number, at or below 30%, were in the upper-income bracket.
-The middle income bracket, which is above the median income, had exactly 22% of
-the population in each area.
-The modest income bracket, which is just below the median income, had 15-16% of
-the population.
+The distributions of personal incomes differ between Kenosha and Racine.
+The most populous income bracket in Kenosha, Upper, makes up 39% of people.
+Kenosha`s next largest bracket, Lower income, also has a lot of people: 27%.
+Its Moderate (14%) and Middle (20%) brackets are both less populous.
+In contrast, Racine's Lower and Upper brackets are tied for most populous, at
+29% each.
+Racine's Middle (26%) bracket is also pretty populous, leaving the Moderate
+income bracket as the smallest, with only 16% of the population.
 Both income distributions are bimodal and asymmetric, with more folks at the
-extreme ends of the range.
+extreme ends of the income range.
 
 ## Appendix
 
@@ -437,3 +457,29 @@ The difference between the three is that `B19325` counts people with any income,
 Let's stick with income, rather than earnings.
 We'll use `B19325` to [count](#Counting-bracket-populations) how many people
 fall into each income bracket.
+
+### Detailed bracket information
+
+Here is the full table of each bracket from the Census and the proportion of
+its members that go into each bracket from the CRA.
+
+```{r}
+#| label: view-counts-by-income-bracket
+#| eval: true
+COUNTS_BY_INCOME_BRACKET |>
+    dplyr::select(
+        "Area",
+        "Sex",
+        "Full-time",
+        "Index",
+        "Lower Bound Census",
+        "Upper Bound Census",
+        "Bracket",
+        "Lower Bound CRA",
+        "Upper Bound CRA",
+        "Overlap",
+        "Proportion"
+    ) |>
+    knitr::kable()
+```
+

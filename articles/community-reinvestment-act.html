@@ -127,9 +127,8 @@ Areas in southeastern Wisconsin: Kenosha County and Racine County.</p>
 <p>Your organization’s impact area will be more customized to your case.
 According to the article above, you should define it in terms of one or
 more entire Census Tracts.</p>
-<p>For this article, we are going to use two Unified School Districts in
-southeastern Wisconsin: the Kenosha and Racine Unified School
-Districts.</p>
+<p>For this article, we are going to use two cities in southeastern
+Wisconsin: Kenosha and Racine.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">IMPACT_AREAS</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>    <span class="op">~</span> <span class="va">Area</span>,    <span class="op">~</span> <span class="va">city</span>,  <span class="op">~</span> <span class="va">district</span>,</span>
@@ -303,9 +302,11 @@ overlap.</p>
 <span>        <span class="va">.data</span><span class="op">$</span><span class="va">Overlap</span> <span class="op">&gt;</span> <span class="fl">0.0</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        Proportion <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Overlap</span> <span class="op">/</span></span>
-<span>            <span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Upper Bound Census`</span> <span class="op">-</span></span>
-<span>                 <span class="va">.data</span><span class="op">$</span><span class="va">`Lower Bound Census`</span><span class="op">)</span></span>
+<span>        Proportion <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/coalesce.html" class="external-link">coalesce</a></span><span class="op">(</span></span>
+<span>            <span class="va">.data</span><span class="op">$</span><span class="va">Overlap</span> <span class="op">/</span> </span>
+<span>                <span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Upper Bound Census`</span> <span class="op">-</span> <span class="va">.data</span><span class="op">$</span><span class="va">`Lower Bound Census`</span><span class="op">)</span>,</span>
+<span>            <span class="fl">1.0</span></span>
+<span>        <span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span></span>
 <span>        <span class="va">.data</span><span class="op">$</span><span class="va">Index</span>,</span>
@@ -347,19 +348,35 @@ the Census.</p>
 <code class="sourceCode R"><span><span class="va">RAW_COUNTS_BY_INCOME_BRACKET</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fetch_data.html">fetch_data</a></span><span class="op">(</span></span>
 <span>    variables <span class="op">=</span> <span class="st">"group(B19325)"</span>,</span>
 <span>    year <span class="op">=</span> <span class="fl">2024L</span>,</span>
-<span>    for_geo <span class="op">=</span> <span class="st">"school district (unified)"</span>, <span class="co"># "place",</span></span>
-<span>    for_items <span class="op">=</span> <span class="va">IMPACT_AREAS</span><span class="op">$</span><span class="va">district</span>,     <span class="co"># city,</span></span>
+<span>    for_geo <span class="op">=</span> <span class="st">"place"</span>,</span>
+<span>    for_items <span class="op">=</span> <span class="va">IMPACT_AREAS</span><span class="op">$</span><span class="va">city</span>,</span>
+<span><span class="co">#    for_geo = "school district (unified)",</span></span>
+<span><span class="co">#    for_items = IMPACT_AREAS$district,</span></span>
 <span>    survey_type <span class="op">=</span> <span class="st">"acs"</span>,</span>
 <span>    table_or_survey_code <span class="op">=</span> <span class="st">"acs1"</span>,</span>
 <span>    state <span class="op">=</span> <span class="st">"55"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">POPULATIONS_PER_BRACKET</span> <span class="op">&lt;-</span> <span class="va">GLOSSARY_OF_INCOME_BRACKETS</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span></span>
-<span>        <span class="va">RAW_COUNTS_BY_INCOME_BRACKET</span>,</span>
-<span>        by <span class="op">=</span> <span class="st">"Index"</span>,</span>
-<span>        relationship <span class="op">=</span> <span class="st">"many-to-many"</span></span>
+<code class="sourceCode R"><span><span class="va">COUNTS_BY_INCOME_BRACKET</span> <span class="op">&lt;-</span> <span class="va">RAW_COUNTS_BY_INCOME_BRACKET</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">.data</span><span class="op">$</span><span class="va">Measure</span> <span class="op">==</span> <span class="st">"E"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter-joins.html" class="external-link">semi_join</a></span><span class="op">(</span></span>
+<span>        <span class="va">GLOSSARY_OF_INCOME_BRACKETS</span>,</span>
+<span>        by <span class="op">=</span> <span class="st">"Index"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span></span>
+<span>        <span class="va">IMPACT_AREAS</span>,</span>
+<span><span class="co">#        by = c(`school district (unified)` = "district")</span></span>
+<span>        by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>place <span class="op">=</span> <span class="st">"city"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span></span>
+<span>        <span class="va">GLOSSARY_OF_INCOME_BRACKETS</span>,</span>
+<span>        by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Area"</span>, <span class="st">"Index"</span><span class="op">)</span>,</span>
+<span>        relationship <span class="op">=</span> <span class="st">"many-to-many"</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">POPULATIONS_PER_BRACKET</span> <span class="op">&lt;-</span> <span class="va">COUNTS_BY_INCOME_BRACKET</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
 <span>        People <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Proportion</span> <span class="op">*</span> <span class="va">.data</span><span class="op">$</span><span class="va">Value</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>        .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Area"</span>, <span class="st">"Bracket"</span><span class="op">)</span></span>
@@ -379,62 +396,63 @@ the Census.</p>
 <tr class="odd">
 <td align="left">Kenosha</td>
 <td align="left">Low</td>
-<td align="right">83,931</td>
-<td align="right">33.0%</td>
+<td align="right">19,824</td>
+<td align="right">27%</td>
 </tr>
 <tr class="even">
 <td align="left">Kenosha</td>
 <td align="left">Moderate</td>
-<td align="right">42,326</td>
-<td align="right">16.5%</td>
+<td align="right">10,228</td>
+<td align="right">14%</td>
 </tr>
 <tr class="odd">
 <td align="left">Kenosha</td>
 <td align="left">Middle</td>
-<td align="right">57,467</td>
-<td align="right">22.0%</td>
+<td align="right">14,326</td>
+<td align="right">20%</td>
 </tr>
 <tr class="even">
 <td align="left">Kenosha</td>
 <td align="left">Upper</td>
-<td align="right">71,783</td>
-<td align="right">28.6%</td>
+<td align="right">28,574</td>
+<td align="right">39%</td>
 </tr>
 <tr class="odd">
 <td align="left">Racine</td>
 <td align="left">Low</td>
-<td align="right">80,216</td>
-<td align="right">31.9%</td>
+<td align="right">16,110</td>
+<td align="right">29%</td>
 </tr>
 <tr class="even">
 <td align="left">Racine</td>
 <td align="left">Moderate</td>
-<td align="right">40,352</td>
-<td align="right">15.4%</td>
+<td align="right">8,582</td>
+<td align="right">16%</td>
 </tr>
 <tr class="odd">
 <td align="left">Racine</td>
 <td align="left">Middle</td>
-<td align="right">56,554</td>
-<td align="right">22.0%</td>
+<td align="right">14,260</td>
+<td align="right">26%</td>
 </tr>
 <tr class="even">
 <td align="left">Racine</td>
 <td align="left">Upper</td>
-<td align="right">78,385</td>
-<td align="right">30.8%</td>
+<td align="right">15,885</td>
+<td align="right">29%</td>
 </tr>
 </tbody>
 </table>
-<p>The distribution of personal incomes are similar in each of the
-unified school districts of Racine and Kenosha. In both areas, a little
-more than 30% of the population were in the low-income bracket. A
-slightly smaller number, at or below 30%, were in the upper-income
-bracket. The middle income bracket, which is above the median income,
-had exactly 22% of the population in each area. The modest income
-bracket, which is just below the median income, had 15-16% of the
-population. Both income distributions are bimodal and asymmetric, with
-more folks at the extreme ends of the range.</p>
+<p>The distributions of personal incomes differ between Kenosha and
+Racine. The most populous income bracket in Kenosha, Upper, makes up 39%
+of people. Kenosha`s next largest bracket, Lower income, also has a lot
+of people: 27%. Its Moderate (14%) and Middle (20%) brackets are both
+less populous. In contrast, Racine’s Lower and Upper brackets are tied
+for most populous, at 29% each. Racine’s Middle (26%) bracket is also
+pretty populous, leaving the Moderate income bracket as the smallest,
+with only 16% of the population. Both income distributions are bimodal
+and asymmetric, with more folks at the extreme ends of the income
+range.</p>
 </div>
 </div>
 <div class="section level2">
@@ -451,7 +469,7 @@ need to look up which tables report the data that you need. The
 <p>We definitely want to find tables with the word “median” in them. The
 Census uses both “income” and “earnings” to talk about how much people
 make. We’ll search with both of those terms.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">METADATA_FOR_ACS_GROUPS</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/search_in_columns.html">search_in_columns</a></span><span class="op">(</span></span>
 <span>        Description <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"median"</span>, <span class="st">"income|earn"</span><span class="op">)</span>, <span class="co"># case-insensitive search for "median" AND ("income" OR "earn")</span></span>
@@ -763,7 +781,7 @@ area</a>.</p>
 their descriptions. This time, however, we want to specifically exclude
 tables that summarize dollars. We’ll exclude tables with words like
 “median,” “average,” or “aggregate” in their descriptions.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">METADATA_FOR_ACS_GROUPS</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="../reference/search_in_columns.html">search_in_columns</a></span><span class="op">(</span></span>
 <span>        Description <span class="op">=</span> <span class="st">"income|earn"</span>,                          <span class="co"># seems obvious, right?</span></span>
@@ -1011,6 +1029,2450 @@ people with any income, <code>B20005</code> counts everyone over 16, and
 <p>Let’s stick with income, rather than earnings. We’ll use
 <code>B19325</code> to <a href="#Counting-bracket-populations">count</a>
 how many people fall into each income bracket.</p>
+</div>
+<div class="section level3">
+<h3 id="detailed-bracket-information">Detailed bracket information<a class="anchor" aria-label="anchor" href="#detailed-bracket-information"></a>
+</h3>
+<p>Here is the full table of each bracket from the Census and the
+proportion of its members that go into each bracket from the CRA.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">COUNTS_BY_INCOME_BRACKET</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
+<span>        <span class="st">"Area"</span>,</span>
+<span>        <span class="st">"Sex"</span>,</span>
+<span>        <span class="st">"Full-time"</span>,</span>
+<span>        <span class="st">"Index"</span>,</span>
+<span>        <span class="st">"Lower Bound Census"</span>,</span>
+<span>        <span class="st">"Upper Bound Census"</span>,</span>
+<span>        <span class="st">"Bracket"</span>,</span>
+<span>        <span class="st">"Lower Bound CRA"</span>,</span>
+<span>        <span class="st">"Upper Bound CRA"</span>,</span>
+<span>        <span class="st">"Overlap"</span>,</span>
+<span>        <span class="st">"Proportion"</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="6%">
+<col width="5%">
+<col width="7%">
+<col width="4%">
+<col width="14%">
+<col width="14%">
+<col width="6%">
+<col width="12%">
+<col width="12%">
+<col width="6%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Area</th>
+<th align="left">Sex</th>
+<th align="left">Full-time</th>
+<th align="right">Index</th>
+<th align="right">Lower Bound Census</th>
+<th align="right">Upper Bound Census</th>
+<th align="left">Bracket</th>
+<th align="right">Lower Bound CRA</th>
+<th align="right">Upper Bound CRA</th>
+<th align="right">Overlap</th>
+<th align="right">Proportion</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">6</td>
+<td align="right">1</td>
+<td align="right">2499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2498.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">7</td>
+<td align="right">2500</td>
+<td align="right">4999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">8</td>
+<td align="right">5000</td>
+<td align="right">7499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">9</td>
+<td align="right">7500</td>
+<td align="right">9999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">10</td>
+<td align="right">10000</td>
+<td align="right">12499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">11</td>
+<td align="right">12500</td>
+<td align="right">14999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">12</td>
+<td align="right">15000</td>
+<td align="right">17499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">13</td>
+<td align="right">17500</td>
+<td align="right">19999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">14</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">15</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">45.5</td>
+<td align="right">0.0182073</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">15</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">2453.5</td>
+<td align="right">0.9817927</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">16</td>
+<td align="right">25000</td>
+<td align="right">29999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">17</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">18</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">1072.8</td>
+<td align="right">0.2146029</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">18</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">3926.2</td>
+<td align="right">0.7853971</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">19</td>
+<td align="right">40000</td>
+<td align="right">44999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">20</td>
+<td align="right">45000</td>
+<td align="right">49999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">21</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4109.2</td>
+<td align="right">0.8220044</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">21</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">889.8</td>
+<td align="right">0.1779956</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">22</td>
+<td align="right">55000</td>
+<td align="right">64999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">23</td>
+<td align="right">65000</td>
+<td align="right">74999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">24</td>
+<td align="right">75000</td>
+<td align="right">99999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">24999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">25</td>
+<td align="right">100000</td>
+<td align="right">Inf</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">29</td>
+<td align="right">1</td>
+<td align="right">2499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2498.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">30</td>
+<td align="right">2500</td>
+<td align="right">4999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">31</td>
+<td align="right">5000</td>
+<td align="right">7499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">32</td>
+<td align="right">7500</td>
+<td align="right">9999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">33</td>
+<td align="right">10000</td>
+<td align="right">12499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">34</td>
+<td align="right">12500</td>
+<td align="right">14999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">35</td>
+<td align="right">15000</td>
+<td align="right">17499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">36</td>
+<td align="right">17500</td>
+<td align="right">19999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">37</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">38</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">45.5</td>
+<td align="right">0.0182073</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">38</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">2453.5</td>
+<td align="right">0.9817927</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">39</td>
+<td align="right">25000</td>
+<td align="right">29999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">40</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">41</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">1072.8</td>
+<td align="right">0.2146029</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">41</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">3926.2</td>
+<td align="right">0.7853971</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">42</td>
+<td align="right">40000</td>
+<td align="right">44999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">43</td>
+<td align="right">45000</td>
+<td align="right">49999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">44</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4109.2</td>
+<td align="right">0.8220044</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">44</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">889.8</td>
+<td align="right">0.1779956</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">45</td>
+<td align="right">55000</td>
+<td align="right">64999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">46</td>
+<td align="right">65000</td>
+<td align="right">74999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">47</td>
+<td align="right">75000</td>
+<td align="right">99999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">24999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">48</td>
+<td align="right">100000</td>
+<td align="right">Inf</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">53</td>
+<td align="right">1</td>
+<td align="right">2499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2498.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">54</td>
+<td align="right">2500</td>
+<td align="right">4999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">55</td>
+<td align="right">5000</td>
+<td align="right">7499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">56</td>
+<td align="right">7500</td>
+<td align="right">9999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">57</td>
+<td align="right">10000</td>
+<td align="right">12499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">58</td>
+<td align="right">12500</td>
+<td align="right">14999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">59</td>
+<td align="right">15000</td>
+<td align="right">17499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">60</td>
+<td align="right">17500</td>
+<td align="right">19999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">61</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">62</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">45.5</td>
+<td align="right">0.0182073</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">62</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">2453.5</td>
+<td align="right">0.9817927</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">63</td>
+<td align="right">25000</td>
+<td align="right">29999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">64</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">65</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">1072.8</td>
+<td align="right">0.2146029</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">65</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">3926.2</td>
+<td align="right">0.7853971</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">66</td>
+<td align="right">40000</td>
+<td align="right">44999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">67</td>
+<td align="right">45000</td>
+<td align="right">49999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">68</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4109.2</td>
+<td align="right">0.8220044</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">68</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">889.8</td>
+<td align="right">0.1779956</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">69</td>
+<td align="right">55000</td>
+<td align="right">64999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">70</td>
+<td align="right">65000</td>
+<td align="right">74999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">71</td>
+<td align="right">75000</td>
+<td align="right">99999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">24999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">72</td>
+<td align="right">100000</td>
+<td align="right">Inf</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">76</td>
+<td align="right">1</td>
+<td align="right">2499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2498.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">77</td>
+<td align="right">2500</td>
+<td align="right">4999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">78</td>
+<td align="right">5000</td>
+<td align="right">7499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">79</td>
+<td align="right">7500</td>
+<td align="right">9999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">80</td>
+<td align="right">10000</td>
+<td align="right">12499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">81</td>
+<td align="right">12500</td>
+<td align="right">14999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">82</td>
+<td align="right">15000</td>
+<td align="right">17499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">83</td>
+<td align="right">17500</td>
+<td align="right">19999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">84</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">85</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">22545.5</td>
+<td align="right">45.5</td>
+<td align="right">0.0182073</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">85</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">2453.5</td>
+<td align="right">0.9817927</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">86</td>
+<td align="right">25000</td>
+<td align="right">29999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">87</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">88</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Moderate</td>
+<td align="right">22545.5</td>
+<td align="right">36072.8</td>
+<td align="right">1072.8</td>
+<td align="right">0.2146029</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">88</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">3926.2</td>
+<td align="right">0.7853971</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">89</td>
+<td align="right">40000</td>
+<td align="right">44999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">90</td>
+<td align="right">45000</td>
+<td align="right">49999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">91</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Middle</td>
+<td align="right">36072.8</td>
+<td align="right">54109.2</td>
+<td align="right">4109.2</td>
+<td align="right">0.8220044</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">91</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">889.8</td>
+<td align="right">0.1779956</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">92</td>
+<td align="right">55000</td>
+<td align="right">64999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">93</td>
+<td align="right">65000</td>
+<td align="right">74999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">94</td>
+<td align="right">75000</td>
+<td align="right">99999</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">24999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Kenosha</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">95</td>
+<td align="right">100000</td>
+<td align="right">Inf</td>
+<td align="left">Upper</td>
+<td align="right">54109.2</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">6</td>
+<td align="right">1</td>
+<td align="right">2499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2498.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">7</td>
+<td align="right">2500</td>
+<td align="right">4999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">8</td>
+<td align="right">5000</td>
+<td align="right">7499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">9</td>
+<td align="right">7500</td>
+<td align="right">9999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">10</td>
+<td align="right">10000</td>
+<td align="right">12499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">11</td>
+<td align="right">12500</td>
+<td align="right">14999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">12</td>
+<td align="right">15000</td>
+<td align="right">17499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">13</td>
+<td align="right">17500</td>
+<td align="right">19999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">14</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">1566.5</td>
+<td align="right">0.6268507</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">14</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">932.5</td>
+<td align="right">0.3731493</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">15</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">16</td>
+<td align="right">25000</td>
+<td align="right">29999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">17</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">4506.4</td>
+<td align="right">0.9014603</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">17</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">492.6</td>
+<td align="right">0.0985397</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">18</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">19</td>
+<td align="right">40000</td>
+<td align="right">44999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">20</td>
+<td align="right">45000</td>
+<td align="right">49999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">21</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">1759.6</td>
+<td align="right">0.3519904</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">21</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">3239.4</td>
+<td align="right">0.6480096</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">22</td>
+<td align="right">55000</td>
+<td align="right">64999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">23</td>
+<td align="right">65000</td>
+<td align="right">74999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">24</td>
+<td align="right">75000</td>
+<td align="right">99999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">24999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">TRUE</td>
+<td align="right">25</td>
+<td align="right">100000</td>
+<td align="right">Inf</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">29</td>
+<td align="right">1</td>
+<td align="right">2499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2498.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">30</td>
+<td align="right">2500</td>
+<td align="right">4999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">31</td>
+<td align="right">5000</td>
+<td align="right">7499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">32</td>
+<td align="right">7500</td>
+<td align="right">9999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">33</td>
+<td align="right">10000</td>
+<td align="right">12499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">34</td>
+<td align="right">12500</td>
+<td align="right">14999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">35</td>
+<td align="right">15000</td>
+<td align="right">17499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">36</td>
+<td align="right">17500</td>
+<td align="right">19999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">37</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">1566.5</td>
+<td align="right">0.6268507</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">37</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">932.5</td>
+<td align="right">0.3731493</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">38</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">39</td>
+<td align="right">25000</td>
+<td align="right">29999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">40</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">4506.4</td>
+<td align="right">0.9014603</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">40</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">492.6</td>
+<td align="right">0.0985397</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">41</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">42</td>
+<td align="right">40000</td>
+<td align="right">44999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">43</td>
+<td align="right">45000</td>
+<td align="right">49999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">44</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">1759.6</td>
+<td align="right">0.3519904</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">44</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">3239.4</td>
+<td align="right">0.6480096</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">45</td>
+<td align="right">55000</td>
+<td align="right">64999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">46</td>
+<td align="right">65000</td>
+<td align="right">74999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">47</td>
+<td align="right">75000</td>
+<td align="right">99999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">24999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Male</td>
+<td align="left">FALSE</td>
+<td align="right">48</td>
+<td align="right">100000</td>
+<td align="right">Inf</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">53</td>
+<td align="right">1</td>
+<td align="right">2499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2498.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">54</td>
+<td align="right">2500</td>
+<td align="right">4999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">55</td>
+<td align="right">5000</td>
+<td align="right">7499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">56</td>
+<td align="right">7500</td>
+<td align="right">9999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">57</td>
+<td align="right">10000</td>
+<td align="right">12499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">58</td>
+<td align="right">12500</td>
+<td align="right">14999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">59</td>
+<td align="right">15000</td>
+<td align="right">17499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">60</td>
+<td align="right">17500</td>
+<td align="right">19999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">61</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">1566.5</td>
+<td align="right">0.6268507</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">61</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">932.5</td>
+<td align="right">0.3731493</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">62</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">63</td>
+<td align="right">25000</td>
+<td align="right">29999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">64</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">4506.4</td>
+<td align="right">0.9014603</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">64</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">492.6</td>
+<td align="right">0.0985397</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">65</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">66</td>
+<td align="right">40000</td>
+<td align="right">44999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">67</td>
+<td align="right">45000</td>
+<td align="right">49999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">68</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">1759.6</td>
+<td align="right">0.3519904</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">68</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">3239.4</td>
+<td align="right">0.6480096</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">69</td>
+<td align="right">55000</td>
+<td align="right">64999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">70</td>
+<td align="right">65000</td>
+<td align="right">74999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">71</td>
+<td align="right">75000</td>
+<td align="right">99999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">24999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">TRUE</td>
+<td align="right">72</td>
+<td align="right">100000</td>
+<td align="right">Inf</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">76</td>
+<td align="right">1</td>
+<td align="right">2499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2498.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">77</td>
+<td align="right">2500</td>
+<td align="right">4999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">78</td>
+<td align="right">5000</td>
+<td align="right">7499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">79</td>
+<td align="right">7500</td>
+<td align="right">9999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">80</td>
+<td align="right">10000</td>
+<td align="right">12499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">81</td>
+<td align="right">12500</td>
+<td align="right">14999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">82</td>
+<td align="right">15000</td>
+<td align="right">17499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">83</td>
+<td align="right">17500</td>
+<td align="right">19999</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">84</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Low</td>
+<td align="right">0.0</td>
+<td align="right">21566.5</td>
+<td align="right">1566.5</td>
+<td align="right">0.6268507</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">84</td>
+<td align="right">20000</td>
+<td align="right">22499</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">932.5</td>
+<td align="right">0.3731493</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">85</td>
+<td align="right">22500</td>
+<td align="right">24999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">2499.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">86</td>
+<td align="right">25000</td>
+<td align="right">29999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">87</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Moderate</td>
+<td align="right">21566.5</td>
+<td align="right">34506.4</td>
+<td align="right">4506.4</td>
+<td align="right">0.9014603</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">87</td>
+<td align="right">30000</td>
+<td align="right">34999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">492.6</td>
+<td align="right">0.0985397</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">88</td>
+<td align="right">35000</td>
+<td align="right">39999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">89</td>
+<td align="right">40000</td>
+<td align="right">44999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">90</td>
+<td align="right">45000</td>
+<td align="right">49999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">4999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">91</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Middle</td>
+<td align="right">34506.4</td>
+<td align="right">51759.6</td>
+<td align="right">1759.6</td>
+<td align="right">0.3519904</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">91</td>
+<td align="right">50000</td>
+<td align="right">54999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">3239.4</td>
+<td align="right">0.6480096</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">92</td>
+<td align="right">55000</td>
+<td align="right">64999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">93</td>
+<td align="right">65000</td>
+<td align="right">74999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">9999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">94</td>
+<td align="right">75000</td>
+<td align="right">99999</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">24999.0</td>
+<td align="right">1.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Racine</td>
+<td align="left">Female</td>
+<td align="left">FALSE</td>
+<td align="right">95</td>
+<td align="right">100000</td>
+<td align="right">Inf</td>
+<td align="left">Upper</td>
+<td align="right">51759.6</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">1.0000000</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -479,7 +479,7 @@ was no survey in 2020.</p>
 <code class="sourceCode R"><span><span class="va">BUILD_DATE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">LATEST_YEAR</span> <span class="op">&lt;-</span> <span class="fu">hercacstables</span><span class="fu">::</span><span class="fu"><a href="../reference/most_recent_vintage.html">most_recent_vintage</a></span><span class="op">(</span><span class="st">"acs"</span>, <span class="st">"acs1"</span><span class="op">)</span></span>
 <span><span class="va">TEN_YEARS_AGO</span> <span class="op">&lt;-</span> <span class="va">LATEST_YEAR</span> <span class="op">-</span> <span class="fl">11L</span></span></code></pre></div>
-<p>The last ten years available from the Census are, as of 2026-01-28,
+<p>The last ten years available from the Census are, as of 2026-01-29,
 2013 through 2024.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">YEARS_INCLUDED</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">TEN_YEARS_AGO</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span></span></code></pre></div>

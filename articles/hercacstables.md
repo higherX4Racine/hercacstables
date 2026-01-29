@@ -272,7 +272,7 @@ LATEST_YEAR <- hercacstables::most_recent_vintage("acs", "acs1")
 TEN_YEARS_AGO <- LATEST_YEAR - 11L
 ```
 
-The last ten years available from the Census are, as of 2026-01-28, 2013
+The last ten years available from the Census are, as of 2026-01-29, 2013
 through 2024.
 
 ``` r

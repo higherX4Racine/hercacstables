@@ -60,8 +60,8 @@ Your organization’s impact area will be more customized to your case.
 According to the article above, you should define it in terms of one or
 more entire Census Tracts.
 
-For this article, we are going to use two Unified School Districts in
-southeastern Wisconsin: the Kenosha and Racine Unified School Districts.
+For this article, we are going to use two cities in southeastern
+Wisconsin: Kenosha and Racine.
 
 ``` r
 IMPACT_AREAS <- tibble::tribble(
@@ -213,9 +213,11 @@ GLOSSARY_OF_INCOME_BRACKETS <- GLOSSARY_OF_SEX_BY_INCOME |>
         .data$Overlap > 0.0
     ) |>
     dplyr::mutate(
-        Proportion = .data$Overlap /
-            (.data$`Upper Bound Census` -
-                 .data$`Lower Bound Census`)
+        Proportion = dplyr::coalesce(
+            .data$Overlap / 
+                (.data$`Upper Bound Census` - .data$`Lower Bound Census`),
+            1.0
+        )
     ) |>
     dplyr::arrange(
         .data$Index,
@@ -238,8 +240,10 @@ the Census.
 RAW_COUNTS_BY_INCOME_BRACKET <- fetch_data(
     variables = "group(B19325)",
     year = 2024L,
-    for_geo = "school district (unified)", # "place",
-    for_items = IMPACT_AREAS$district,     # city,
+    for_geo = "place",
+    for_items = IMPACT_AREAS$city,
+#    for_geo = "school district (unified)",
+#    for_items = IMPACT_AREAS$district,
     survey_type = "acs",
     table_or_survey_code = "acs1",
     state = "55"
@@ -247,12 +251,28 @@ RAW_COUNTS_BY_INCOME_BRACKET <- fetch_data(
 ```
 
 ``` r
-POPULATIONS_PER_BRACKET <- GLOSSARY_OF_INCOME_BRACKETS |>
-    dplyr::left_join(
-        RAW_COUNTS_BY_INCOME_BRACKET,
-        by = "Index",
-        relationship = "many-to-many"
+COUNTS_BY_INCOME_BRACKET <- RAW_COUNTS_BY_INCOME_BRACKET |>
+    dplyr::filter(
+        .data$Measure == "E"
     ) |>
+    dplyr::semi_join(
+        GLOSSARY_OF_INCOME_BRACKETS,
+        by = "Index"
+    ) |>
+    dplyr::inner_join(
+        IMPACT_AREAS,
+#        by = c(`school district (unified)` = "district")
+        by = c(place = "city")
+    ) |>
+    dplyr::left_join(
+        GLOSSARY_OF_INCOME_BRACKETS,
+        by = c("Area", "Index"),
+        relationship = "many-to-many"
+    )
+```
+
+``` r
+POPULATIONS_PER_BRACKET <- COUNTS_BY_INCOME_BRACKET |>
     dplyr::summarize(
         People = sum(.data$Proportion * .data$Value, na.rm = TRUE),
         .by = c("Area", "Bracket")
@@ -265,24 +285,24 @@ POPULATIONS_PER_BRACKET <- GLOSSARY_OF_INCOME_BRACKETS |>
 
 | Area    | Bracket  | People | Percent |
 |:--------|:---------|-------:|--------:|
-| Kenosha | Low      | 83,931 |   33.0% |
-| Kenosha | Moderate | 42,326 |   16.5% |
-| Kenosha | Middle   | 57,467 |   22.0% |
-| Kenosha | Upper    | 71,783 |   28.6% |
-| Racine  | Low      | 80,216 |   31.9% |
-| Racine  | Moderate | 40,352 |   15.4% |
-| Racine  | Middle   | 56,554 |   22.0% |
-| Racine  | Upper    | 78,385 |   30.8% |
+| Kenosha | Low      | 19,824 |     27% |
+| Kenosha | Moderate | 10,228 |     14% |
+| Kenosha | Middle   | 14,326 |     20% |
+| Kenosha | Upper    | 28,574 |     39% |
+| Racine  | Low      | 16,110 |     29% |
+| Racine  | Moderate |  8,582 |     16% |
+| Racine  | Middle   | 14,260 |     26% |
+| Racine  | Upper    | 15,885 |     29% |
 
-The distribution of personal incomes are similar in each of the unified
-school districts of Racine and Kenosha. In both areas, a little more
-than 30% of the population were in the low-income bracket. A slightly
-smaller number, at or below 30%, were in the upper-income bracket. The
-middle income bracket, which is above the median income, had exactly 22%
-of the population in each area. The modest income bracket, which is just
-below the median income, had 15-16% of the population. Both income
-distributions are bimodal and asymmetric, with more folks at the extreme
-ends of the range.
+The distributions of personal incomes differ between Kenosha and Racine.
+The most populous income bracket in Kenosha, Upper, makes up 39% of
+people. Kenosha\`s next largest bracket, Lower income, also has a lot of
+people: 27%. Its Moderate (14%) and Middle (20%) brackets are both less
+populous. In contrast, Racine’s Lower and Upper brackets are tied for
+most populous, at 29% each. Racine’s Middle (26%) bracket is also pretty
+populous, leaving the Moderate income bracket as the smallest, with only
+16% of the population. Both income distributions are bimodal and
+asymmetric, with more folks at the extreme ends of the income range.
 
 ## Appendix
 
@@ -409,3 +429,213 @@ people with earnings.
 Let’s stick with income, rather than earnings. We’ll use `B19325` to
 [count](#Counting-bracket-populations) how many people fall into each
 income bracket.
+
+### Detailed bracket information
+
+Here is the full table of each bracket from the Census and the
+proportion of its members that go into each bracket from the CRA.
+
+``` r
+COUNTS_BY_INCOME_BRACKET |>
+    dplyr::select(
+        "Area",
+        "Sex",
+        "Full-time",
+        "Index",
+        "Lower Bound Census",
+        "Upper Bound Census",
+        "Bracket",
+        "Lower Bound CRA",
+        "Upper Bound CRA",
+        "Overlap",
+        "Proportion"
+    ) |>
+    knitr::kable()
+```
+
+| Area    | Sex    | Full-time | Index | Lower Bound Census | Upper Bound Census | Bracket  | Lower Bound CRA | Upper Bound CRA | Overlap | Proportion |
+|:--------|:-------|:----------|------:|-------------------:|-------------------:|:---------|----------------:|----------------:|--------:|-----------:|
+| Kenosha | Male   | TRUE      |     6 |                  1 |               2499 | Low      |             0.0 |         22545.5 |  2498.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |     7 |               2500 |               4999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |     8 |               5000 |               7499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |     9 |               7500 |               9999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    10 |              10000 |              12499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    11 |              12500 |              14999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    12 |              15000 |              17499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    13 |              17500 |              19999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    14 |              20000 |              22499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    15 |              22500 |              24999 | Low      |             0.0 |         22545.5 |    45.5 |  0.0182073 |
+| Kenosha | Male   | TRUE      |    15 |              22500 |              24999 | Moderate |         22545.5 |         36072.8 |  2453.5 |  0.9817927 |
+| Kenosha | Male   | TRUE      |    16 |              25000 |              29999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    17 |              30000 |              34999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    18 |              35000 |              39999 | Moderate |         22545.5 |         36072.8 |  1072.8 |  0.2146029 |
+| Kenosha | Male   | TRUE      |    18 |              35000 |              39999 | Middle   |         36072.8 |         54109.2 |  3926.2 |  0.7853971 |
+| Kenosha | Male   | TRUE      |    19 |              40000 |              44999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    20 |              45000 |              49999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    21 |              50000 |              54999 | Middle   |         36072.8 |         54109.2 |  4109.2 |  0.8220044 |
+| Kenosha | Male   | TRUE      |    21 |              50000 |              54999 | Upper    |         54109.2 |             Inf |   889.8 |  0.1779956 |
+| Kenosha | Male   | TRUE      |    22 |              55000 |              64999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    23 |              65000 |              74999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    24 |              75000 |              99999 | Upper    |         54109.2 |             Inf | 24999.0 |  1.0000000 |
+| Kenosha | Male   | TRUE      |    25 |             100000 |                Inf | Upper    |         54109.2 |             Inf |     Inf |  1.0000000 |
+| Kenosha | Male   | FALSE     |    29 |                  1 |               2499 | Low      |             0.0 |         22545.5 |  2498.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    30 |               2500 |               4999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    31 |               5000 |               7499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    32 |               7500 |               9999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    33 |              10000 |              12499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    34 |              12500 |              14999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    35 |              15000 |              17499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    36 |              17500 |              19999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    37 |              20000 |              22499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    38 |              22500 |              24999 | Low      |             0.0 |         22545.5 |    45.5 |  0.0182073 |
+| Kenosha | Male   | FALSE     |    38 |              22500 |              24999 | Moderate |         22545.5 |         36072.8 |  2453.5 |  0.9817927 |
+| Kenosha | Male   | FALSE     |    39 |              25000 |              29999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    40 |              30000 |              34999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    41 |              35000 |              39999 | Moderate |         22545.5 |         36072.8 |  1072.8 |  0.2146029 |
+| Kenosha | Male   | FALSE     |    41 |              35000 |              39999 | Middle   |         36072.8 |         54109.2 |  3926.2 |  0.7853971 |
+| Kenosha | Male   | FALSE     |    42 |              40000 |              44999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    43 |              45000 |              49999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    44 |              50000 |              54999 | Middle   |         36072.8 |         54109.2 |  4109.2 |  0.8220044 |
+| Kenosha | Male   | FALSE     |    44 |              50000 |              54999 | Upper    |         54109.2 |             Inf |   889.8 |  0.1779956 |
+| Kenosha | Male   | FALSE     |    45 |              55000 |              64999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    46 |              65000 |              74999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    47 |              75000 |              99999 | Upper    |         54109.2 |             Inf | 24999.0 |  1.0000000 |
+| Kenosha | Male   | FALSE     |    48 |             100000 |                Inf | Upper    |         54109.2 |             Inf |     Inf |  1.0000000 |
+| Kenosha | Female | TRUE      |    53 |                  1 |               2499 | Low      |             0.0 |         22545.5 |  2498.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    54 |               2500 |               4999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    55 |               5000 |               7499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    56 |               7500 |               9999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    57 |              10000 |              12499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    58 |              12500 |              14999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    59 |              15000 |              17499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    60 |              17500 |              19999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    61 |              20000 |              22499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    62 |              22500 |              24999 | Low      |             0.0 |         22545.5 |    45.5 |  0.0182073 |
+| Kenosha | Female | TRUE      |    62 |              22500 |              24999 | Moderate |         22545.5 |         36072.8 |  2453.5 |  0.9817927 |
+| Kenosha | Female | TRUE      |    63 |              25000 |              29999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    64 |              30000 |              34999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    65 |              35000 |              39999 | Moderate |         22545.5 |         36072.8 |  1072.8 |  0.2146029 |
+| Kenosha | Female | TRUE      |    65 |              35000 |              39999 | Middle   |         36072.8 |         54109.2 |  3926.2 |  0.7853971 |
+| Kenosha | Female | TRUE      |    66 |              40000 |              44999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    67 |              45000 |              49999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    68 |              50000 |              54999 | Middle   |         36072.8 |         54109.2 |  4109.2 |  0.8220044 |
+| Kenosha | Female | TRUE      |    68 |              50000 |              54999 | Upper    |         54109.2 |             Inf |   889.8 |  0.1779956 |
+| Kenosha | Female | TRUE      |    69 |              55000 |              64999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    70 |              65000 |              74999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    71 |              75000 |              99999 | Upper    |         54109.2 |             Inf | 24999.0 |  1.0000000 |
+| Kenosha | Female | TRUE      |    72 |             100000 |                Inf | Upper    |         54109.2 |             Inf |     Inf |  1.0000000 |
+| Kenosha | Female | FALSE     |    76 |                  1 |               2499 | Low      |             0.0 |         22545.5 |  2498.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    77 |               2500 |               4999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    78 |               5000 |               7499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    79 |               7500 |               9999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    80 |              10000 |              12499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    81 |              12500 |              14999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    82 |              15000 |              17499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    83 |              17500 |              19999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    84 |              20000 |              22499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    85 |              22500 |              24999 | Low      |             0.0 |         22545.5 |    45.5 |  0.0182073 |
+| Kenosha | Female | FALSE     |    85 |              22500 |              24999 | Moderate |         22545.5 |         36072.8 |  2453.5 |  0.9817927 |
+| Kenosha | Female | FALSE     |    86 |              25000 |              29999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    87 |              30000 |              34999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    88 |              35000 |              39999 | Moderate |         22545.5 |         36072.8 |  1072.8 |  0.2146029 |
+| Kenosha | Female | FALSE     |    88 |              35000 |              39999 | Middle   |         36072.8 |         54109.2 |  3926.2 |  0.7853971 |
+| Kenosha | Female | FALSE     |    89 |              40000 |              44999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    90 |              45000 |              49999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    91 |              50000 |              54999 | Middle   |         36072.8 |         54109.2 |  4109.2 |  0.8220044 |
+| Kenosha | Female | FALSE     |    91 |              50000 |              54999 | Upper    |         54109.2 |             Inf |   889.8 |  0.1779956 |
+| Kenosha | Female | FALSE     |    92 |              55000 |              64999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    93 |              65000 |              74999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    94 |              75000 |              99999 | Upper    |         54109.2 |             Inf | 24999.0 |  1.0000000 |
+| Kenosha | Female | FALSE     |    95 |             100000 |                Inf | Upper    |         54109.2 |             Inf |     Inf |  1.0000000 |
+| Racine  | Male   | TRUE      |     6 |                  1 |               2499 | Low      |             0.0 |         21566.5 |  2498.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |     7 |               2500 |               4999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |     8 |               5000 |               7499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |     9 |               7500 |               9999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    10 |              10000 |              12499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    11 |              12500 |              14999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    12 |              15000 |              17499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    13 |              17500 |              19999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    14 |              20000 |              22499 | Low      |             0.0 |         21566.5 |  1566.5 |  0.6268507 |
+| Racine  | Male   | TRUE      |    14 |              20000 |              22499 | Moderate |         21566.5 |         34506.4 |   932.5 |  0.3731493 |
+| Racine  | Male   | TRUE      |    15 |              22500 |              24999 | Moderate |         21566.5 |         34506.4 |  2499.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    16 |              25000 |              29999 | Moderate |         21566.5 |         34506.4 |  4999.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    17 |              30000 |              34999 | Moderate |         21566.5 |         34506.4 |  4506.4 |  0.9014603 |
+| Racine  | Male   | TRUE      |    17 |              30000 |              34999 | Middle   |         34506.4 |         51759.6 |   492.6 |  0.0985397 |
+| Racine  | Male   | TRUE      |    18 |              35000 |              39999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    19 |              40000 |              44999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    20 |              45000 |              49999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    21 |              50000 |              54999 | Middle   |         34506.4 |         51759.6 |  1759.6 |  0.3519904 |
+| Racine  | Male   | TRUE      |    21 |              50000 |              54999 | Upper    |         51759.6 |             Inf |  3239.4 |  0.6480096 |
+| Racine  | Male   | TRUE      |    22 |              55000 |              64999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    23 |              65000 |              74999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    24 |              75000 |              99999 | Upper    |         51759.6 |             Inf | 24999.0 |  1.0000000 |
+| Racine  | Male   | TRUE      |    25 |             100000 |                Inf | Upper    |         51759.6 |             Inf |     Inf |  1.0000000 |
+| Racine  | Male   | FALSE     |    29 |                  1 |               2499 | Low      |             0.0 |         21566.5 |  2498.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    30 |               2500 |               4999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    31 |               5000 |               7499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    32 |               7500 |               9999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    33 |              10000 |              12499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    34 |              12500 |              14999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    35 |              15000 |              17499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    36 |              17500 |              19999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    37 |              20000 |              22499 | Low      |             0.0 |         21566.5 |  1566.5 |  0.6268507 |
+| Racine  | Male   | FALSE     |    37 |              20000 |              22499 | Moderate |         21566.5 |         34506.4 |   932.5 |  0.3731493 |
+| Racine  | Male   | FALSE     |    38 |              22500 |              24999 | Moderate |         21566.5 |         34506.4 |  2499.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    39 |              25000 |              29999 | Moderate |         21566.5 |         34506.4 |  4999.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    40 |              30000 |              34999 | Moderate |         21566.5 |         34506.4 |  4506.4 |  0.9014603 |
+| Racine  | Male   | FALSE     |    40 |              30000 |              34999 | Middle   |         34506.4 |         51759.6 |   492.6 |  0.0985397 |
+| Racine  | Male   | FALSE     |    41 |              35000 |              39999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    42 |              40000 |              44999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    43 |              45000 |              49999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    44 |              50000 |              54999 | Middle   |         34506.4 |         51759.6 |  1759.6 |  0.3519904 |
+| Racine  | Male   | FALSE     |    44 |              50000 |              54999 | Upper    |         51759.6 |             Inf |  3239.4 |  0.6480096 |
+| Racine  | Male   | FALSE     |    45 |              55000 |              64999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    46 |              65000 |              74999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    47 |              75000 |              99999 | Upper    |         51759.6 |             Inf | 24999.0 |  1.0000000 |
+| Racine  | Male   | FALSE     |    48 |             100000 |                Inf | Upper    |         51759.6 |             Inf |     Inf |  1.0000000 |
+| Racine  | Female | TRUE      |    53 |                  1 |               2499 | Low      |             0.0 |         21566.5 |  2498.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    54 |               2500 |               4999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    55 |               5000 |               7499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    56 |               7500 |               9999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    57 |              10000 |              12499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    58 |              12500 |              14999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    59 |              15000 |              17499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    60 |              17500 |              19999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    61 |              20000 |              22499 | Low      |             0.0 |         21566.5 |  1566.5 |  0.6268507 |
+| Racine  | Female | TRUE      |    61 |              20000 |              22499 | Moderate |         21566.5 |         34506.4 |   932.5 |  0.3731493 |
+| Racine  | Female | TRUE      |    62 |              22500 |              24999 | Moderate |         21566.5 |         34506.4 |  2499.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    63 |              25000 |              29999 | Moderate |         21566.5 |         34506.4 |  4999.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    64 |              30000 |              34999 | Moderate |         21566.5 |         34506.4 |  4506.4 |  0.9014603 |
+| Racine  | Female | TRUE      |    64 |              30000 |              34999 | Middle   |         34506.4 |         51759.6 |   492.6 |  0.0985397 |
+| Racine  | Female | TRUE      |    65 |              35000 |              39999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    66 |              40000 |              44999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    67 |              45000 |              49999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    68 |              50000 |              54999 | Middle   |         34506.4 |         51759.6 |  1759.6 |  0.3519904 |
+| Racine  | Female | TRUE      |    68 |              50000 |              54999 | Upper    |         51759.6 |             Inf |  3239.4 |  0.6480096 |
+| Racine  | Female | TRUE      |    69 |              55000 |              64999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    70 |              65000 |              74999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    71 |              75000 |              99999 | Upper    |         51759.6 |             Inf | 24999.0 |  1.0000000 |
+| Racine  | Female | TRUE      |    72 |             100000 |                Inf | Upper    |         51759.6 |             Inf |     Inf |  1.0000000 |
+| Racine  | Female | FALSE     |    76 |                  1 |               2499 | Low      |             0.0 |         21566.5 |  2498.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    77 |               2500 |               4999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    78 |               5000 |               7499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    79 |               7500 |               9999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    80 |              10000 |              12499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    81 |              12500 |              14999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    82 |              15000 |              17499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    83 |              17500 |              19999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    84 |              20000 |              22499 | Low      |             0.0 |         21566.5 |  1566.5 |  0.6268507 |
+| Racine  | Female | FALSE     |    84 |              20000 |              22499 | Moderate |         21566.5 |         34506.4 |   932.5 |  0.3731493 |
+| Racine  | Female | FALSE     |    85 |              22500 |              24999 | Moderate |         21566.5 |         34506.4 |  2499.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    86 |              25000 |              29999 | Moderate |         21566.5 |         34506.4 |  4999.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    87 |              30000 |              34999 | Moderate |         21566.5 |         34506.4 |  4506.4 |  0.9014603 |
+| Racine  | Female | FALSE     |    87 |              30000 |              34999 | Middle   |         34506.4 |         51759.6 |   492.6 |  0.0985397 |
+| Racine  | Female | FALSE     |    88 |              35000 |              39999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    89 |              40000 |              44999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    90 |              45000 |              49999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    91 |              50000 |              54999 | Middle   |         34506.4 |         51759.6 |  1759.6 |  0.3519904 |
+| Racine  | Female | FALSE     |    91 |              50000 |              54999 | Upper    |         51759.6 |             Inf |  3239.4 |  0.6480096 |
+| Racine  | Female | FALSE     |    92 |              55000 |              64999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    93 |              65000 |              74999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    94 |              75000 |              99999 | Upper    |         51759.6 |             Inf | 24999.0 |  1.0000000 |
+| Racine  | Female | FALSE     |    95 |             100000 |                Inf | Upper    |         51759.6 |             Inf |     Inf |  1.0000000 |

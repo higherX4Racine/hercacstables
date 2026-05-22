@@ -40,6 +40,7 @@ articles:
   contents:
   - articles/children_in_poverty
   - articles/community-reinvestment-act
+  - articles/composition_of_income
   - articles/plumbing_and_owner_occupancy
   - articles/population_changes_in_school_districts
 
@@ -91,9 +92,11 @@ reference:
 
 - subtitle: Sustainable Income
   contents:
+  - GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME
   - GLOSSARY_OF_EMPLOYMENT_STATUS
-  - GLOSSARY_OF_STANDARD_OF_LIVING
   - GLOSSARY_OF_LABOR_FORCE_PARTICIPATION
+  - GLOSSARY_OF_STANDARD_OF_LIVING
+  - GLOSSARY_OF_WORK_STATUS
 
 - title: Utilities
   desc: >

@@ -283,6 +283,31 @@
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B01001.html
 "GLOSSARY_OF_AGE_AND_SEX"
 
+#' Aggregate income values for households, broken down by race, age, and source
+#'
+#' These data come from 20 different tables. All of the tables, except for
+#' B19050, which reports income by age of householder, have a single row, the
+#' total income across all households in the geography. Tables B19025.* contain
+#' values by race, and tables B19060-70 contain values by the nature of the
+#' income.
+#'
+#' @format ## GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME
+#' An object of class `spec_tbl_df/tbl_df/tbl/data.frame` with
+#' 24 rows and 6 columns
+#' \describe{
+#'  \item{Group}{`<chr>` the identification code of the item's table}
+#'  \item{Index}{`<int>` the item's row in its table}
+#'  \item{Race/Ethnicity}{`<chr>` the racial/ethnic identity of people described by the item}
+#'  \item{Source}{`<chr>` the type of income, e.g. earnings, interest, or SNAP}
+#'  \item{Public}{`<lgl>` TRUE if the income is from a government assistance program.}
+#'  \item{Lower Age}{`<int>` the lowest age of householders described by the item}
+#'  \item{Upper Age}{`<int>`the highest age of householders described by the item}
+#'  \item{Subtotal}{`<chr>` whether the row involves all, race/ethnicity, age, or source subtotals},
+#'  \item{Atomic}{`<lgl>` TRUE if the item is an atomic observation, not a subtotal}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups.html
+"GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME"
+
 #' Counts of people in income brackets, by sex and employment status.
 #'
 #' The rows in this glossary apply to both table `B19325` AND `B20005`. The
@@ -372,3 +397,21 @@
 #' \item{Employed"}{`<lgl>`}
 #' }
 "GLOSSARY_OF_LABOR_FORCE_PARTICIPATION"
+
+#' ACS data on age and full- or part-time employment
+#'
+#' @format ## GLOSSARY_OF_WORK_STATUS
+#' an object of class `tbl_df/tbl/data.frame` with
+#' 36 rows and
+#' 7 columns
+#' \describe{
+#'  \item{Index}{`<int>` the row in the census table}
+#'  \item{Variable}{`<chr>` the full variable name}
+#'  \item{Lower Age}{`<int>` the youngest age that this row counts}
+#'  \item{Upper Age}{`<int>` the oldest age that this row counts}
+#'  \item{Employed}{`<lgl>` `TRUE` if employed, `NA` if either status}
+#'  \item{Full Time}{`<lgl>``TRUE` if full-time, `NA` if either status}
+#'  \item{Employment}{`<chr>` a three-level factor with levels "Unemployed", "Part-Time", and "Full-Time"}
+#' }
+#' @source https://api.census.gov/2024/acs/acs5/groups/B23027.html
+"GLOSSARY_OF_WORK_STATUS"

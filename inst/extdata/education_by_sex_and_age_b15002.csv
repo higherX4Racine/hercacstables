@@ -1,0 +1,36 @@
+group,index,Variable,Sex,Lower Age,Upper Age,Age,Education,Label
+B15002,1,B15002_001E,All,25,999,All,All,NA
+B15002,2,B15002_002E,Male,25,999,All,All,NA
+B15002,3,B15002_003E,Male,25,999,All,Less than high school diploma,No schooling completed
+B15002,4,B15002_004E,Male,25,999,All,Less than high school diploma,Nursery to 4th grade
+B15002,5,B15002_005E,Male,25,999,All,Less than high school diploma,5th and 6th grade
+B15002,6,B15002_006E,Male,25,999,All,Less than high school diploma,7th and 8th grade
+B15002,7,B15002_007E,Male,25,999,All,Less than high school diploma,9th grade
+B15002,8,B15002_008E,Male,25,999,All,Less than high school diploma,10th grade
+B15002,9,B15002_009E,Male,25,999,All,Less than high school diploma,11th grade
+B15002,10,B15002_010E,Male,25,999,All,Less than high school diploma,"12th grade, no diploma"
+B15002,11,B15002_011E,Male,25,999,All,High school graduate (includes equivalency),High school graduate (includes equivalency)
+B15002,12,B15002_012E,Male,25,999,All,Some college or associate's degree,"Some college, less than 1 year"
+B15002,13,B15002_013E,Male,25,999,All,Some college or associate's degree,"Some college, 1 or more years, no degree"
+B15002,14,B15002_014E,Male,25,999,All,Some college or associate's degree,Associate's degree
+B15002,15,B15002_015E,Male,25,999,All,Bachelor's degree or higher,Bachelor's degree
+B15002,16,B15002_016E,Male,25,999,All,Bachelor's degree or higher,Master's degree
+B15002,17,B15002_017E,Male,25,999,All,Bachelor's degree or higher,Professional school degree
+B15002,18,B15002_018E,Male,25,999,All,Bachelor's degree or higher,Doctorate degree
+B15002,19,B15002_019E,Female,25,999,All,All,NA
+B15002,20,B15002_020E,Female,25,999,All,Less than high school diploma,No schooling completed
+B15002,21,B15002_021E,Female,25,999,All,Less than high school diploma,Nursery to 4th grade
+B15002,22,B15002_022E,Female,25,999,All,Less than high school diploma,5th and 6th grade
+B15002,23,B15002_023E,Female,25,999,All,Less than high school diploma,7th and 8th grade
+B15002,24,B15002_024E,Female,25,999,All,Less than high school diploma,9th grade
+B15002,25,B15002_025E,Female,25,999,All,Less than high school diploma,10th grade
+B15002,26,B15002_026E,Female,25,999,All,Less than high school diploma,11th grade
+B15002,27,B15002_027E,Female,25,999,All,Less than high school diploma,"12th grade, no diploma"
+B15002,28,B15002_028E,Female,25,999,All,High school graduate (includes equivalency),High school graduate (includes equivalency)
+B15002,29,B15002_029E,Female,25,999,All,Some college or associate's degree,"Some college, less than 1 year"
+B15002,30,B15002_030E,Female,25,999,All,Some college or associate's degree,"Some college, 1 or more years, no degree"
+B15002,31,B15002_031E,Female,25,999,All,Some college or associate's degree,Associate's degree
+B15002,32,B15002_032E,Female,25,999,All,Bachelor's degree or higher,Bachelor's degree
+B15002,33,B15002_033E,Female,25,999,All,Bachelor's degree or higher,Master's degree
+B15002,34,B15002_034E,Female,25,999,All,Bachelor's degree or higher,Professional school degree
+B15002,35,B15002_035E,Female,25,999,All,Bachelor's degree or higher,Doctorate degree

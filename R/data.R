@@ -313,7 +313,7 @@
 #' The rows in this glossary apply to both table `B19325` AND `B20005`. The
 #' difference is that `B19325` deals with all income and `B20005` just earnings.
 #'
-#' @format ## GLOSSARY_OF_SEX_BY_INCEM
+#' @format ## GLOSSARY_OF_SEX_BY_INCOME
 #' A data frame with 43 rows and 5 columns.
 #' \describe{
 #'   \item{Index}{`<int>` The row in the source table that this GLOSSARY row describes.}
@@ -325,6 +325,20 @@
 #' @source https://api.census.gov/data/2024/acs/acs1/groups/B19325.html
 #' @source https://api.census.gov/data/2024/acs/acs1/groups/B20005.html
 "GLOSSARY_OF_SEX_BY_INCOME"
+
+#' Households by age of householder and owner or renter status
+#'
+#' @format ## GLOSSARY_OF_TENURE_BY_AGE
+#' A data frame with 21 rows and 5 columns
+#' \describe{
+#'  \item{Group}{<chr> Always "B25007"}
+#'  \item{Index}{<int> Each row in the table}
+#'  \item{Variable}{<chr> The full name for each estimate variable}
+#'  \item{Tenure}{<chr> One of "All," "Owner," or "Renter"} "", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "…
+#'  \item{Lower Age}{<int> One of 15, 25, 35, 45, 55, 60, 75, or 85}
+#'  \item{Upper Age}{<int> One of 24, 34, 44, 54, 59, 64, 74, 84, or 999}
+#' }
+"GLOSSARY_OF_TENURE_BY_AGE"
 
 #' A Census table's ID always starts with an alphanumeric code for its type.
 #'

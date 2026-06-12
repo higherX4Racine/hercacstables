@@ -187,8 +187,29 @@
 #'   \item{Census Race/Ethnicity}{`<chr>`}
 #'   \item{Poverty}{`<chr>`}
 #' }
-#' @source api.census.gov/data/acs/acs5/groups.html
+#' @source https://api.census.gov/data/acs/acs5/groups.html
 "GLOSSARY_OF_EMPLOYMENT_STATUS"
+
+
+#' Crossed counts of educational attainment and employment status
+#'
+#' This table, `B23006`, uses the five-level attainment classification in
+#' [`hercacstables::EDUCATIONAL_ATTAINMENT_LEVELS$Broad`]. Its employment status information
+#' does not distinguish between full- and part-time employment.
+#'
+#' @format ## GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT
+#' A data frame with 29 rows and 7 columns
+#' \describe{
+#'  \item{Group}{`<chr>` Always "B23006"}
+#'  \item{Index}{`<int>`The row number in the table}
+#'  \item{Variable}{`<chr>` The variable name for the population estimate}
+#'  \item{Education}{`<chr>`one of five broad levels of educational attainment}
+#'  \item{`Labor Force`}{`<lgl>` `NA` means "All"}
+#'  \item{Civilian}{`<lgl>` `NA` means "All"}
+#'  \item{Employed}{`<lgl>` `NA` means "All"}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B23006.html
+"GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT"
 
 #' Categorize ACS variables about income : poverty level ratios by family sustainability
 #'
@@ -331,13 +352,14 @@
 #' @format ## GLOSSARY_OF_TENURE_BY_AGE
 #' A data frame with 21 rows and 5 columns
 #' \describe{
-#'  \item{Group}{<chr> Always "B25007"}
-#'  \item{Index}{<int> Each row in the table}
-#'  \item{Variable}{<chr> The full name for each estimate variable}
-#'  \item{Tenure}{<chr> One of "All," "Owner," or "Renter"} "", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "…
-#'  \item{Lower Age}{<int> One of 15, 25, 35, 45, 55, 60, 75, or 85}
-#'  \item{Upper Age}{<int> One of 24, 34, 44, 54, 59, 64, 74, 84, or 999}
+#'  \item{Group}{`<chr>` Always "B25007"}
+#'  \item{Index}{`<int>` Each row in the table}
+#'  \item{Variable}{`<chr>` The full name for each estimate variable}
+#'  \item{Tenure}{`<chr>` One of "All," "Owner," or "Renter"} "", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "…
+#'  \item{Lower Age}{`<int>` One of 15, 25, 35, 45, 55, 60, 75, or 85}
+#'  \item{Upper Age}{`<int>` One of 24, 34, 44, 54, 59, 64, 74, 84, or 999}
 #' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B25007.html
 "GLOSSARY_OF_TENURE_BY_AGE"
 
 #' A Census table's ID always starts with an alphanumeric code for its type.
@@ -410,6 +432,7 @@
 #' \item{Civilian}{`<lgl>`}
 #' \item{Employed"}{`<lgl>`}
 #' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B23001.html
 "GLOSSARY_OF_LABOR_FORCE_PARTICIPATION"
 
 #' ACS data on age and full- or part-time employment

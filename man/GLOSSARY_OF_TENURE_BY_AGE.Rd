@@ -9,14 +9,17 @@
 
 A data frame with 21 rows and 5 columns
 \describe{
-\item{Group}{\if{html}{\out{<chr>}} Always "B25007"}
-\item{Index}{\if{html}{\out{<int>}} Each row in the table}
-\item{Variable}{\if{html}{\out{<chr>}} The full name for each estimate variable}
-\item{Tenure}{\if{html}{\out{<chr>}} One of "All," "Owner," or "Renter"} "", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "…
-\item{Lower Age}{\if{html}{\out{<int>}} One of 15, 25, 35, 45, 55, 60, 75, or 85}
-\item{Upper Age}{\if{html}{\out{<int>}} One of 24, 34, 44, 54, 59, 64, 74, 84, or 999}
+\item{Group}{\verb{<chr>} Always "B25007"}
+\item{Index}{\verb{<int>} Each row in the table}
+\item{Variable}{\verb{<chr>} The full name for each estimate variable}
+\item{Tenure}{\verb{<chr>} One of "All," "Owner," or "Renter"} "", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "…
+\item{Lower Age}{\verb{<int>} One of 15, 25, 35, 45, 55, 60, 75, or 85}
+\item{Upper Age}{\verb{<int>} One of 24, 34, 44, 54, 59, 64, 74, 84, or 999}
 }
 }
+}
+\source{
+https://api.census.gov/data/2024/acs/acs5/groups/B25007.html
 }
 \usage{
 GLOSSARY_OF_TENURE_BY_AGE

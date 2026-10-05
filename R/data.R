@@ -288,7 +288,8 @@
 #'
 #' These data come from table B05010, "RATIO OF INCOME TO POVERTY LEVEL IN THE
 #' PAST 12 MONTHS BY NATIVITY OF CHILDREN UNDER 18 YEARS IN FAMILIES AND
-#' SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS."
+#' SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS." The value is the
+#' number of **Families**.
 #'
 #' @format ## GLOSSARY_OF_CHILDREN_IN_POVERTY
 #' A data frame with 15 rows and 8 columns
@@ -308,21 +309,41 @@
 #' Poverty status related to number and type of parents/guardians and children
 #'
 #' These data come from tables `B17010*`, which have the same structure for all
-#' racial identities and data sources.
+#' racial identities and data sources. The value is number of **Families**.
 #'
 #' @format ## GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY
 #' A data frame with 41 rows and 7 columns
 #' \describe{
-#'   \item{Index}{<int> the row number}
-#'   \item{`Below Poverty Level`}{<lgl> TRUE if the families' incomes are below the federal poverty level}
-#'   \item{Married}{<lgl> The Census keeps track about this I guess?}
-#'   \item{Male}{<lgl> A male parent is present}
-#'   \item{Female}{<lgl> A female parent is present}
-#'   \item{`Under 5`}{<lgl> At least one child under 5 is present}
-#'   \item{`Over 4 Under 18`}{<lgl> At least on child aged 5-17 is present}
+#'   \item{Index}{`<int>` the row number}
+#'   \item{`Below Poverty Level`}{`<lgl>` TRUE if the families' incomes are below the federal poverty level}
+#'   \item{Married}{`<lgl>` The Census keeps track about this I guess?}
+#'   \item{Male}{`<lgl>` A male parent is present}
+#'   \item{Female}{`<lgl>` A female parent is present}
+#'   \item{`Under 5`}{`<lgl>` At least one child under 5 is present}
+#'   \item{`Over 4 Under 18`}{`<lgl>` At least on child aged 5-17 is present}
 #' }
 #' @source https://api.census.gov/data/2024/acs/acs5/groups/B17010.html
 "GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY"
+
+#' Number of children by poverty status related type of parents/guardians.
+#'
+#' These data come from table `B17006`.
+#'
+#' @format ## GLOSSARY_OF_POVERTY_FAMILY_AND_CHILDREN
+#' A data frame with 29 rows and 9 columns
+#' \describe{
+#'   \item{Group}{`<chr>` Always "B17006"}
+#'   \item{Index}{`<int>` The row number.}
+#'   \item{Variable}{`<chr>` computed from Group and Index.}
+#'   \item{`Federal Poverty`}{`<lgl>` TRUE if the family's income is below the Federal poverty level.}
+#'   \item{Married}{`<lgl>` TRUE if the Census thinks the family's householders are wedded to one another}
+#'   \item{`Male Parent`}{`<lgl>` TRUE if there is a male parent/guardian present in the household}
+#'   \item{`Female Parent`}{`<lgl>` TRUE if there is a female parent/guarian present in the household}
+#'   \item{`Lower Age`}{`<int>` The youngest age in the range counted by this row}
+#'   \item{`Upper Age`}{`<int>` The oldest age in the range counted by this row}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B17006.html
+"GLOSSARY_OF_POVERTY_FAMILY_AND_CHILDREN"
 
 #' The fundamental demographics of age and sex from tables `B01001[ A-H]`
 #'

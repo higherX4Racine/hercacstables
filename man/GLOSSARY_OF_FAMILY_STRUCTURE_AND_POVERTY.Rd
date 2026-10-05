@@ -9,13 +9,13 @@
 
 A data frame with 41 rows and 7 columns
 \describe{
-\item{Index}{\if{html}{\out{<int>}} the row number}
-\item{\verb{Below Poverty Level}}{\if{html}{\out{<lgl>}} TRUE if the families' incomes are below the federal poverty level}
-\item{Married}{\if{html}{\out{<lgl>}} The Census keeps track about this I guess?}
-\item{Male}{\if{html}{\out{<lgl>}} A male parent is present}
-\item{Female}{\if{html}{\out{<lgl>}} A female parent is present}
-\item{\verb{Under 5}}{\if{html}{\out{<lgl>}} At least one child under 5 is present}
-\item{\verb{Over 4 Under 18}}{\if{html}{\out{<lgl>}} At least on child aged 5-17 is present}
+\item{Index}{\verb{<int>} the row number}
+\item{\verb{Below Poverty Level}}{\verb{<lgl>} TRUE if the families' incomes are below the federal poverty level}
+\item{Married}{\verb{<lgl>} The Census keeps track about this I guess?}
+\item{Male}{\verb{<lgl>} A male parent is present}
+\item{Female}{\verb{<lgl>} A female parent is present}
+\item{\verb{Under 5}}{\verb{<lgl>} At least one child under 5 is present}
+\item{\verb{Over 4 Under 18}}{\verb{<lgl>} At least on child aged 5-17 is present}
 }
 }
 }
@@ -27,6 +27,6 @@ GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY
 }
 \description{
 These data come from tables \verb{B17010*}, which have the same structure for all
-racial identities and data sources.
+racial identities and data sources. The value is number of \strong{Families}.
 }
 \keyword{datasets}

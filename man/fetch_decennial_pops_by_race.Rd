@@ -8,7 +8,7 @@ fetch_decennial_pops_by_race(...)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=build_api_url]{build_api_url}}
+  Arguments passed on to \code{\link{build_api_url}}
   \describe{
     \item{\code{for_items}}{<chr[]> one or more instances of \code{for_geo} desired, e.g. \code{"*"} or \code{"000200"}, passed on to \code{\link[=build_for_geographies]{build_for_geographies()}}}
     \item{\code{use_key}}{<lgl?> optional, should the query include a Census API key from the system environment. Defaults to \code{TRUE}}

@@ -17,6 +17,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Ben Taft \email{ben.taft@career2cradle.org}
 
+Authors:
+\itemize{
+  \item Ben Taft \email{ben.taft@career2cradle.org}
+}
+
 Other contributors:
 \itemize{
   \item Higher Expectations for Racine County [copyright holder, funder]

@@ -20,6 +20,6 @@ Take a wide-formatted response from the Census API and convert it to long
 \seealso{
 \code{\link[tidyr:pivot_longer]{tidyr::pivot_longer()}}
 
-\code{\link[tidyr:separate_wider_delim]{tidyr::separate_wider_regex()}}
+\code{\link[tidyr:separate_wider_regex]{tidyr::separate_wider_regex()}}
 }
 \keyword{internal}

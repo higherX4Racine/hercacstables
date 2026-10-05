@@ -117,6 +117,24 @@
 #' @source https://api.census.gov/data
 "EDUCATIONAL_ATTAINMENT_LEVELS"
 
+#' Census variables for how many children of different ages live in families
+#'
+#' This table only lists "own children," so presumably that excludes foster
+#' care and multi-generational homes with older householders.
+#'
+#' @format An object of class `tbl_df/tbl/data.frame` with
+#' 20 rows and 7 columns
+#' \describe{
+#' \item{Group}{`<chr>` Always "B09002"}
+#' \item{Index}{`<int>`The row number in the table}
+#' \item{Variable}{`<chr>` The full census variable}
+#' \item{Married}{`<lgl>` Whether the family is single-parent or married}
+#' \item{`Sex of Householder`}{`<chr>` Female, Male, or NA}
+#' \item{`Lower Age`}{`<int>` inclusive from 0 to 17}
+#' \item{`Upper Age`}{`<int>` exclusive from 0 to 17}
+#' }
+"GLOSSARY_OF_CHILD_AGE_AND_FAMILY_STRUCTURE"
+
 #' Census variables for different levels of educational achievement
 #'
 #' The census breaks down educational attainment to different levels of detail
@@ -286,6 +304,25 @@
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B05010.html
 "GLOSSARY_OF_CHILDREN_IN_POVERTY"
+
+#' Poverty status related to number and type of parents/guardians and children
+#'
+#' These data come from tables `B17010*`, which have the same structure for all
+#' racial identities and data sources.
+#'
+#' @format ## GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY
+#' A data frame with 41 rows and 7 columns
+#' \describe{
+#'   \item{Index}{<int> the row number}
+#'   \item{`Below Poverty Level`}{<lgl> TRUE if the families' incomes are below the federal poverty level}
+#'   \item{Married}{<lgl> The Census keeps track about this I guess?}
+#'   \item{Male}{<lgl> A male parent is present}
+#'   \item{Female}{<lgl> A female parent is present}
+#'   \item{`Under 5`}{<lgl> At least one child under 5 is present}
+#'   \item{`Over 4 Under 18`}{<lgl> At least on child aged 5-17 is present}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B17010.html
+"GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY"
 
 #' The fundamental demographics of age and sex from tables `B01001[ A-H]`
 #'

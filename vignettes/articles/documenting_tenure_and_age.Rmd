@@ -1,0 +1,241 @@
+---
+title: "Documenting Tenure, Age, and Years Living in Current Residence"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  cache = TRUE
+)
+```
+
+```{r setup}
+library(hercacstables)
+```
+
+```{r}
+#| label: define-fetch-function
+
+fetch_tenure_durations <- function(.product, .geo, .state) {
+    .years <- 2015:2024
+    if (.product == "acs1") {
+        .years <- .years[.years != 2020]
+    }
+    .years |>
+        purrr::map(
+            \(.year) hercacstables::fetch_data(
+                hercacstables::GLOSSARY_OF_TENURE_DURATIONS$Variable, 
+                year = .year,
+                survey_type = "acs",
+                table_or_survey_code = .product,
+                for_geo = .geo,
+                for_items = "*",
+                state = .state
+            )
+        ) |>
+        purrr::list_rbind()
+}
+```
+
+```{r}
+#| label: define-wrangle-function
+
+wrangle_tenure_duration <- function(.raw_tenure, .displacement_window, .geo) {
+    .raw_tenure |>
+        dplyr::inner_join(
+            hercacstables::GLOSSARY_OF_TENURE_DURATIONS,
+            by = c("Group", "Index")
+        ) |>
+        dplyr::summarize(
+            Households = sum(.data$Value, na.rm = TRUE),
+            `Recent Movers` = sum(.data$Value *
+                                      (.data$`Longest Duration` < .displacement_window),
+                                  na.rm = TRUE
+            ),
+            `Displacement Rate` = .data$`Recent Movers` / .data$Households,
+            .by = tidyselect::all_of(c(
+                "Year",
+                .geo,
+                "Tenure",
+                "Upper Age"
+            ))
+        )
+}
+
+```
+
+```{r}
+#| label: define-fetch-names-and-sizes
+
+fetch_names_and_sizes <- function(.product, .geo, .state) {
+    hercacstables::fetch_data(
+        c("NAME", "B01001_001E"),
+        year = 2024,
+        for_geo = .geo,
+        for_items = "*",
+        survey_type = "acs",
+        table_or_survey_code = .product,
+        state = .state
+    )
+}
+```
+
+```{r}
+#| label: define-wrangle-names-and-sizes
+
+wrangle_names_and_sizes <- function(.raw_names_and_sizes, .geo, .label, .pattern) {
+    .raw_names_and_sizes |>
+        dplyr::mutate(
+            "{.label}" := stringr::str_extract(.data$NAME, .pattern)
+        ) |>
+        dplyr::select(
+            tidyselect::all_of(c(
+                .label,
+                .geo,
+                Population = "Value"
+            ))
+        )
+}
+```
+
+```{r}
+#| label: define-plot-function
+
+plot_tenure_duration <- function(.tenure_data, .label) {
+    .tenure_data |>
+        ggplot2::ggplot(
+            ggplot2::aes(x = .data$Year,
+                         y = .data$`Displacement Rate`,
+                         color = .data[[.label]])
+        ) +
+        hercreports::ploture_layer_lines() +
+        hercreports::ploture_scale_integers(
+            .width = 5
+        ) +
+        hercreports::ploture_scale_percentages() +
+        hercreports::ploture_layout_facets(
+            .rows = "Upper Age",
+            .columns = "Tenure"
+        )
+}
+```
+
+```{r}
+#| label: define-settings
+
+SETTINGS <- tibble::tribble(
+    ~ Product, ~ Geography,                  ~ Label,    ~ Pattern,
+    "acs1",     "school district (unified)", "District", ".+(?= School)",
+    "acs5",     "place",                     "City",     ".+(?= city)"
+)
+```
+
+```{r}
+#| label: fetch
+
+RAW <- dplyr::mutate(
+    SETTINGS,
+    Households = purrr::map2(.data$Product, .data$Geography,
+                             \(.p, .g) fetch_tenure_durations(.p, .g, 55)),
+    Populations = purrr::map2(.data$Product, .data$Geography,
+                              \(.p, .g) fetch_names_and_sizes(.p, .g, 55))
+)
+
+```
+
+```{r}
+#| label: wrangle
+
+WRANGLED <- RAW |> 
+    dplyr::mutate(
+        TenureDuration = purrr::map2(
+            .data$Households,
+            .data$Geography,
+            \(.h, .g) wrangle_tenure_duration(.h, 2L, .g)
+        ),
+        LargePlaces = list(.raw_names_and_sizes = .data$Populations,
+                           .geo = .data$Geography,
+                           .label = .data$Label,
+                           .pattern = .data$Pattern) |>
+            purrr::pmap(
+                wrangle_names_and_sizes
+            ) |>
+            purrr::map(
+                \(.x) dplyr::slice_max(.x, .data$Population, n = 10)
+            ),
+        BigTenure = purrr::pmap(
+            list(.lhs = .data$TenureDuration,
+                 .rhs = .data$LargePlaces,
+                 .g = .data$Geography),
+            \(.lhs, .rhs, .g) {
+                .lhs |>
+                    dplyr::inner_join(
+                        .rhs,
+                        by = .g
+                    ) |>
+                    dplyr::arrange(
+                        dplyr::across(tidyselect::all_of(.g))
+                    )
+            }
+        ),
+        Table = purrr::map2(
+            .data$BigTenure,
+            .data$Label,
+            \(.bt, .l) {
+                nyears <- dplyr::n_distinct(.bt$Year)
+                .bt |>
+                    dplyr::summarize(
+                        `Displacement Rate` = weighted.mean(
+                            .data$`Displacement Rate`,
+                            .data$Households
+                        ),
+                        Households = sum(.data$Households),
+                        .by = tidyselect::all_of(c("Year", .l))
+                    ) |>
+                    dplyr::mutate(
+                        dplyr::across("Displacement Rate",
+                                      scales::label_percent(accuracy = 1)),
+                        dplyr::across("Households",
+                                      scales::label_comma(accuracy = 1)),
+                        Text = sprintf("%s of %s",
+                                       .data$`Displacement Rate`,
+                                       .data$Households)
+                    ) |>
+                    dplyr::select(
+                        tidyselect::all_of(c("Year", .l, "Text"))
+                    ) |>
+                    tidyr::pivot_wider(
+                        names_from = "Year",
+                        values_from = "Text"
+                    ) |>
+                    knitr::kable(
+                        caption = "Households that Have Recently Moved",
+                        align = paste0(c("l", rep("r", nyears)),
+                                       collapse = "")
+                    )
+        }),
+        Plot = purrr::map2(.data$BigTenure,
+                           .data$Label,
+                           plot_tenure_duration)
+    )
+```
+
+```{r}
+#| label: look-at-results
+#| results: asis
+
+WRANGLED |>
+    dplyr::select(
+        "Label", "Table", "Plot"
+    ) |>
+    purrr::pwalk(
+        \(Label, Table, Plot) {
+            cat("###", Label, "\n\n")
+            print(Table)
+            cat("\n\n")
+            print(Plot)
+            cat("\n\n")
+        }
+    )
+```

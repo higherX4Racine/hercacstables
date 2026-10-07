@@ -105,11 +105,13 @@ reference:
 - subtitle: Home Ownership
   contents:
   - GLOSSARY_OF_TENURE_BY_AGE
+  - GLOSSARY_OF_TENURE_DURATIONS
 
 - title: Utilities
   desc: >
     Functions that a typical user won't need to bother with, but might be useful
     for someone working to extend the capabilities of the package.
+  - extract_range
 
 - subtitle: Constructing API calls
   desc: >

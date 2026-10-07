@@ -41,6 +41,7 @@ articles:
   - articles/children_in_poverty
   - articles/community-reinvestment-act
   - articles/composition_of_income
+  - articles/documenting_tenure_and_age
   - articles/plumbing_and_owner_occupancy
   - articles/population_changes_in_school_districts
 
@@ -106,11 +107,13 @@ reference:
   contents:
   - GLOSSARY_OF_TENURE_BY_AGE
   - GLOSSARY_OF_TENURE_DURATIONS
+  - GLOSSARY_OF_TENURE_DURATIONS_BY_AGE
 
 - title: Utilities
   desc: >
     Functions that a typical user won't need to bother with, but might be useful
     for someone working to extend the capabilities of the package.
+  contents:
   - extract_range
 
 - subtitle: Constructing API calls

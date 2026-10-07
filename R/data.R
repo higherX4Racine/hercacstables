@@ -420,6 +420,28 @@
 #' @source https://api.census.gov/data/2024/acs/acs5/groups/B25007.html
 "GLOSSARY_OF_TENURE_BY_AGE"
 
+#' People in households by the length of their current residence
+#'
+#' A note of warning! Different years of the ACS have different values for
+#' "Shortest Duration" and "Longest Duration!" If this table
+#' seemed like a really useful source of data (it doesn't, I'll be looking at
+#' HUD for better precision and coverage), there should really be a different
+#' table for EACH ACS year.
+#'
+#' @format ## GLOSSARY_OF_TENURE_BY_AGE
+#' A data frame with 36 rows and 8 columns
+#' \describe{
+#'  \item{Group}{`<chr>` Always "B25026"}
+#'  \item{Index}{`<int>` The row number from the table}
+#'  \item{Variable}{`<chr>` The full code needed to query the API for this value}
+#'  \item{Tenure}{`<chr>` Renter or Owner occupied}
+#'  \item{Shortest Duration}{`<int>` The fewest years of residency in this count}
+#'  \item{Longest Duration}{`<int>` The most years of residency in this count}
+#' }
+#'
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B25026.html
+"GLOSSARY_OF_TENURE_DURATIONS"
+
 #' Tenure by age of householder and the length of their current residence
 #'
 #' A note of warning! Different years of the ACS have different values for
@@ -441,7 +463,8 @@
 #'  \item{Longest Duration}{`<int>` The most years of residency in this count}
 #' }
 #'
-"GLOSSARY_OF_TENURE_DURATIONS"
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B25128.html
+"GLOSSARY_OF_TENURE_DURATIONS_BY_AGE"
 
 #' A Census table's ID always starts with an alphanumeric code for its type.
 #'

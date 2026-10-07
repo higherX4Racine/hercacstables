@@ -2,9 +2,9 @@
 
 .tmp <- hercacstables::METADATA_FOR_ACS_VARIABLES |>
     hercacstables::hoist_table_glossary(
-        "B25026",
-        c("Ignore",
-          "Tenure",
+        "B25128",
+        c("Tenure",
+          "Age",
           "Date")
     ) |>
     dplyr::filter(
@@ -25,7 +25,10 @@
 
 .latest_year <- max(hercacstables:::extract_left_side_of_range(.tmp$Date)) + 1L
 
-GLOSSARY_OF_TENURE_DURATIONS <- .tmp |>
+GLOSSARY_OF_TENURE_DURATIONS_BY_AGE <- .tmp |>
+    dplyr::bind_cols(
+        hercacstables::extract_range(.tmp$Age, "Age")
+    ) |>
     dplyr::bind_cols(
         hercacstables::extract_range(.tmp$Date, "Years")
     ) |>
@@ -40,10 +43,12 @@ GLOSSARY_OF_TENURE_DURATIONS <- .tmp |>
         "Index",
         "Variable",
         "Tenure",
+        "Lower Age",
+        "Upper Age",
         "Shortest Duration" = "Upper Years",
         "Longest Duration" = "Lower Years"
     )
 
-usethis::use_data(GLOSSARY_OF_TENURE_DURATIONS, overwrite = TRUE)
+usethis::use_data(GLOSSARY_OF_TENURE_DURATIONS_BY_AGE, overwrite = TRUE)
 
-pillar::glimpse(GLOSSARY_OF_TENURE_DURATIONS)
+pillar::glimpse(GLOSSARY_OF_TENURE_DURATIONS_BY_AGE)

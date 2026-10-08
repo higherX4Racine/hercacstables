@@ -40,6 +40,8 @@ articles:
   contents:
   - articles/children_in_poverty
   - articles/community-reinvestment-act
+  - articles/composition_of_income
+  - articles/documenting_tenure_and_age
   - articles/plumbing_and_owner_occupancy
   - articles/population_changes_in_school_districts
 
@@ -80,25 +82,39 @@ reference:
 
 - subtitle: Families
   contents:
+  - GLOSSARY_OF_CHILD_AGE_AND_FAMILY_STRUCTURE
   - GLOSSARY_OF_CHILDREN_IN_POVERTY
   - GLOSSARY_OF_CHILDREN_PER_FAMILY
   - GLOSSARY_OF_FAMILIES_WITH_CHILDREN
+  - GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY
+  - GLOSSARY_OF_POVERTY_FAMILY_AND_CHILDREN
 
 - subtitle: Education
   contents:
   - EDUCATIONAL_ATTAINMENT_LEVELS
   - GLOSSARY_OF_EDUCATIONAL_ATTAINMENT
+  - GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT
 
 - subtitle: Sustainable Income
   contents:
+  - GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME
   - GLOSSARY_OF_EMPLOYMENT_STATUS
-  - GLOSSARY_OF_STANDARD_OF_LIVING
   - GLOSSARY_OF_LABOR_FORCE_PARTICIPATION
+  - GLOSSARY_OF_STANDARD_OF_LIVING
+  - GLOSSARY_OF_WORK_STATUS
+
+- subtitle: Home Ownership
+  contents:
+  - GLOSSARY_OF_TENURE_BY_AGE
+  - GLOSSARY_OF_TENURE_DURATIONS
+  - GLOSSARY_OF_TENURE_DURATIONS_BY_AGE
 
 - title: Utilities
   desc: >
     Functions that a typical user won't need to bother with, but might be useful
     for someone working to extend the capabilities of the package.
+  contents:
+  - extract_range
 
 - subtitle: Constructing API calls
   desc: >

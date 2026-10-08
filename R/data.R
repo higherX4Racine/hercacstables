@@ -117,6 +117,24 @@
 #' @source https://api.census.gov/data
 "EDUCATIONAL_ATTAINMENT_LEVELS"
 
+#' Census variables for how many children of different ages live in families
+#'
+#' This table only lists "own children," so presumably that excludes foster
+#' care and multi-generational homes with older householders.
+#'
+#' @format An object of class `tbl_df/tbl/data.frame` with
+#' 20 rows and 7 columns
+#' \describe{
+#' \item{Group}{`<chr>` Always "B09002"}
+#' \item{Index}{`<int>`The row number in the table}
+#' \item{Variable}{`<chr>` The full census variable}
+#' \item{Married}{`<lgl>` Whether the family is single-parent or married}
+#' \item{`Sex of Householder`}{`<chr>` Female, Male, or NA}
+#' \item{`Lower Age`}{`<int>` inclusive from 0 to 17}
+#' \item{`Upper Age`}{`<int>` exclusive from 0 to 17}
+#' }
+"GLOSSARY_OF_CHILD_AGE_AND_FAMILY_STRUCTURE"
+
 #' Census variables for different levels of educational achievement
 #'
 #' The census breaks down educational attainment to different levels of detail
@@ -187,8 +205,29 @@
 #'   \item{Census Race/Ethnicity}{`<chr>`}
 #'   \item{Poverty}{`<chr>`}
 #' }
-#' @source api.census.gov/data/acs/acs5/groups.html
+#' @source https://api.census.gov/data/acs/acs5/groups.html
 "GLOSSARY_OF_EMPLOYMENT_STATUS"
+
+
+#' Crossed counts of educational attainment and employment status
+#'
+#' This table, `B23006`, uses the five-level attainment classification in
+#' [`hercacstables::EDUCATIONAL_ATTAINMENT_LEVELS$Broad`]. Its employment status information
+#' does not distinguish between full- and part-time employment.
+#'
+#' @format ## GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT
+#' A data frame with 29 rows and 7 columns
+#' \describe{
+#'  \item{Group}{`<chr>` Always "B23006"}
+#'  \item{Index}{`<int>`The row number in the table}
+#'  \item{Variable}{`<chr>` The variable name for the population estimate}
+#'  \item{Education}{`<chr>`one of five broad levels of educational attainment}
+#'  \item{`Labor Force`}{`<lgl>` `NA` means "All"}
+#'  \item{Civilian}{`<lgl>` `NA` means "All"}
+#'  \item{Employed}{`<lgl>` `NA` means "All"}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B23006.html
+"GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT"
 
 #' Categorize ACS variables about income : poverty level ratios by family sustainability
 #'
@@ -249,7 +288,8 @@
 #'
 #' These data come from table B05010, "RATIO OF INCOME TO POVERTY LEVEL IN THE
 #' PAST 12 MONTHS BY NATIVITY OF CHILDREN UNDER 18 YEARS IN FAMILIES AND
-#' SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS."
+#' SUBFAMILIES BY LIVING ARRANGEMENTS AND NATIVITY OF PARENTS." The value is the
+#' number of **Families**.
 #'
 #' @format ## GLOSSARY_OF_CHILDREN_IN_POVERTY
 #' A data frame with 15 rows and 8 columns
@@ -265,6 +305,45 @@
 #' }
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B05010.html
 "GLOSSARY_OF_CHILDREN_IN_POVERTY"
+
+#' Poverty status related to number and type of parents/guardians and children
+#'
+#' These data come from tables `B17010*`, which have the same structure for all
+#' racial identities and data sources. The value is number of **Families**.
+#'
+#' @format ## GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY
+#' A data frame with 41 rows and 7 columns
+#' \describe{
+#'   \item{Index}{`<int>` the row number}
+#'   \item{`Below Poverty Level`}{`<lgl>` TRUE if the families' incomes are below the federal poverty level}
+#'   \item{Married}{`<lgl>` The Census keeps track about this I guess?}
+#'   \item{Male}{`<lgl>` A male parent is present}
+#'   \item{Female}{`<lgl>` A female parent is present}
+#'   \item{`Under 5`}{`<lgl>` At least one child under 5 is present}
+#'   \item{`Over 4 Under 18`}{`<lgl>` At least on child aged 5-17 is present}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B17010.html
+"GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY"
+
+#' Number of children by poverty status related type of parents/guardians.
+#'
+#' These data come from table `B17006`.
+#'
+#' @format ## GLOSSARY_OF_POVERTY_FAMILY_AND_CHILDREN
+#' A data frame with 29 rows and 9 columns
+#' \describe{
+#'   \item{Group}{`<chr>` Always "B17006"}
+#'   \item{Index}{`<int>` The row number.}
+#'   \item{Variable}{`<chr>` computed from Group and Index.}
+#'   \item{`Federal Poverty`}{`<lgl>` TRUE if the family's income is below the Federal poverty level.}
+#'   \item{Married}{`<lgl>` TRUE if the Census thinks the family's householders are wedded to one another}
+#'   \item{`Male Parent`}{`<lgl>` TRUE if there is a male parent/guardian present in the household}
+#'   \item{`Female Parent`}{`<lgl>` TRUE if there is a female parent/guarian present in the household}
+#'   \item{`Lower Age`}{`<int>` The youngest age in the range counted by this row}
+#'   \item{`Upper Age`}{`<int>` The oldest age in the range counted by this row}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B17006.html
+"GLOSSARY_OF_POVERTY_FAMILY_AND_CHILDREN"
 
 #' The fundamental demographics of age and sex from tables `B01001[ A-H]`
 #'
@@ -283,12 +362,37 @@
 #' @source https://api.census.gov/data/2022/acs/acs1/groups/B01001.html
 "GLOSSARY_OF_AGE_AND_SEX"
 
+#' Aggregate income values for households, broken down by race, age, and source
+#'
+#' These data come from 20 different tables. All of the tables, except for
+#' B19050, which reports income by age of householder, have a single row, the
+#' total income across all households in the geography. Tables B19025.* contain
+#' values by race, and tables B19060-70 contain values by the nature of the
+#' income.
+#'
+#' @format ## GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME
+#' An object of class `spec_tbl_df/tbl_df/tbl/data.frame` with
+#' 24 rows and 6 columns
+#' \describe{
+#'  \item{Group}{`<chr>` the identification code of the item's table}
+#'  \item{Index}{`<int>` the item's row in its table}
+#'  \item{Race/Ethnicity}{`<chr>` the racial/ethnic identity of people described by the item}
+#'  \item{Source}{`<chr>` the type of income, e.g. earnings, interest, or SNAP}
+#'  \item{Public}{`<lgl>` TRUE if the income is from a government assistance program.}
+#'  \item{Lower Age}{`<int>` the lowest age of householders described by the item}
+#'  \item{Upper Age}{`<int>`the highest age of householders described by the item}
+#'  \item{Subtotal}{`<chr>` whether the row involves all, race/ethnicity, age, or source subtotals},
+#'  \item{Atomic}{`<lgl>` TRUE if the item is an atomic observation, not a subtotal}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups.html
+"GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME"
+
 #' Counts of people in income brackets, by sex and employment status.
 #'
 #' The rows in this glossary apply to both table `B19325` AND `B20005`. The
 #' difference is that `B19325` deals with all income and `B20005` just earnings.
 #'
-#' @format ## GLOSSARY_OF_SEX_BY_INCEM
+#' @format ## GLOSSARY_OF_SEX_BY_INCOME
 #' A data frame with 43 rows and 5 columns.
 #' \describe{
 #'   \item{Index}{`<int>` The row in the source table that this GLOSSARY row describes.}
@@ -300,6 +404,67 @@
 #' @source https://api.census.gov/data/2024/acs/acs1/groups/B19325.html
 #' @source https://api.census.gov/data/2024/acs/acs1/groups/B20005.html
 "GLOSSARY_OF_SEX_BY_INCOME"
+
+#' Households by age of householder and owner or renter status
+#'
+#' @format ## GLOSSARY_OF_TENURE_BY_AGE
+#' A data frame with 21 rows and 5 columns
+#' \describe{
+#'  \item{Group}{`<chr>` Always "B25007"}
+#'  \item{Index}{`<int>` Each row in the table}
+#'  \item{Variable}{`<chr>` The full name for each estimate variable}
+#'  \item{Tenure}{`<chr>` One of "All," "Owner," or "Renter"} "", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "Owner occupied", "…
+#'  \item{Lower Age}{`<int>` One of 15, 25, 35, 45, 55, 60, 75, or 85}
+#'  \item{Upper Age}{`<int>` One of 24, 34, 44, 54, 59, 64, 74, 84, or 999}
+#' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B25007.html
+"GLOSSARY_OF_TENURE_BY_AGE"
+
+#' People in households by the length of their current residence
+#'
+#' A note of warning! Different years of the ACS have different values for
+#' "Shortest Duration" and "Longest Duration!" If this table
+#' seemed like a really useful source of data (it doesn't, I'll be looking at
+#' HUD for better precision and coverage), there should really be a different
+#' table for EACH ACS year.
+#'
+#' @format ## GLOSSARY_OF_TENURE_BY_AGE
+#' A data frame with 36 rows and 8 columns
+#' \describe{
+#'  \item{Group}{`<chr>` Always "B25026"}
+#'  \item{Index}{`<int>` The row number from the table}
+#'  \item{Variable}{`<chr>` The full code needed to query the API for this value}
+#'  \item{Tenure}{`<chr>` Renter or Owner occupied}
+#'  \item{Shortest Duration}{`<int>` The fewest years of residency in this count}
+#'  \item{Longest Duration}{`<int>` The most years of residency in this count}
+#' }
+#'
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B25026.html
+"GLOSSARY_OF_TENURE_DURATIONS"
+
+#' Tenure by age of householder and the length of their current residence
+#'
+#' A note of warning! Different years of the ACS have different values for
+#' "Shortest Duration" and "Longest Duration!" If this table
+#' seemed like a really useful source of data (it doesn't, I'll be looking at
+#' HUD for better precision and coverage), there should really be a different
+#' table for EACH ACS year.
+#'
+#' @format ## GLOSSARY_OF_TENURE_BY_AGE
+#' A data frame with 36 rows and 8 columns
+#' \describe{
+#'  \item{Group}{`<chr>` Always "B25128"}
+#'  \item{Index}{`<int>` The row number from the table}
+#'  \item{Variable}{`<chr>` The full code needed to query the API for this value}
+#'  \item{Tenure}{`<chr>` Renter or Owner occupied}
+#'  \item{Lower Age}{`<int>` The age of the youngest householders in this count}
+#'  \item{Upper Age}{`<int>` The age of the oldest householders in this count}
+#'  \item{Shortest Duration}{`<int>` The fewest years of residency in this count}
+#'  \item{Longest Duration}{`<int>` The most years of residency in this count}
+#' }
+#'
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B25128.html
+"GLOSSARY_OF_TENURE_DURATIONS_BY_AGE"
 
 #' A Census table's ID always starts with an alphanumeric code for its type.
 #'
@@ -371,4 +536,23 @@
 #' \item{Civilian}{`<lgl>`}
 #' \item{Employed"}{`<lgl>`}
 #' }
+#' @source https://api.census.gov/data/2024/acs/acs5/groups/B23001.html
 "GLOSSARY_OF_LABOR_FORCE_PARTICIPATION"
+
+#' ACS data on age and full- or part-time employment
+#'
+#' @format ## GLOSSARY_OF_WORK_STATUS
+#' an object of class `tbl_df/tbl/data.frame` with
+#' 36 rows and
+#' 7 columns
+#' \describe{
+#'  \item{Index}{`<int>` the row in the census table}
+#'  \item{Variable}{`<chr>` the full variable name}
+#'  \item{Lower Age}{`<int>` the youngest age that this row counts}
+#'  \item{Upper Age}{`<int>` the oldest age that this row counts}
+#'  \item{Employed}{`<lgl>` `TRUE` if employed, `NA` if either status}
+#'  \item{Full Time}{`<lgl>``TRUE` if full-time, `NA` if either status}
+#'  \item{Employment}{`<chr>` a three-level factor with levels "Unemployed", "Part-Time", and "Full-Time"}
+#' }
+#' @source https://api.census.gov/2024/acs/acs5/groups/B23027.html
+"GLOSSARY_OF_WORK_STATUS"

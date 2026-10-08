@@ -1,0 +1,24 @@
+Group,Index,Race/Ethnicity,Source,Public,Lower Age,Upper Age,Subtotal,Atomic
+B19025,1,All,All,,0,999,All,FALSE
+B19025A,1,White alone,All,,0,999,Race/Ethnicity,TRUE
+B19025B,1,Black or African American alone,All,,0,999,Race/Ethnicity,TRUE
+B19025C,1,American Indian and Alaska Native alone,All,,0,999,Race/Ethnicity,TRUE
+B19025D,1,Asian alone,All,,0,999,Race/Ethnicity,TRUE
+B19025E,1,Native Hawaiian and Other Pacific Islander alone,All,,0,999,Race/Ethnicity,TRUE
+B19025F,1,Some Other Race alone,All,,0,999,Race/Ethnicity,TRUE
+B19025G,1,Two or More Races,All,,0,999,Race/Ethnicity,TRUE
+B19025H,1,"White alone, not Hispanic or Latino",All,,0,999,Race/Ethnicity,FALSE
+B19025I,1,Hispanic or Latino,All,,0,999,Race/Ethnicity,FALSE
+B19050,2,All,All,,0,24,Age,TRUE
+B19050,3,All,All,,25,44,Age,TRUE
+B19050,4,All,All,,45,64,Age,TRUE
+B19050,5,All,All,,65,999,Age,TRUE
+B19061,1,All,Earnings,FALSE,0,999,Source,FALSE
+B19062,1,All,Wage or Salary ,FALSE,0,999,Source,TRUE
+B19063,1,All,Self-Employment ,FALSE,0,999,Source,TRUE
+B19064,1,All,"Interest, Dividends, or Net Rental ",FALSE,0,999,Source,TRUE
+B19065,1,All,Social Security ,TRUE,0,999,Source,TRUE
+B19066,1,All,Supplemental Security (SSI) ,TRUE,0,999,Source,TRUE
+B19067,1,All,Public Assistance ,TRUE,0,999,Source,TRUE
+B19069,1,All,Retirement ,,0,999,Source,TRUE
+B19070,1,All,Other Types,,0,999,Source,TRUE

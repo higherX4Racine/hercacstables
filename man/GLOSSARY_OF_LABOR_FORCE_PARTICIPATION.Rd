@@ -22,6 +22,9 @@ A data frame with 172 rows and 10 columns
 }
 }
 }
+\source{
+https://api.census.gov/data/2024/acs/acs5/groups/B23001.html
+}
 \usage{
 GLOSSARY_OF_LABOR_FORCE_PARTICIPATION
 }

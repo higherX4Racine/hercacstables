@@ -1,0 +1,48 @@
+---
+title: "composition_of_income"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(hercacstables)
+```
+
+The American Community Survey has twenty different tables that report on
+aggregate household income.
+
+```{r}
+#| label: show-group-metadata
+#| echo: false
+
+METADATA_FOR_ACS_GROUPS |>
+    dplyr::filter(
+        .data$ACS5,
+        stringr::str_starts(.data$Universe, "Household"),
+        stringr::str_starts(.data$Description, "Aggregate")
+    ) |>
+    knitr::kable()
+```
+
+Only one of these tables, B19050, has more than one row.
+It reports aggregate incomes by age of householder, with four age ranges that
+break at 25, 45, and 64.
+Its first rows is income over all ages, which is redundant with the single
+row in table B19025.
+Taken together, this gives us the 24 different variables that are described in
+[hercacstables::GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME].
+
+```{r}
+#| label: show-glossary
+#| echo: false
+
+GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME |>
+    knitr::kable()
+```
+
+

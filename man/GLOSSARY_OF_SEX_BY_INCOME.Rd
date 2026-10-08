@@ -5,7 +5,7 @@
 \alias{GLOSSARY_OF_SEX_BY_INCOME}
 \title{Counts of people in income brackets, by sex and employment status.}
 \format{
-\subsection{GLOSSARY_OF_SEX_BY_INCEM}{
+\subsection{GLOSSARY_OF_SEX_BY_INCOME}{
 
 A data frame with 43 rows and 5 columns.
 \describe{

@@ -101,12 +101,12 @@ our assessment area in each bracket.
 
 ### Median income of assessment areas
 
-We'll use table [`B19326`](https:://api.census.gov/data/acs/2024/B19326.html),
-which reports median income by place of birth.
+We'll use table [`B19326`](https:://api.census.gov/data/acs/acs1/2024/groups/B19326.html),
+which reports median income by sex and employment experience.
 A full explanation of how I chose this table appears in an appendix at the
 [end of this article](#Finding-a-Median-Income-Table).
-We don't actually need any of the details of place of birth, just the area's
-overall median income.
+We don't actually need any of the table's details, just the area's overall
+median income.
 That will be reported by the table's first row, `B19326_001E`.
 
 ```{r}
@@ -213,11 +213,11 @@ INCOME_BRACKETS |>
 
 The third step is to count how many people fall into each income bracket.
 To do this, we will use census table
-[`B20005`](https://api.census.gov/data/2024/acs/acs1/B19325.html)
-`hercacstables` provides `GLOSSARY_OF_SEX_BY_EARNINGS`, which describes how each
+[`B19325`](https://api.census.gov/data/2024/acs/acs1/groups/B19325.html)
+`hercacstables` provides `GLOSSARY_OF_SEX_BY_INCOME`, which describes how each
 row of this table corresponds to a specific combination of sex, employment
 status, and income bracket.
-We must assign each bracket in `B20005` to one or more of our local income
+We must assign each bracket in `B19325` to one or more of our local income
 brackets, with the amount weighted by how much they overlap.
 
 To do that, we'll create a helper function that computes how much, if at all,

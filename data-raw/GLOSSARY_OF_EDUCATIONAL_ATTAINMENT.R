@@ -89,6 +89,29 @@ by_race_ethnicity <- "extdata" |>
             `Census Race/Ethnicity` = "Race or Ethnic Group"
         )
     ) |>
+    dplyr::bind_rows(
+        "extdata" |>
+            system.file(
+                "education_by_sex_and_age_b15002.csv",
+                package = "hercacstables"
+            ) |>
+            readr::read_csv(
+                col_types = list(
+                    group = readr::col_character(),
+                    index = readr::col_integer(),
+                    Sex = readr::col_character(),
+                    `Lower Age` = readr::col_integer(),
+                    `Upper Age` = readr::col_integer(),
+                    Age = readr::col_character(),
+                    Education = readr::col_character(),
+                    .default = readr::col_skip()
+                )
+            ) |>
+            dplyr::mutate(
+                Suffix = "",
+                `Census Race/Ethnicity` = "All"
+            )
+    ) |>
     dplyr::mutate(
         variable = hercacstables::build_api_variable(
             group_code = .data$group,

@@ -7,18 +7,32 @@
 #' @export
 most_recent_vintage <- function(survey_type, table_or_survey_code){
 
+    .base_request <- "" |>
+        httr2::url_modify(
+            scheme = CENSUS_API_SCHEME,
+            hostname = CENSUS_API_HOSTNAME
+        ) |>
+        httr2::request() |>
+        httr2::req_method(
+            "HEAD"
+        )
+
     current_year <- the_year_right_now()
 
     while (current_year > 1985) {
 
-        probe_url <- file.path("https://api.census.gov/data",
-                               current_year,
-                               survey_type,
-                               table_or_survey_code)
+        .request <- httr2::req_url_path(.base_request,
+                                        CENSUS_API_PATHROOT,
+                                        current_year,
+                                        survey_type,
+                                        table_or_survey_code)
 
-        response <- httr::HEAD(probe_url)
+        .response <- tryCatch(
+            httr2::req_perform(.request),
+            httr2_http_404 = \(.cnd) .cnd$resp
+        )
 
-        if (response$status_code == 200L)
+        if (.response$status_code == 200L)
             return(current_year)
 
         current_year <- current_year - 1

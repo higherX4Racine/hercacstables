@@ -3,7 +3,7 @@
 #' @param for_geo &lt;chr&gt; the geographical level the data will describe, e.g. `"tract"`
 #' @param ...  &lt;[`dynamic-dots`][rlang::dyn-dots]&gt; The specific items to search for, which will be all items if you leave them empty.
 #'
-#' @return a list with one element named `for` which is a "key:value" string
+#' @return a "key:value" string
 #' @keywords internal
 #'
 #' @examples
@@ -15,7 +15,6 @@ build_for_geographies <- function(for_geo, ...){
     if (length(for_items) == 0) {
         for_items = "*"
     }
-    list(
-        `for` = paste(for_geo, for_items, sep = ":")
-    )
+    paste(for_geo, for_items, sep = ":")
+
 }

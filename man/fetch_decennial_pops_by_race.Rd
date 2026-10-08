@@ -10,9 +10,9 @@ fetch_decennial_pops_by_race(...)
 \item{...}{
   Arguments passed on to \code{\link{build_api_url}}
   \describe{
+    \item{\code{for_geo}}{\verb{<chr>} A Census geography like "us," "state," "tract," or "school district (unified)."}
     \item{\code{for_items}}{<chr[]> one or more instances of \code{for_geo} desired, e.g. \code{"*"} or \code{"000200"}, passed on to \code{\link[=build_for_geographies]{build_for_geographies()}}}
     \item{\code{use_key}}{<lgl?> optional, should the query include a Census API key from the system environment. Defaults to \code{TRUE}}
-    \item{\code{for_geo}}{<chr> the geographical level the data will describe, e.g. \code{"tract"}}
   }}
 }
 \value{

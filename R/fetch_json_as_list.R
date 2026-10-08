@@ -6,7 +6,7 @@
 #' @keywords internal
 #'
 #' @seealso [build_api_url()]
-#' @seealso [jsonlite::read_json()]
+#' @seealso [httr2::resp_body_json()]
 fetch_json_as_list <- function(variables,
                                year,
                                for_geo,
@@ -26,5 +26,7 @@ fetch_json_as_list <- function(variables,
             ...,
             use_key = use_key
         ) |>
-        jsonlite::read_json()
+        httr2::request() |>
+        httr2::req_perform() |>
+        httr2::resp_body_json()
 }

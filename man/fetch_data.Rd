@@ -20,7 +20,7 @@ fetch_data(
 
 \item{year}{an integer year, e.g. \code{2021L}}
 
-\item{for_geo}{<chr> the geographical level the data will describe, e.g. \code{"tract"}}
+\item{for_geo}{\verb{<chr>} A Census geography like "us," "state," "tract," or "school district (unified)."}
 
 \item{for_items}{<chr[]> one or more instances of \code{for_geo} desired, e.g. \code{"*"} or \code{"000200"}, passed on to \code{\link[=build_for_geographies]{build_for_geographies()}}}
 
@@ -28,7 +28,7 @@ fetch_data(
 
 \item{table_or_survey_code}{e.g. "acs5" or "pl"}
 
-\item{...}{<\code{\link[rlang:dyn-dots]{dynamic dots}}> other items to pass to the query}
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic dots}}> list of key-value pairs to pass to \code{\link[=build_in_geographies]{build_in_geographies()}}}
 
 \item{use_key}{<lgl?> optional, should the query include a Census API key from the system environment. Defaults to \code{TRUE}}
 }

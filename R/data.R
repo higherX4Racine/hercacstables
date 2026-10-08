@@ -211,9 +211,10 @@
 
 #' Crossed counts of educational attainment and employment status
 #'
-#' This table, `B23006`, uses the five-level attainment classification in
-#' [`hercacstables::EDUCATIONAL_ATTAINMENT_LEVELS$Broad`]. Its employment status information
-#' does not distinguish between full- and part-time employment.
+#' This table, `B23006`, uses the five-level attainment classification in the
+#' "Broad" column of [`hercacstables::EDUCATIONAL_ATTAINMENT_LEVELS`]. Its
+#' employment status information does not distinguish between full- and
+#' part-time employment.
 #'
 #' @format ## GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT
 #' A data frame with 29 rows and 7 columns

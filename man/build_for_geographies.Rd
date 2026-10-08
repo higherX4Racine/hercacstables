@@ -12,7 +12,7 @@ build_for_geographies(for_geo, ...)
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> The specific items to search for, which will be all items if you leave them empty.}
 }
 \value{
-a list with one element named \code{for} which is a "key:value" string
+a "key:value" string
 }
 \description{
 Use the \code{for} geography to specify the level that you are querying data for.

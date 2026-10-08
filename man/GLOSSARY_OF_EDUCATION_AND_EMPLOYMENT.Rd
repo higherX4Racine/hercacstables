@@ -26,8 +26,9 @@ https://api.census.gov/data/2024/acs/acs5/groups/B23006.html
 GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT
 }
 \description{
-This table, \code{B23006}, uses the five-level attainment classification in
-\code{\link{EDUCATIONAL_ATTAINMENT_LEVELS$Broad}}. Its employment status information
-does not distinguish between full- and part-time employment.
+This table, \code{B23006}, uses the five-level attainment classification in the
+"Broad" column of \code{\link{EDUCATIONAL_ATTAINMENT_LEVELS}}. Its
+employment status information does not distinguish between full- and
+part-time employment.
 }
 \keyword{datasets}

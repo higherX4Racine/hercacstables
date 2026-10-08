@@ -11,7 +11,9 @@
 fetch_metadata_table <- function(.info_type, .year, .year_span) {
     .list <- .info_type |>
         build_info_url(.year, .year_span) |>
-        jsonlite::read_json() |>
+        httr2::request() |>
+        httr2::req_perform() |>
+        httr2::resp_body_json() |>
         purrr::pluck(1) |>
         purrr::map(.glossary_row_to_tibble)
 

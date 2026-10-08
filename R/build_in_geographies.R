@@ -2,7 +2,7 @@
 #'
 #' @param ...  &lt;[`dynamic-dots`][rlang::dyn-dots]&gt; key-value pairs like "state='03'"
 #'
-#' @return A string of ampersand-separated `in=geo:code` pairs
+#' @return A vector of "geo:code" pairs
 #' @keywords internal
 #'
 #' @examples
@@ -10,18 +10,16 @@
 #'
 build_in_geographies <- function(...){
     .l <- list(...) |>
-        purrr::keep(
-            ~ !(is.null(.) || is.na(.)) && nchar(.) > 0
+        purrr::discard(
+            \(.) is.null(.) || is.na(.) || nchar(.) < 1
+        ) |>
+        purrr::keep_at(
+            \(.) nchar(.) > 1
         )
 
-    if (length(.l) == 0) {
-        return(list())
+    if (is.null(.l) || length(.l) == 0) {
+        return(NULL)
     }
 
-    .l <- purrr::keep_at(.l, .l |> names() |> setdiff(""))
-
-    .l |>
-        names() |>
-        paste0(":", .l, collapse = " ") |>
-        list(`in` = _)
+    paste0(names(.l), ":", .l)
 }

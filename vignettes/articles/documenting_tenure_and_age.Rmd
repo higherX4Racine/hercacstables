@@ -354,7 +354,7 @@ tabulate_tenure_durations <- function(BigTenure, Label) {
         ) |>
         knitr::kable(
             caption = "Households that Have Recently Moved",
-            align = paste0(c("l", rep("r", nyears)),
+            align = paste0(c("ll", rep("r", nyears)),
                            collapse = "")
         )
 }
@@ -373,6 +373,9 @@ of householder age and tenure.
 
 plot_tenure_duration <- function(BigTenure, Label) {
     BigTenure |>
+        dplyr::mutate(
+            `Upper Age` = paste(.data$`Upper Age`, "and Younger")
+        ) |>
         ggplot2::ggplot(
             ggplot2::aes(x = .data$Year,
                          y = .data$`Recent Move Rate`,
@@ -444,6 +447,8 @@ Here's what all of that prep creates:
 #| results: asis
 #| dependson:
 #| - summarize
+#| fig-dim: !expr "6 * c(1.62, 1)"
+#| dpi: 96
 
 SUMMARIZED |>
     tidyr::nest(

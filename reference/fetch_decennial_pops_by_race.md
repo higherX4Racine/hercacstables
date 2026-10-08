@@ -16,6 +16,11 @@ fetch_decennial_pops_by_race(...)
   Arguments passed on to
   [`build_api_url`](https://higherx4racine.github.io/hercacstables/reference/build_api_url.md)
 
+  `for_geo`
+
+  :   `<chr>` A Census geography like "us," "state," "tract," or "school
+      district (unified)."
+
   `for_items`
 
   :   \<chr\[\]\> one or more instances of `for_geo` desired, e.g. `"*"`
@@ -26,11 +31,6 @@ fetch_decennial_pops_by_race(...)
 
   :   \<lgl?\> optional, should the query include a Census API key from
       the system environment. Defaults to `TRUE`
-
-  `for_geo`
-
-  :   \<chr\> the geographical level the data will describe, e.g.
-      `"tract"`
 
 ## Value
 

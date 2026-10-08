@@ -30,7 +30,8 @@ fetch_json_as_list(
 
 - for_geo:
 
-  \<chr\> the geographical level the data will describe, e.g. `"tract"`
+  `<chr>` A Census geography like "us," "state," "tract," or "school
+  district (unified)."
 
 - for_items:
 
@@ -49,7 +50,8 @@ fetch_json_as_list(
 - ...:
 
   \<[`dynamic dots`](https://rlang.r-lib.org/reference/dyn-dots.html)\>
-  other items to pass to the query
+  list of key-value pairs to pass to
+  [`build_in_geographies()`](https://higherx4racine.github.io/hercacstables/reference/build_in_geographies.md)
 
 - use_key:
 
@@ -64,4 +66,4 @@ a list of items read from json
 
 [`build_api_url()`](https://higherx4racine.github.io/hercacstables/reference/build_api_url.md)
 
-[`jsonlite::read_json()`](https://jeroen.r-universe.dev/jsonlite/reference/read_json.html)
+[`httr2::resp_body_json()`](https://httr2.r-lib.org/reference/resp_body_raw.html)

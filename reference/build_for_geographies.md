@@ -23,17 +23,13 @@ build_for_geographies(for_geo, ...)
 
 ## Value
 
-a list with one element named `for` which is a "key:value" string
+a "key:value" string
 
 ## Examples
 
 ``` r
 hercacstables:::build_for_geographies("block")
-#> $`for`
 #> [1] "block:*"
-#> 
 hercacstables:::build_for_geographies("tract", "000400", "000500")
-#> $`for`
 #> [1] "tract:000400,000500"
-#> 
 ```

@@ -14,6 +14,7 @@ Use
 to find tables that are relevant to our question.
 
 ``` r
+
 WB_TABLES <- hercacstables::search_in_columns(
     hercacstables::METADATA_FOR_ACS_GROUPS,
     Group = "\\d$", # the group must end in a digit, so only "all races" tables
@@ -22,16 +23,16 @@ WB_TABLES <- hercacstables::search_in_columns(
 )
 ```
 
-| Group  | Universe                                                   | Description                                                                                                                                | ACS1 | ACS5 |
-|:-------|:-----------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------|:-----|:-----|
-| B13002 | Women 15 to 50 years                                       | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Age                                                       | TRUE | TRUE |
-| B13004 | Women 15 to 50 years in households                         | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Presence of Spouse or Unmarried Partner                                      | TRUE | TRUE |
-| B13008 | Women 15 to 50 years                                       | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Nativity                                                  | TRUE | TRUE |
-| B13010 | Women 15 to 50 years for whom poverty status is determined | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Poverty Status in the Past 12 Months                      | TRUE | TRUE |
-| B13012 | Women 16 to 50 years                                       | Women 16 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Labor Force Status                                        | TRUE | TRUE |
-| B13014 | Women 15 to 50 years                                       | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Educational Attainment                                    | TRUE | TRUE |
-| B13015 | Women 15 to 50 years                                       | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Receipt of Public Assistance Income in the Past 12 Months | TRUE | TRUE |
-| B13016 | Women 15 to 50 years                                       | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Age                                                                          | TRUE | TRUE |
+| Group | Universe | Description | ACS1 | ACS5 |
+|:---|:---|:---|:---|:---|
+| B13002 | Women 15 to 50 years | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Age | TRUE | TRUE |
+| B13004 | Women 15 to 50 years in households | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Presence of Spouse or Unmarried Partner | TRUE | TRUE |
+| B13008 | Women 15 to 50 years | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Nativity | TRUE | TRUE |
+| B13010 | Women 15 to 50 years for whom poverty status is determined | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Poverty Status in the Past 12 Months | TRUE | TRUE |
+| B13012 | Women 16 to 50 years | Women 16 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Labor Force Status | TRUE | TRUE |
+| B13014 | Women 15 to 50 years | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Educational Attainment | TRUE | TRUE |
+| B13015 | Women 15 to 50 years | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status and Receipt of Public Assistance Income in the Past 12 Months | TRUE | TRUE |
+| B13016 | Women 15 to 50 years | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Age | TRUE | TRUE |
 
 It looks like table
 [B13016](https://api.census.gov/data/2023/acs/acs5/groups/B13016.html)
@@ -48,6 +49,7 @@ The following example glosses 12 variables from “B13016.” Each specific
 variable encodes four columns’ worth of data.
 
 ``` r
+
 GLOSSARY_OF_WOMEN_AND_BIRTHS <- "B13016" |>
     hercacstables::unpack_group_details() |>
     dplyr::filter(
@@ -91,6 +93,7 @@ Having defined a reusable glossary, we can now define a reusable
 fetching function.
 
 ``` r
+
 fetch_women_and_births <- function(...) {
     hercacstables::fetch_data(
         variables = GLOSSARY_OF_WOMEN_AND_BIRTHS$Variable,
@@ -109,6 +112,7 @@ command by itself so that you can cache it. In this example, we will ask
 for the most recent data for the whole country.
 
 ``` r
+
 RAW_WOMEN_AND_BIRTHS <- fetch_women_and_births(
     year = hercacstables::most_recent_vintage("acs", "acs1"),
     for_geo = "us",
@@ -144,6 +148,7 @@ function will let us get rid of the superfluous information about
 marital status.
 
 ``` r
+
 wrangle_women_and_births <- function(.raw_api_output, ...) {
     .raw_api_output |>
         dplyr::inner_join(
@@ -171,7 +176,7 @@ WOMEN_AND_BIRTHS <- wrangle_women_and_births(RAW_WOMEN_AND_BIRTHS)
 |        40 |        44 |        297,919 | 11,273,920 |   3% |
 |        45 |        50 |        141,994 | 12,198,683 |   1% |
 
-## Reusability
+## Examples of Reusability
 
 The benefit of this approach is that we can reuse the fetching and
 wrangling functions.
@@ -181,6 +186,7 @@ wrangling functions.
 In this example, we pull data for three different counties in Wisconsin.
 
 ``` r
+
 SE_WI_WOMEN_AND_BIRTHS <- fetch_women_and_births(
     state = 55,
     for_geo = "county",
@@ -196,6 +202,11 @@ SE_WI_WOMEN_AND_BIRTHS <- fetch_women_and_births(
                                   "079" ~ "Milwaukee",
                                   "101" ~ "Racine")
     )
+#> Warning: There was 1 warning in `dplyr::mutate()`.
+#> ℹ In argument: `county = dplyr::case_match(...)`.
+#> Caused by warning:
+#> ! `case_match()` was deprecated in dplyr 1.2.0.
+#> ℹ Please use `recode_values()` instead.
 ```
 
 For a simpler table, we’ll exclude the counts of mothers and women, then
@@ -218,6 +229,7 @@ make three separate calls, one for each year. It’s an idiosyncrasy of
 this particular API.
 
 ``` r
+
 TEXAS_WOMEN_AND_BIRTHS <- 2021:2023 |>
     purrr::map(
         \(.y) fetch_women_and_births(

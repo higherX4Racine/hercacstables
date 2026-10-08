@@ -15,6 +15,7 @@ You look for geographical levels related to schools in
 [`hercacstables::METADATA_FOR_ACS_GEOGRAPHIES`](https://higherx4racine.github.io/hercacstables/reference/METADATA_FOR_ACS_GEOGRAPHIES.md).
 
 ``` r
+
 SCHOOL_GEOGRAPHIES <- dplyr::filter(hercacstables::METADATA_FOR_ACS_GEOGRAPHIES,
                                     grepl("school", .data$`Geographic Level`))
 ```
@@ -29,6 +30,7 @@ FIPS codes for unified school districts in Wisconsin that have the word
 “Racine” in them.
 
 ``` r
+
 RACINE_DISTRICTS <- "NAME" |>
     hercacstables::fetch_data(
         variables = _,
@@ -61,6 +63,7 @@ With `hercacstables`, you would search within its glossary about ACS
 groups:
 
 ``` r
+
 PLUMBING_GROUPS <- hercacstables::METADATA_FOR_ACS_GROUPS |>
     dplyr::filter(
         grepl("plumbing",         # search for the term "plumbing"
@@ -69,24 +72,25 @@ PLUMBING_GROUPS <- hercacstables::METADATA_FOR_ACS_GROUPS |>
     )
 ```
 
-| Group  | Universe               | Description                                                       | ACS1 | ACS5 |
-|:-------|:-----------------------|:------------------------------------------------------------------|:-----|:-----|
-| B25016 | Occupied housing units | Tenure by Plumbing Facilities by Occupants per Room               | TRUE | TRUE |
-| B25047 | Housing units          | Plumbing Facilities for All Housing Units                         | TRUE | TRUE |
-| B25048 | Occupied housing units | Plumbing Facilities for Occupied Housing Units                    | TRUE | TRUE |
-| B25049 | Occupied housing units | Tenure by Plumbing Facilities                                     | TRUE | TRUE |
+| Group | Universe | Description | ACS1 | ACS5 |
+|:---|:---|:---|:---|:---|
+| B25016 | Occupied housing units | Tenure by Plumbing Facilities by Occupants per Room | TRUE | TRUE |
+| B25047 | Housing units | Plumbing Facilities for All Housing Units | TRUE | TRUE |
+| B25048 | Occupied housing units | Plumbing Facilities for Occupied Housing Units | TRUE | TRUE |
+| B25049 | Occupied housing units | Tenure by Plumbing Facilities | TRUE | TRUE |
 | B25050 | Occupied housing units | Plumbing Facilities by Occupants per Room by Year Structure Built | TRUE | TRUE |
-| B99259 | Housing units          | Allocation of Plumbing Facilities                                 | TRUE | TRUE |
+| B99259 | Housing units | Allocation of Plumbing Facilities | TRUE | TRUE |
 
 It appears that the keyword “plumbing” appears in 6 different ACS
 groups.
 
 ## Specific variables about plumbing
 
-Let’s say that “Tenure[¹](#fn1) by plumbing facilities” jumps out to you
-as potentially interesting.
+Let’s say that “Tenure[^1] by plumbing facilities” jumps out to you as
+potentially interesting.
 
 ``` r
+
 GROUP <- "B25049"
 ```
 
@@ -94,6 +98,7 @@ There `hercacstables` also provides glossary about variables. You can
 search it to see details about each variable in group B25049.
 
 ``` r
+
 PLUMBING_VARIABLES <- hercacstables::METADATA_FOR_ACS_VARIABLES |>
     dplyr::filter(
         .data$Dataset == "ACS5", # use the 1-year dataset only
@@ -101,15 +106,15 @@ PLUMBING_VARIABLES <- hercacstables::METADATA_FOR_ACS_VARIABLES |>
     )
 ```
 
-| Dataset | Group  | Index | Variable    | Details                                        |
-|:--------|:-------|------:|:------------|:-----------------------------------------------|
-| ACS5    | B25049 |     1 | B25049_001E |                                                |
-| ACS5    | B25049 |     2 | B25049_002E | Owner occupied                                 |
-| ACS5    | B25049 |     3 | B25049_003E | Owner occupied , Complete plumbing facilities  |
-| ACS5    | B25049 |     4 | B25049_004E | Owner occupied , Lacking plumbing facilities   |
-| ACS5    | B25049 |     5 | B25049_005E | Renter occupied                                |
-| ACS5    | B25049 |     6 | B25049_006E | Renter occupied , Complete plumbing facilities |
-| ACS5    | B25049 |     7 | B25049_007E | Renter occupied , Lacking plumbing facilities  |
+| Dataset | Group | Index | Variable | Details |
+|:---|:---|---:|:---|:---|
+| ACS5 | B25049 | 1 | B25049_001E |  |
+| ACS5 | B25049 | 2 | B25049_002E | Owner occupied |
+| ACS5 | B25049 | 3 | B25049_003E | Owner occupied , Complete plumbing facilities |
+| ACS5 | B25049 | 4 | B25049_004E | Owner occupied , Lacking plumbing facilities |
+| ACS5 | B25049 | 5 | B25049_005E | Renter occupied |
+| ACS5 | B25049 | 6 | B25049_006E | Renter occupied , Complete plumbing facilities |
+| ACS5 | B25049 | 7 | B25049_007E | Renter occupied , Lacking plumbing facilities |
 
 ## Unpacking variable details
 
@@ -131,6 +136,7 @@ number of households (row 1) and subtotals by tenure (2 and 5). You’ll
 have that data anyway from 3, 4, 6, and 7.
 
 ``` r
+
 PLUMBING_VARIABLES <- GROUP |>
     hercacstables::unpack_group_details() |>
     dplyr::filter(
@@ -162,6 +168,7 @@ state, its census region, and the whole country. Once again, we’ll use
 and the [tidyverse](https://www.tidyverse.org "The tidyverse").
 
 ``` r
+
 YEAR <- hercacstables::most_recent_vintage("acs", "acs5")
 
 RAW_PLUMBING <- tibble::tribble(
@@ -189,23 +196,23 @@ RAW_PLUMBING <- tibble::tribble(
 
 | NAME          | us  | Group  | Index | Measure |    Value | Year |
 |:--------------|:----|:-------|------:|:--------|---------:|-----:|
-| United States | 1   | B25049 |     3 | E       | 82628718 | 2023 |
+| United States | 1   | B25049 |     3 | E       | 83931926 | 2024 |
 
 | NAME           | region | Group  | Index | Measure |    Value | Year |
 |:---------------|:-------|:-------|------:|:--------|---------:|-----:|
-| Midwest Region | 2      | B25049 |     3 | E       | 19041735 | 2023 |
+| Midwest Region | 2      | B25049 |     3 | E       | 19268495 | 2024 |
 
 | NAME      | state | Group  | Index | Measure |   Value | Year |
 |:----------|:------|:-------|------:|:--------|--------:|-----:|
-| Wisconsin | 55    | B25049 |     3 | E       | 1655255 | 2023 |
+| Wisconsin | 55    | B25049 |     3 | E       | 1676869 | 2024 |
 
 | NAME                     | state | county | Group  | Index | Measure | Value | Year |
 |:-------------------------|:------|:-------|:-------|------:|:--------|------:|-----:|
-| Racine County, Wisconsin | 55    | 101    | B25049 |     3 | E       | 56159 | 2023 |
+| Racine County, Wisconsin | 55    | 101    | B25049 |     3 | E       | 57001 | 2024 |
 
-| NAME                              | state | school district (unified) | Group  | Index | Measure | Value | Year |
-|:----------------------------------|:------|:--------------------------|:-------|------:|:--------|------:|-----:|
-| Racine School District, Wisconsin | 55    | 12360                     | B25049 |     3 | E       | 38779 | 2023 |
+| NAME | state | school district (unified) | Group | Index | Measure | Value | Year |
+|:---|:---|:---|:---|---:|:---|---:|---:|
+| Racine School District, Wisconsin | 55 | 12360 | B25049 | 3 | E | 39231 | 2024 |
 
 The data in `RAW_PLUMBING` do not have much meaning without the
 information in `PLUMBING_VARIABLES`. Fortunately, we can use the
@@ -213,6 +220,7 @@ information in `PLUMBING_VARIABLES`. Fortunately, we can use the
 tables together.
 
 ``` r
+
 PLUMBING <- RAW_PLUMBING |>
     purrr::map(
         \(.) dplyr::select(.,
@@ -236,37 +244,39 @@ PLUMBING <- RAW_PLUMBING |>
 ```
 
 ``` r
+
 knitr::kable(PLUMBING)
 ```
 
-| Geography                         | Tenure          | Plumbing                     | Households |
-|:----------------------------------|:----------------|:-----------------------------|-----------:|
-| United States                     | Owner occupied  | Complete plumbing facilities |   82628718 |
-| United States                     | Owner occupied  | Lacking plumbing facilities  |     263319 |
-| United States                     | Renter occupied | Complete plumbing facilities |   44349427 |
-| United States                     | Renter occupied | Lacking plumbing facilities  |     241401 |
-| Midwest Region                    | Owner occupied  | Complete plumbing facilities |   19041735 |
-| Midwest Region                    | Owner occupied  | Lacking plumbing facilities  |      55380 |
-| Midwest Region                    | Renter occupied | Complete plumbing facilities |    8561887 |
-| Midwest Region                    | Renter occupied | Lacking plumbing facilities  |      43001 |
-| Wisconsin                         | Owner occupied  | Complete plumbing facilities |    1655255 |
-| Wisconsin                         | Owner occupied  | Lacking plumbing facilities  |       5250 |
-| Wisconsin                         | Renter occupied | Complete plumbing facilities |     781225 |
-| Wisconsin                         | Renter occupied | Lacking plumbing facilities  |       4298 |
-| Racine County, Wisconsin          | Owner occupied  | Complete plumbing facilities |      56159 |
-| Racine County, Wisconsin          | Owner occupied  | Lacking plumbing facilities  |        124 |
-| Racine County, Wisconsin          | Renter occupied | Complete plumbing facilities |      22809 |
-| Racine County, Wisconsin          | Renter occupied | Lacking plumbing facilities  |         17 |
-| Racine School District, Wisconsin | Owner occupied  | Complete plumbing facilities |      38779 |
-| Racine School District, Wisconsin | Owner occupied  | Lacking plumbing facilities  |         47 |
-| Racine School District, Wisconsin | Renter occupied | Complete plumbing facilities |      17242 |
-| Racine School District, Wisconsin | Renter occupied | Lacking plumbing facilities  |         12 |
+| Geography | Tenure | Plumbing | Households |
+|:---|:---|:---|---:|
+| United States | Owner occupied | Complete plumbing facilities | 83931926 |
+| United States | Owner occupied | Lacking plumbing facilities | 278216 |
+| United States | Renter occupied | Complete plumbing facilities | 44772122 |
+| United States | Renter occupied | Lacking plumbing facilities | 245232 |
+| Midwest Region | Owner occupied | Complete plumbing facilities | 19268495 |
+| Midwest Region | Owner occupied | Lacking plumbing facilities | 57454 |
+| Midwest Region | Renter occupied | Complete plumbing facilities | 8601107 |
+| Midwest Region | Renter occupied | Lacking plumbing facilities | 44845 |
+| Wisconsin | Owner occupied | Complete plumbing facilities | 1676869 |
+| Wisconsin | Owner occupied | Lacking plumbing facilities | 5345 |
+| Wisconsin | Renter occupied | Complete plumbing facilities | 792775 |
+| Wisconsin | Renter occupied | Lacking plumbing facilities | 4491 |
+| Racine County, Wisconsin | Owner occupied | Complete plumbing facilities | 57001 |
+| Racine County, Wisconsin | Owner occupied | Lacking plumbing facilities | 121 |
+| Racine County, Wisconsin | Renter occupied | Complete plumbing facilities | 23225 |
+| Racine County, Wisconsin | Renter occupied | Lacking plumbing facilities | 59 |
+| Racine School District, Wisconsin | Owner occupied | Complete plumbing facilities | 39231 |
+| Racine School District, Wisconsin | Owner occupied | Lacking plumbing facilities | 42 |
+| Racine School District, Wisconsin | Renter occupied | Complete plumbing facilities | 17745 |
+| Racine School District, Wisconsin | Renter occupied | Lacking plumbing facilities | 52 |
 
 Finally, you can do some
 [tidyverse](https://www.tidyverse.org "The tidyverse")-only magic to
 look at the different rates of plumbing for renters versus owners.
 
 ``` r
+
 RATES_OF_PLUMBING <- PLUMBING |>
     dplyr::mutate(
         dplyr::across(c("Tenure", "Plumbing"),
@@ -305,11 +315,11 @@ RATES_OF_PLUMBING <- PLUMBING |>
 
 | Geography                         | Renter |  Owner | All Households |
 |:----------------------------------|-------:|-------:|---------------:|
-| United States                     | 99.46% | 99.68% |         99.60% |
-| Midwest Region                    | 99.50% | 99.71% |         99.64% |
-| Wisconsin                         | 99.45% | 99.68% |         99.61% |
-| Racine County, Wisconsin          | 99.93% | 99.78% |         99.82% |
-| Racine School District, Wisconsin | 99.93% | 99.88% |         99.89% |
+| United States                     | 99.46% | 99.67% |         99.59% |
+| Midwest Region                    | 99.48% | 99.70% |         99.63% |
+| Wisconsin                         | 99.44% | 99.68% |         99.60% |
+| Racine County, Wisconsin          | 99.75% | 99.79% |         99.78% |
+| Racine School District, Wisconsin | 99.71% | 99.89% |         99.84% |
 
 Three things might jump out at you. The first is that almost every
 household in the US has complete plumbing facilities. The second thing
@@ -321,6 +331,4 @@ access to plumbing. In contrast, renters in Racine County and the Racine
 Unified School District are actually a little more likely to have access
 to plumbing.
 
-------------------------------------------------------------------------
-
-1.  Whether the occupants rent or own, not if they can’t be fired.
+[^1]: Whether the occupants rent or own, not if they can’t be fired.

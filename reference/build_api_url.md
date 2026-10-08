@@ -25,7 +25,8 @@ build_api_url(
 
 - for_geo:
 
-  \<chr\> the geographical level the data will describe, e.g. `"tract"`
+  `<chr>` A Census geography like "us," "state," "tract," or "school
+  district (unified)."
 
 - for_items:
 
@@ -48,7 +49,8 @@ build_api_url(
 - ...:
 
   \<[`dynamic dots`](https://rlang.r-lib.org/reference/dyn-dots.html)\>
-  other items to pass to the query
+  list of key-value pairs to pass to
+  [`build_in_geographies()`](https://higherx4racine.github.io/hercacstables/reference/build_in_geographies.md)
 
 - use_key:
 
@@ -71,7 +73,7 @@ hercacstables:::build_api_url(paste0("B25003_00", 1:3, "E"),
                               state = 55L,
                               county = 101L,
                               use_key = FALSE)
-#> [1] "https://api.census.gov/data/2020/acs/acs5?get=B25003_001E%2CB25003_002E%2CB25003_003E&for=tract%3A%2A&in=state%3A55%20county%3A101"
+#> [1] "https://api.census.gov/data/2020/acs/acs5?get=B25003_001E%2CB25003_002E%2CB25003_003E&for=tract%3A%2A&in=state%3A55&in=county%3A101"
 
 hercacstables:::build_api_url(paste0("P1_00", c(1, 3, 4), "N"),
                               "tract",
@@ -82,5 +84,5 @@ hercacstables:::build_api_url(paste0("P1_00", c(1, 3, 4), "N"),
                               state = 55L,
                               county = 101L,
                               use_key = FALSE)
-#> [1] "https://api.census.gov/data/2020/dec/pl?get=P1_001N%2CP1_003N%2CP1_004N&for=tract%3A%2A&in=state%3A55%20county%3A101"
+#> [1] "https://api.census.gov/data/2020/dec/pl?get=P1_001N%2CP1_003N%2CP1_004N&for=tract%3A%2A&in=state%3A55&in=county%3A101"
 ```

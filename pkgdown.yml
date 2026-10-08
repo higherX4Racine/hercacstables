@@ -1,20 +1,22 @@
-pandoc: 3.1.11
-pkgdown: 2.2.0
+pandoc: 3.8.3
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   articles/children_in_poverty: children_in_poverty.html
   articles/community-reinvestment-act: community-reinvestment-act.html
+  articles/composition_of_income: composition_of_income.html
   articles/determine_demographies: determine_demographies.html
   articles/determine_geographies: determine_geographies.html
   articles/determine_measurement: determine_measurement.html
   articles/determine_timeframes: determine_timeframes.html
+  articles/documenting_tenure_and_age: documenting_tenure_and_age.html
   hercacstables: hercacstables.html
   articles/plumbing_and_owner_occupancy: plumbing_and_owner_occupancy.html
   articles/population_changes_in_school_districts: population_changes_in_school_districts.html
   race_ethnicity_categories: race_ethnicity_categories.html
   reusability: reusability.html
   set_up_your_api_key: set_up_your_api_key.html
-last_built: 2026-01-29T02:29Z
+last_built: 2026-10-08T22:02Z
 urls:
   reference: https://higherx4racine.github.io/hercacstables/reference
   article: https://higherx4racine.github.io/hercacstables/articles

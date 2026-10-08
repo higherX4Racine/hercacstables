@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Work with American Community Survey Tables through the US Census API • hercacstables</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Work with American Community Survey Tables through the US Census API">
 <meta name="description" content="The American Community Survey (ACS) from the US Census's website returns data in a weirdly idiosyncratic way. There are many subtotals in each table. Grouping variables are organized in a tree-like, rather than tabular fashion. This package is intended to make it easy to access and use the ACS data with R.">
@@ -104,7 +104,7 @@
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<thead><tr class="header">
+<thead><tr>
 <th align="left">NAME</th>
 <th align="right">state</th>
 <th align="left">Group</th>
@@ -113,7 +113,7 @@
 <th align="right">Year</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td align="left">District of Columbia</td>
 <td align="right">11</td>
 <td align="left">B01001</td>
@@ -121,7 +121,7 @@
 <td align="right">678,972</td>
 <td align="right">2023</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">District of Columbia</td>
 <td align="right">11</td>
 <td align="left">B11002</td>
@@ -129,7 +129,7 @@
 <td align="right">406,283</td>
 <td align="right">2023</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">District of Columbia</td>
 <td align="right">11</td>
 <td align="left">B11002</td>
@@ -137,7 +137,7 @@
 <td align="right">235,088</td>
 <td align="right">2023</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">Puerto Rico</td>
 <td align="right">72</td>
 <td align="left">B01001</td>
@@ -145,7 +145,7 @@
 <td align="right">3,205,691</td>
 <td align="right">2023</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">Puerto Rico</td>
 <td align="right">72</td>
 <td align="left">B11002</td>
@@ -153,7 +153,7 @@
 <td align="right">2,613,461</td>
 <td align="right">2023</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">Puerto Rico</td>
 <td align="right">72</td>
 <td align="left">B11002</td>
@@ -198,7 +198,7 @@
 <col width="20%">
 <col width="20%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th align="left">Group</th>
 <th align="left">Universe</th>
 <th align="left">Description</th>
@@ -206,35 +206,35 @@
 <th align="left">ACS5</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td align="left">B14001</td>
 <td align="left">Population 3 years and over</td>
 <td align="left">School Enrollment by Level of School for the Population 3 Years and Over</td>
 <td align="left">TRUE</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">B14006</td>
 <td align="left">Population 3 years and over for whom poverty status is determined</td>
 <td align="left">Poverty Status in the Past 12 Months by School Enrollment by Level of School for the Population 3 Years and Over</td>
 <td align="left">TRUE</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">B14007</td>
 <td align="left">Population 3 years and over</td>
 <td align="left">School Enrollment by Detailed Level of School for the Population 3 Years and Over</td>
 <td align="left">TRUE</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">C14002</td>
 <td align="left">Population 3 years and over</td>
 <td align="left">School Enrollment by Level of School by Type of School for the Population 3 Years and Over</td>
 <td align="left">TRUE</td>
 <td align="left">FALSE</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">C14003</td>
 <td align="left">Population 3 years and over</td>
 <td align="left">School Enrollment by Type of School by Age for the Population 3 Years and Over</td>
@@ -259,7 +259,7 @@
 <col width="20%">
 <col width="20%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th align="left">Group</th>
 <th align="right">Index</th>
 <th align="left">Variable</th>
@@ -267,70 +267,70 @@
 <th align="left">B</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td align="left">B14001</td>
 <td align="right">1</td>
 <td align="left">B14001_001E</td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">B14001</td>
 <td align="right">2</td>
 <td align="left">B14001_002E</td>
 <td align="left">Enrolled in school</td>
 <td align="left"></td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">B14001</td>
 <td align="right">3</td>
 <td align="left">B14001_003E</td>
 <td align="left">Enrolled in school</td>
 <td align="left">Enrolled in nursery school, preschool</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">B14001</td>
 <td align="right">4</td>
 <td align="left">B14001_004E</td>
 <td align="left">Enrolled in school</td>
 <td align="left">Enrolled in kindergarten</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">B14001</td>
 <td align="right">5</td>
 <td align="left">B14001_005E</td>
 <td align="left">Enrolled in school</td>
 <td align="left">Enrolled in grade 1 to grade 4</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">B14001</td>
 <td align="right">6</td>
 <td align="left">B14001_006E</td>
 <td align="left">Enrolled in school</td>
 <td align="left">Enrolled in grade 5 to grade 8</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">B14001</td>
 <td align="right">7</td>
 <td align="left">B14001_007E</td>
 <td align="left">Enrolled in school</td>
 <td align="left">Enrolled in grade 9 to grade 12</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">B14001</td>
 <td align="right">8</td>
 <td align="left">B14001_008E</td>
 <td align="left">Enrolled in school</td>
 <td align="left">Enrolled in college, undergraduate years</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">B14001</td>
 <td align="right">9</td>
 <td align="left">B14001_009E</td>
 <td align="left">Enrolled in school</td>
 <td align="left">Graduate or professional school</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">B14001</td>
 <td align="right">10</td>
 <td align="left">B14001_010E</td>
@@ -372,62 +372,62 @@
 <col width="25%">
 <col width="25%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th align="left">Race/Ethnicity</th>
 <th align="right">2000</th>
 <th align="right">2010</th>
 <th align="right">2020</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td align="left">All</td>
 <td align="right">285,230,516</td>
 <td align="right">312,471,327</td>
 <td align="right">334,735,155</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">American Indian and Alaska Native</td>
 <td align="right">2,069,446</td>
 <td align="right">2,247,427</td>
 <td align="right">2,252,011</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">Asian</td>
 <td align="right">10,126,044</td>
 <td align="right">14,468,054</td>
 <td align="right">19,621,465</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">Black or African American</td>
 <td align="right">33,952,901</td>
 <td align="right">37,690,511</td>
 <td align="right">39,944,624</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">Hispanic or Latino</td>
 <td align="right">39,068,564</td>
 <td align="right">54,166,049</td>
 <td align="right">65,329,087</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">Native Hawaiian and Other Pacific Islander</td>
 <td align="right">353,874</td>
 <td align="right">481,653</td>
 <td align="right">622,109</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">Some other race</td>
 <td align="right">468,155</td>
 <td align="right">605,291</td>
 <td align="right">1,692,341</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">Two or more races</td>
 <td align="right">4,604,792</td>
 <td align="right">5,967,844</td>
 <td align="right">13,551,323</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">White</td>
 <td align="right">194,586,740</td>
 <td align="right">196,844,498</td>
@@ -480,7 +480,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

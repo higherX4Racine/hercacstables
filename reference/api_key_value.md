@@ -23,5 +23,5 @@ a hexadecimal API token, or an empty string
 
 ``` r
 api_key_value()
-#> [1] ""
+#> [1] "9e838c6945f1010bc581e83957ffc2f70c9507c6"
 ```

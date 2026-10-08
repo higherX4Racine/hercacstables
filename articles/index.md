@@ -34,6 +34,9 @@ and R to analyze that data.
   Poverty](https://higherx4racine.github.io/hercacstables/articles/children_in_poverty.md):
 - [Income Brackets for the Community Reinvestment
   Act](https://higherx4racine.github.io/hercacstables/articles/community-reinvestment-act.md):
+- [composition_of_income](https://higherx4racine.github.io/hercacstables/articles/composition_of_income.md):
+- [Documenting Tenure, Age, and Years Living in Current
+  Residence](https://higherx4racine.github.io/hercacstables/articles/documenting_tenure_and_age.md):
 - [Plumbing and
   Owner-occupancy](https://higherx4racine.github.io/hercacstables/articles/plumbing_and_owner_occupancy.md):
 - [Population changes in school

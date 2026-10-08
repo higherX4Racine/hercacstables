@@ -29,7 +29,8 @@ fetch_data(
 
 - for_geo:
 
-  \<chr\> the geographical level the data will describe, e.g. `"tract"`
+  `<chr>` A Census geography like "us," "state," "tract," or "school
+  district (unified)."
 
 - for_items:
 
@@ -48,7 +49,8 @@ fetch_data(
 - ...:
 
   \<[`dynamic dots`](https://rlang.r-lib.org/reference/dyn-dots.html)\>
-  other items to pass to the query
+  list of key-value pairs to pass to
+  [`build_in_geographies()`](https://higherx4racine.github.io/hercacstables/reference/build_in_geographies.md)
 
 - use_key:
 

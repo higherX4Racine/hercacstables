@@ -15,6 +15,7 @@ You can install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("higherX4Racine/hercacstables")
 ```
@@ -32,6 +33,7 @@ Here is a modestly complicated use of the function without any setup or
 post-processing.
 
 ``` r
+
 POPS_AND_HOUSEHOLDS <- hercacstables::fetch_data(
     # the API works one year at a time
     year = hercacstables::most_recent_vintage("acs", "acs1"),
@@ -90,6 +92,7 @@ function and the built-in
 [`METADATA_FOR_ACS_GROUPS`](https://higherx4racine.github.io/hercacstables/reference/METADATA_FOR_ACS_GROUPS.md).
 
 ``` r
+
 EDUCATION_TABLES <- hercacstables::search_in_columns(
     hercacstables::METADATA_FOR_ACS_GROUPS,
     Group = "\\d$",          # "Group" values need to end in a digit.
@@ -103,13 +106,13 @@ EDUCATION_TABLES <- hercacstables::search_in_columns(
 )
 ```
 
-| Group  | Universe                                                          | Description                                                                                                      | ACS1 | ACS5  |
-|:-------|:------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------|:-----|:------|
-| B14001 | Population 3 years and over                                       | School Enrollment by Level of School for the Population 3 Years and Over                                         | TRUE | TRUE  |
-| B14006 | Population 3 years and over for whom poverty status is determined | Poverty Status in the Past 12 Months by School Enrollment by Level of School for the Population 3 Years and Over | TRUE | TRUE  |
-| B14007 | Population 3 years and over                                       | School Enrollment by Detailed Level of School for the Population 3 Years and Over                                | TRUE | TRUE  |
-| C14002 | Population 3 years and over                                       | School Enrollment by Level of School by Type of School for the Population 3 Years and Over                       | TRUE | FALSE |
-| C14003 | Population 3 years and over                                       | School Enrollment by Type of School by Age for the Population 3 Years and Over                                   | TRUE | FALSE |
+| Group | Universe | Description | ACS1 | ACS5 |
+|:---|:---|:---|:---|:---|
+| B14001 | Population 3 years and over | School Enrollment by Level of School for the Population 3 Years and Over | TRUE | TRUE |
+| B14006 | Population 3 years and over for whom poverty status is determined | Poverty Status in the Past 12 Months by School Enrollment by Level of School for the Population 3 Years and Over | TRUE | TRUE |
+| B14007 | Population 3 years and over | School Enrollment by Detailed Level of School for the Population 3 Years and Over | TRUE | TRUE |
+| C14002 | Population 3 years and over | School Enrollment by Level of School by Type of School for the Population 3 Years and Over | TRUE | FALSE |
+| C14003 | Population 3 years and over | School Enrollment by Type of School by Age for the Population 3 Years and Over | TRUE | FALSE |
 
 ### Unpack variables for a group
 
@@ -126,21 +129,22 @@ The following example unpacks the variables in the
 [B14001](https://api.census.gov/data/2023/acs/acs1/B14001.html) table.
 
 ``` r
+
 UNPACKED_B14001 <- hercacstables::unpack_group_details("B14001")
 ```
 
-| Group  | Index | Variable    | A                      | B                                        |
-|:-------|------:|:------------|:-----------------------|:-----------------------------------------|
-| B14001 |     1 | B14001_001E |                        |                                          |
-| B14001 |     2 | B14001_002E | Enrolled in school     |                                          |
-| B14001 |     3 | B14001_003E | Enrolled in school     | Enrolled in nursery school, preschool    |
-| B14001 |     4 | B14001_004E | Enrolled in school     | Enrolled in kindergarten                 |
-| B14001 |     5 | B14001_005E | Enrolled in school     | Enrolled in grade 1 to grade 4           |
-| B14001 |     6 | B14001_006E | Enrolled in school     | Enrolled in grade 5 to grade 8           |
-| B14001 |     7 | B14001_007E | Enrolled in school     | Enrolled in grade 9 to grade 12          |
-| B14001 |     8 | B14001_008E | Enrolled in school     | Enrolled in college, undergraduate years |
-| B14001 |     9 | B14001_009E | Enrolled in school     | Graduate or professional school          |
-| B14001 |    10 | B14001_010E | Not enrolled in school |                                          |
+| Group | Index | Variable | A | B |
+|:---|---:|:---|:---|:---|
+| B14001 | 1 | B14001_001E |  |  |
+| B14001 | 2 | B14001_002E | Enrolled in school |  |
+| B14001 | 3 | B14001_003E | Enrolled in school | Enrolled in nursery school, preschool |
+| B14001 | 4 | B14001_004E | Enrolled in school | Enrolled in kindergarten |
+| B14001 | 5 | B14001_005E | Enrolled in school | Enrolled in grade 1 to grade 4 |
+| B14001 | 6 | B14001_006E | Enrolled in school | Enrolled in grade 5 to grade 8 |
+| B14001 | 7 | B14001_007E | Enrolled in school | Enrolled in grade 9 to grade 12 |
+| B14001 | 8 | B14001_008E | Enrolled in school | Enrolled in college, undergraduate years |
+| B14001 | 9 | B14001_009E | Enrolled in school | Graduate or professional school |
+| B14001 | 10 | B14001_010E | Not enrolled in school |  |
 
 ## Shortcuts
 
@@ -155,6 +159,7 @@ One example is pulling trends of racial/ethnic populations from the
 decennial census for some specific level of geography.
 
 ``` r
+
 POPS_BY_RACE <-
     hercacstables::fetch_decennial_pops_by_race(
         for_geo = "state", # one cannot fetch the whole nation from 2000 or 2010
@@ -172,14 +177,14 @@ POPS_BY_RACE <-
     )
 ```
 
-| Race/Ethnicity                             |        2000 |        2010 |        2020 |
-|:-------------------------------------------|------------:|------------:|------------:|
-| All                                        | 285,230,516 | 312,471,327 | 334,735,155 |
-| American Indian and Alaska Native          |   2,069,446 |   2,247,427 |   2,252,011 |
-| Asian                                      |  10,126,044 |  14,468,054 |  19,621,465 |
-| Black or African American                  |  33,952,901 |  37,690,511 |  39,944,624 |
-| Hispanic or Latino                         |  39,068,564 |  54,166,049 |  65,329,087 |
-| Native Hawaiian and Other Pacific Islander |     353,874 |     481,653 |     622,109 |
-| Some other race                            |     468,155 |     605,291 |   1,692,341 |
-| Two or more races                          |   4,604,792 |   5,967,844 |  13,551,323 |
-| White                                      | 194,586,740 | 196,844,498 | 191,722,195 |
+| Race/Ethnicity | 2000 | 2010 | 2020 |
+|:---|---:|---:|---:|
+| All | 285,230,516 | 312,471,327 | 334,735,155 |
+| American Indian and Alaska Native | 2,069,446 | 2,247,427 | 2,252,011 |
+| Asian | 10,126,044 | 14,468,054 | 19,621,465 |
+| Black or African American | 33,952,901 | 37,690,511 | 39,944,624 |
+| Hispanic or Latino | 39,068,564 | 54,166,049 | 65,329,087 |
+| Native Hawaiian and Other Pacific Islander | 353,874 | 481,653 | 622,109 |
+| Some other race | 468,155 | 605,291 | 1,692,341 |
+| Two or more races | 4,604,792 | 5,967,844 | 13,551,323 |
+| White | 194,586,740 | 196,844,498 | 191,722,195 |

@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Race/Ethnicity Categories in ACS Tables • hercacstables</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Race/Ethnicity Categories in ACS Tables">
 </head>
@@ -504,29 +504,29 @@ subtables.</p>
 <tr class="odd">
 <td align="left">People</td>
 <td align="left">White</td>
-<td align="right">210,875,446</td>
-<td align="right">210,875,446</td>
+<td align="right">204,142,876</td>
+<td align="right">204,142,876</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">People</td>
 <td align="left">Black</td>
-<td align="right">41,070,890</td>
-<td align="right">41,070,890</td>
+<td align="right">40,919,547</td>
+<td align="right">40,919,547</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="odd">
 <td align="left">Households</td>
 <td align="left">White</td>
-<td align="right">87,717,076</td>
-<td align="right">87,717,076</td>
+<td align="right">86,237,463</td>
+<td align="right">86,237,463</td>
 <td align="left">Yes</td>
 </tr>
 <tr class="even">
 <td align="left">Households</td>
 <td align="left">Black</td>
-<td align="right">15,556,942</td>
-<td align="right">15,556,942</td>
+<td align="right">15,641,707</td>
+<td align="right">15,641,707</td>
 <td align="left">Yes</td>
 </tr>
 </tbody>
@@ -1071,7 +1071,7 @@ in their percentages of Hispanic ethnicity.</p>
 </tr>
 </tbody>
 </table>
-<p>Next, we pull 18 years of ACS data.</p>
+<p>Next, we pull 19 years of ACS data.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hispanic_and_broad_race_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2005</span><span class="op">:</span><span class="fl">2019</span>, <span class="fl">2021</span><span class="op">:</span><span class="va">LATEST_YEAR</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
@@ -1283,6 +1283,14 @@ in their percentages of Hispanic ethnicity.</p>
 <td align="right">282,571</td>
 <td align="right">20,052,323</td>
 <td align="right">1%</td>
+</tr>
+<tr class="odd">
+<td align="left">WHITE ALONE</td>
+<td align="right">2024</td>
+<td align="right">191,382,624</td>
+<td align="right">11,967,339</td>
+<td align="right">203,349,963</td>
+<td align="right">6%</td>
 </tr>
 </tbody>
 </table>
@@ -1754,7 +1762,7 @@ There is another table that gives the breakdown in more detail, though:
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

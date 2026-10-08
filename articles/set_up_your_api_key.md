@@ -18,5 +18,6 @@ accessing the Census API,
 [tidycensus](https://walker-data.com/tidycensus/index.html).
 
 ``` r
+
 hercacstables::api_key_setup()
 ```

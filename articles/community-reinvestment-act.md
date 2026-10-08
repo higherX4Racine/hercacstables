@@ -1,6 +1,7 @@
 # Income Brackets for the Community Reinvestment Act
 
 ``` r
+
 library(hercacstables)
 ```
 
@@ -47,6 +48,7 @@ For this article, we are going to use two Metropolitan Statistical Areas
 in southeastern Wisconsin: Kenosha County and Racine County.
 
 ``` r
+
 ASSESSMENT_AREAS <- tibble::tribble(
     ~ Area,    ~ county,
     "Kenosha", "059",
@@ -64,6 +66,7 @@ For this article, we are going to use two cities in southeastern
 Wisconsin: Kenosha and Racine.
 
 ``` r
+
 IMPACT_AREAS <- tibble::tribble(
     ~ Area,    ~ city,  ~ district,
     "Kenosha", "39225", "07320",
@@ -80,14 +83,15 @@ number of folks in our assessment area in each bracket.
 ### Median income of assessment areas
 
 We’ll use table
-[`B19326`](https:://api.census.gov/data/acs/2024/B19326.html), which
-reports median income by place of birth. A full explanation of how I
-chose this table appears in an appendix at the [end of this
-article](#Finding-a-Median-Income-Table). We don’t actually need any of
-the details of place of birth, just the area’s overall median income.
-That will be reported by the table’s first row, `B19326_001E`.
+[`B19326`](https:://api.census.gov/data/acs/acs1/2024/groups/B19326.html),
+which reports median income by sex and employment experience. A full
+explanation of how I chose this table appears in an appendix at the [end
+of this article](#Finding-a-Median-Income-Table). We don’t actually need
+any of the table’s details, just the area’s overall median income. That
+will be reported by the table’s first row, `B19326_001E`.
 
 ``` r
+
 MEDIAN_INCOMES <- "B19326_001E" |>
     fetch_data(
         year = 2024L,
@@ -112,7 +116,7 @@ MEDIAN_INCOMES <- "B19326_001E" |>
 | Kenosha |      \$45,091 |
 | Racine  |      \$43,133 |
 
-Personal median incomes in 2024
+Personal median incomes in 2024 {.table}
 
 ### Defining income brackets
 
@@ -120,6 +124,7 @@ We can define a glossary of income brackets for each assessment area by
 joining and multiplying.
 
 ``` r
+
 INCOME_BRACKETS <- tibble::tribble(
     ~ Bracket, ~ `Lower Bound`, ~ `Upper Bound`,
     "Low",                 0.0,             0.5,
@@ -154,17 +159,17 @@ INCOME_BRACKETS <- tibble::tribble(
 | Middle   | \$36,073 - \$54,109 | \$34,506 - \$51,760 |
 | Upper    |      \$54,109 - Inf |      \$51,760 - Inf |
 
-Personal income brackets in 2024
+Personal income brackets in 2024 {.table}
 
 ### Counting bracket populations
 
 The third step is to count how many people fall into each income
 bracket. To do this, we will use census table
-[`B20005`](https://api.census.gov/data/2024/acs/acs1/B19325.html)
-`hercacstables` provides `GLOSSARY_OF_SEX_BY_EARNINGS`, which describes
+[`B19325`](https://api.census.gov/data/2024/acs/acs1/groups/B19325.html)
+`hercacstables` provides `GLOSSARY_OF_SEX_BY_INCOME`, which describes
 how each row of this table corresponds to a specific combination of sex,
 employment status, and income bracket. We must assign each bracket in
-`B20005` to one or more of our local income brackets, with the amount
+`B19325` to one or more of our local income brackets, with the amount
 weighted by how much they overlap.
 
 To do that, we’ll create a helper function that computes how much, if at
@@ -173,6 +178,7 @@ all, two ranges overlap. We’ll use
 make it work on vector inputs.
 
 ``` r
+
 overlap_helper <- function(.lower_1, .upper_1, .lower_2, .upper_2) {
     .tops <- purrr::map2_dbl(.upper_1, .upper_2, min)
     .bottoms <- purrr::map2_dbl(.lower_1, .lower_2, max)
@@ -185,6 +191,7 @@ without any overlap, and compute the weights as the proportion of
 overlap.
 
 ``` r
+
 GLOSSARY_OF_INCOME_BRACKETS <- GLOSSARY_OF_SEX_BY_INCOME |>
     dplyr::slice(
          -1L, # grand total
@@ -237,6 +244,7 @@ The next step is to pull the counts of people in income brackets from
 the Census.
 
 ``` r
+
 RAW_COUNTS_BY_INCOME_BRACKET <- fetch_data(
     variables = "group(B19325)",
     year = 2024L,
@@ -251,6 +259,7 @@ RAW_COUNTS_BY_INCOME_BRACKET <- fetch_data(
 ```
 
 ``` r
+
 COUNTS_BY_INCOME_BRACKET <- RAW_COUNTS_BY_INCOME_BRACKET |>
     dplyr::filter(
         .data$Measure == "E"
@@ -272,6 +281,7 @@ COUNTS_BY_INCOME_BRACKET <- RAW_COUNTS_BY_INCOME_BRACKET |>
 ```
 
 ``` r
+
 POPULATIONS_PER_BRACKET <- COUNTS_BY_INCOME_BRACKET |>
     dplyr::summarize(
         People = sum(.data$Proportion * .data$Value, na.rm = TRUE),
@@ -318,6 +328,7 @@ Census uses both “income” and “earnings” to talk about how much people
 make. We’ll search with both of those terms.
 
 ``` r
+
 METADATA_FOR_ACS_GROUPS |>
     search_in_columns(
         Description = c("median", "income|earn"), # case-insensitive search for "median" AND ("income" OR "earn")
@@ -327,37 +338,37 @@ METADATA_FOR_ACS_GROUPS |>
     knitr::kable()
 ```
 
-| Group  | Universe                                                                                       | Description                                                                                                                                                    | ACS1 | ACS5 |
-|:-------|:-----------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----|:-----|
-| B06011 | Population 15 years and over in the United States with income                                  | Median Income in the Past 12 Months by Place of Birth in the United States                                                                                     | TRUE | TRUE |
-| B07011 | Population 15 years and over in the United States with income                                  | Median Income in the Past 12 Months by Geographical Mobility in the Past Year for Current Residence in the United States                                       | TRUE | TRUE |
-| B07411 | Population 15 years and over in the United States with income                                  | Median Income in the Past 12 Months by Geographical Mobility in the Past Year for Residence 1 Year Ago in the United States                                    | TRUE | TRUE |
-| B15013 | Population 25 to 64 years with earnings and a Bachelor’s degree or higher attainment           | Median Earnings in the Past 12 Months by Sex by Field of Bachelor’s Degree for First Major                                                                     | TRUE | TRUE |
-| B15014 | Population 25 to 64 years with earnings and a Bachelor’s degree or higher attainment           | Median Earnings in the Past 12 Months by Age by Field of Bachelor’s Degree for First Major                                                                     | TRUE | TRUE |
-| B18140 | Civilian noninstitutionalized population 16 years and over with earnings in the past 12 months | Median Earnings in the Past 12 Months by Disability Status by Sex for the Civilian Noninstitutionalized Population 16 Years and Over With Earnings             | TRUE | TRUE |
-| B19326 | Population 15 years and over with income in the past 12 months                                 | Median Income in the Past 12 Months by Sex by Work Experience in the Past 12 Months for the Population 15 Years and Over With Income                           | TRUE | TRUE |
-| B20002 | Population 16 years and over with earnings                                                     | Median Earnings in the Past 12 Months by Sex for the Population 16 Years and Over With Earnings in the Past 12 Months                                          | TRUE | TRUE |
-| B20004 | Population 25 years and over with earnings                                                     | Median Earnings in the Past 12 Months by Sex by Educational Attainment for the Population 25 Years and Over                                                    | TRUE | TRUE |
-| B20017 | Population 16 years and over with earnings                                                     | Median Earnings in the Past 12 Months by Sex by Work Experience in the Past 12 Months for the Population 16 Years and Over With Earnings in the Past 12 Months | TRUE | TRUE |
-| B20018 | Population 16 years and over who worked full-time, year-round with earnings                    | Median Earnings in the Past 12 Months for the Population 16 Years and Over Who Worked Full-Time, Year-Round With Earnings in the Past 12 Months                | TRUE | TRUE |
-| B21004 | Civilian population 18 years and over with income in the past 12 months                        | Median Income in the Past 12 Months by Veteran Status by Sex for the Civilian Population 18 Years and Over With Income                                         | TRUE | TRUE |
-| B24011 | Civilian employed population 16 years and over with earnings                                   | Occupation by Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over                                                     | TRUE | TRUE |
-| B24012 | Civilian employed population 16 years and over with earnings                                   | Sex by Occupation and Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over                                             | TRUE | TRUE |
-| B24021 | Full-time, year-round civilian employed population 16 years and over with earnings             | Occupation by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over                               | TRUE | TRUE |
-| B24022 | Full-time, year-round civilian employed population 16 years and over with earnings             | Sex by Occupation and Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over                       | TRUE | TRUE |
-| B24031 | Civilian employed population 16 years and over with earnings                                   | Industry by Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over                                                       | TRUE | TRUE |
-| B24032 | Civilian employed population 16 years and over with earnings                                   | Sex by Industry and Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over                                               | TRUE | TRUE |
-| B24041 | Full-time, year-round civilian employed population 16 years and over with earnings             | Industry by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over                                 | TRUE | TRUE |
-| B24042 | Full-time, year-round civilian employed population 16 years and over with earnings             | Sex by Industry and Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over                         | TRUE | TRUE |
-| B24081 | Civilian employed population 16 years and over with earnings                                   | Class of Worker by Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over                                                | TRUE | TRUE |
-| B24082 | Civilian employed population 16 years and over with earnings                                   | Sex by Class of Worker and Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over                                        | TRUE | TRUE |
-| B24091 | Full-time, year-round civilian employed population 16 years and over with earnings             | Class of Worker by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over                          | TRUE | TRUE |
-| B24092 | Full-time, year-round civilian employed population 16 years and over with earnings             | Sex by Class of Worker and Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over                  | TRUE | TRUE |
-| B24121 | Full-time, year-round civilian employed population 16 years and over with earnings             | Detailed Occupation by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over                      | TRUE | TRUE |
-| B24122 | Full-time, year-round civilian employed male population 16 years and over with earnings        | Detailed Occupation by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Male Population 16 Years and Over                 | TRUE | TRUE |
-| B24123 | Full-time, year-round civilian employed female population 16 years and over with earnings      | Detailed Occupation by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Female Population 16 Years and Over               | TRUE | TRUE |
-| B26119 | Population 16 years and over with earnings                                                     | Median Earnings in the Past 12 Months by Group Quarters Type (3 Types) by Sex                                                                                  | TRUE | TRUE |
-| B26219 | Population 16 years and over with earnings                                                     | Median Earnings in the Past 12 Months by Group Quarters Type (5 Types) by Sex                                                                                  | TRUE | TRUE |
+| Group | Universe | Description | ACS1 | ACS5 |
+|:---|:---|:---|:---|:---|
+| B06011 | Population 15 years and over in the United States with income | Median Income in the Past 12 Months by Place of Birth in the United States | TRUE | TRUE |
+| B07011 | Population 15 years and over in the United States with income | Median Income in the Past 12 Months by Geographical Mobility in the Past Year for Current Residence in the United States | TRUE | TRUE |
+| B07411 | Population 15 years and over in the United States with income | Median Income in the Past 12 Months by Geographical Mobility in the Past Year for Residence 1 Year Ago in the United States | TRUE | TRUE |
+| B15013 | Population 25 to 64 years with earnings and a Bachelor’s degree or higher attainment | Median Earnings in the Past 12 Months by Sex by Field of Bachelor’s Degree for First Major | TRUE | TRUE |
+| B15014 | Population 25 to 64 years with earnings and a Bachelor’s degree or higher attainment | Median Earnings in the Past 12 Months by Age by Field of Bachelor’s Degree for First Major | TRUE | TRUE |
+| B18140 | Civilian noninstitutionalized population 16 years and over with earnings in the past 12 months | Median Earnings in the Past 12 Months by Disability Status by Sex for the Civilian Noninstitutionalized Population 16 Years and Over With Earnings | TRUE | TRUE |
+| B19326 | Population 15 years and over with income in the past 12 months | Median Income in the Past 12 Months by Sex by Work Experience in the Past 12 Months for the Population 15 Years and Over With Income | TRUE | TRUE |
+| B20002 | Population 16 years and over with earnings | Median Earnings in the Past 12 Months by Sex for the Population 16 Years and Over With Earnings in the Past 12 Months | TRUE | TRUE |
+| B20004 | Population 25 years and over with earnings | Median Earnings in the Past 12 Months by Sex by Educational Attainment for the Population 25 Years and Over | TRUE | TRUE |
+| B20017 | Population 16 years and over with earnings | Median Earnings in the Past 12 Months by Sex by Work Experience in the Past 12 Months for the Population 16 Years and Over With Earnings in the Past 12 Months | TRUE | TRUE |
+| B20018 | Population 16 years and over who worked full-time, year-round with earnings | Median Earnings in the Past 12 Months for the Population 16 Years and Over Who Worked Full-Time, Year-Round With Earnings in the Past 12 Months | TRUE | TRUE |
+| B21004 | Civilian population 18 years and over with income in the past 12 months | Median Income in the Past 12 Months by Veteran Status by Sex for the Civilian Population 18 Years and Over With Income | TRUE | TRUE |
+| B24011 | Civilian employed population 16 years and over with earnings | Occupation by Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24012 | Civilian employed population 16 years and over with earnings | Sex by Occupation and Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24021 | Full-time, year-round civilian employed population 16 years and over with earnings | Occupation by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24022 | Full-time, year-round civilian employed population 16 years and over with earnings | Sex by Occupation and Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24031 | Civilian employed population 16 years and over with earnings | Industry by Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24032 | Civilian employed population 16 years and over with earnings | Sex by Industry and Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24041 | Full-time, year-round civilian employed population 16 years and over with earnings | Industry by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24042 | Full-time, year-round civilian employed population 16 years and over with earnings | Sex by Industry and Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24081 | Civilian employed population 16 years and over with earnings | Class of Worker by Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24082 | Civilian employed population 16 years and over with earnings | Sex by Class of Worker and Median Earnings in the Past 12 Months for the Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24091 | Full-time, year-round civilian employed population 16 years and over with earnings | Class of Worker by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24092 | Full-time, year-round civilian employed population 16 years and over with earnings | Sex by Class of Worker and Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24121 | Full-time, year-round civilian employed population 16 years and over with earnings | Detailed Occupation by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Population 16 Years and Over | TRUE | TRUE |
+| B24122 | Full-time, year-round civilian employed male population 16 years and over with earnings | Detailed Occupation by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Male Population 16 Years and Over | TRUE | TRUE |
+| B24123 | Full-time, year-round civilian employed female population 16 years and over with earnings | Detailed Occupation by Median Earnings in the Past 12 Months for the Full-Time, Year-Round Civilian Employed Female Population 16 Years and Over | TRUE | TRUE |
+| B26119 | Population 16 years and over with earnings | Median Earnings in the Past 12 Months by Group Quarters Type (3 Types) by Sex | TRUE | TRUE |
+| B26219 | Population 16 years and over with earnings | Median Earnings in the Past 12 Months by Group Quarters Type (5 Types) by Sex | TRUE | TRUE |
 
 Wow … that’s a lot of tables. Poring through them, table
 [`B19326`](https://api.census.gov/data/2024/acs/acs1/B19326.html) seems
@@ -377,6 +388,7 @@ tables that summarize dollars. We’ll exclude tables with words like
 “median,” “average,” or “aggregate” in their descriptions.
 
 ``` r
+
 METADATA_FOR_ACS_GROUPS |>
     search_in_columns(
         Description = "income|earn",                          # seems obvious, right?
@@ -387,33 +399,33 @@ METADATA_FOR_ACS_GROUPS |>
     knitr::kable()
 ```
 
-| Group  | Universe                                                                       | Description                                                                                                                                                                         | ACS1 | ACS5  |
-|:-------|:-------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----|:------|
-| B06010 | Population 15 years and over in the United States                              | Place of Birth by Individual Income in the Past 12 Months in the United States                                                                                                      | TRUE | TRUE  |
-| B07010 | Population 15 years and over in the United States                              | Geographical Mobility in the Past Year by Individual Income in the Past 12 Months for Current Residence in the United States                                                        | TRUE | TRUE  |
-| B07410 | Population 15 years and over in the United States                              | Geographical Mobility in the Past Year by Individual Income in the Past 12 Months for Residence 1 Year Ago in the United States                                                     | TRUE | TRUE  |
-| B09010 | Population under 18 years in households                                        | Receipt of Supplemental Security Income (SSI), Cash Public Assistance Income, or Food Stamps/SNAP in the Past 12 Months by Household Type for Children Under 18 Years in Households | TRUE | TRUE  |
-| B17002 | Population for whom poverty status is determined                               | Ratio of Income to Poverty Level in the Past 12 Months                                                                                                                              | TRUE | FALSE |
-| B17024 | Population for whom poverty status is determined                               | Age by Ratio of Income to Poverty Level in the Past 12 Months                                                                                                                       | TRUE | TRUE  |
-| B18131 | Civilian noninstitutionalized population for whom poverty status is determined | Age by Ratio of Income to Poverty Level in the Past 12 Months by Disability Status and Type                                                                                         | TRUE | FALSE |
-| B19301 | Total population                                                               | Per Capita Income in the Past 12 Months                                                                                                                                             | TRUE | TRUE  |
-| B19325 | Population 15 years and over                                                   | Sex by Work Experience in the Past 12 Months by Income in the Past 12 Months for the Population 15 Years and Over                                                                   | TRUE | TRUE  |
-| B20001 | Population 16 years and over with earnings                                     | Sex by Earnings in the Past 12 Months for the Population 16 Years and Over With Earnings in the Past 12 Months                                                                      | TRUE | TRUE  |
-| B20005 | Population 16 years and over                                                   | Sex by Work Experience in the Past 12 Months by Earnings in the Past 12 Months for the Population 16 Years and Over                                                                 | TRUE | TRUE  |
-| B26117 | Population 16 years and over with earnings                                     | Group Quarters Type (3 Types) by Sex With Earnings in the Past 12 Months                                                                                                            | TRUE | TRUE  |
-| B26217 | Population 16 years and over with earnings                                     | Group Quarters Type (5 Types) by Sex With Earnings in the Past 12 Months                                                                                                            | TRUE | TRUE  |
-| B27015 | Civilian population living in households                                       | Health Insurance Coverage Status and Type by Household Income in the Past 12 Months                                                                                                 | TRUE | TRUE  |
-| B27016 | Civilian noninstitutionalized population for whom poverty status is determined | Health Insurance Coverage Status and Type by Ratio of Income to Poverty Level in the Past 12 Months by Age                                                                          | TRUE | FALSE |
-| B27017 | Civilian noninstitutionalized population for whom poverty status is determined | Private Health Insurance by Ratio of Income to Poverty Level in the Past 12 Months by Age                                                                                           | TRUE | FALSE |
-| B27018 | Civilian noninstitutionalized population for whom poverty status is determined | Public Health Insurance by Ratio of Income to Poverty Level in the Past 12 Months by Age                                                                                            | TRUE | FALSE |
-| B99191 | Population 15 years and over                                                   | Allocation of Individuals’ Income in the Past 12 Months for the Population 15 Years and Over - Percent of Income Allocated                                                          | TRUE | TRUE  |
-| B99201 | Population 16 years and over                                                   | Allocation of Earnings in the Past 12 Months for the Population 16 Years and Over - Percent of Earnings Allocated                                                                   | TRUE | TRUE  |
-| C17002 | Population for whom poverty status is determined                               | Ratio of Income to Poverty Level in the Past 12 Months                                                                                                                              | TRUE | TRUE  |
-| C17024 | Population for whom poverty status is determined                               | Age by Ratio of Income to Poverty Level in the Past 12 Months                                                                                                                       | TRUE | FALSE |
-| C18131 | Civilian noninstitutionalized population for whom poverty status is determined | Ratio of Income to Poverty Level in the Past 12 Months by Disability Status                                                                                                         | TRUE | TRUE  |
-| C27016 | Civilian noninstitutionalized population for whom poverty status is determined | Health Insurance Coverage Status by Ratio of Income to Poverty Level in the Past 12 Months by Age                                                                                   | TRUE | TRUE  |
-| C27017 | Civilian noninstitutionalized population for whom poverty status is determined | Private Health Insurance by Ratio of Income to Poverty Level in the Past 12 Months by Age                                                                                           | TRUE | TRUE  |
-| C27018 | Civilian noninstitutionalized population for whom poverty status is determined | Public Health Insurance by Ratio of Income to Poverty Level in the Past 12 Months by Age                                                                                            | TRUE | TRUE  |
+| Group | Universe | Description | ACS1 | ACS5 |
+|:---|:---|:---|:---|:---|
+| B06010 | Population 15 years and over in the United States | Place of Birth by Individual Income in the Past 12 Months in the United States | TRUE | TRUE |
+| B07010 | Population 15 years and over in the United States | Geographical Mobility in the Past Year by Individual Income in the Past 12 Months for Current Residence in the United States | TRUE | TRUE |
+| B07410 | Population 15 years and over in the United States | Geographical Mobility in the Past Year by Individual Income in the Past 12 Months for Residence 1 Year Ago in the United States | TRUE | TRUE |
+| B09010 | Population under 18 years in households | Receipt of Supplemental Security Income (SSI), Cash Public Assistance Income, or Food Stamps/SNAP in the Past 12 Months by Household Type for Children Under 18 Years in Households | TRUE | TRUE |
+| B17002 | Population for whom poverty status is determined | Ratio of Income to Poverty Level in the Past 12 Months | TRUE | FALSE |
+| B17024 | Population for whom poverty status is determined | Age by Ratio of Income to Poverty Level in the Past 12 Months | TRUE | TRUE |
+| B18131 | Civilian noninstitutionalized population for whom poverty status is determined | Age by Ratio of Income to Poverty Level in the Past 12 Months by Disability Status and Type | TRUE | FALSE |
+| B19301 | Total population | Per Capita Income in the Past 12 Months | TRUE | TRUE |
+| B19325 | Population 15 years and over | Sex by Work Experience in the Past 12 Months by Income in the Past 12 Months for the Population 15 Years and Over | TRUE | TRUE |
+| B20001 | Population 16 years and over with earnings | Sex by Earnings in the Past 12 Months for the Population 16 Years and Over With Earnings in the Past 12 Months | TRUE | TRUE |
+| B20005 | Population 16 years and over | Sex by Work Experience in the Past 12 Months by Earnings in the Past 12 Months for the Population 16 Years and Over | TRUE | TRUE |
+| B26117 | Population 16 years and over with earnings | Group Quarters Type (3 Types) by Sex With Earnings in the Past 12 Months | TRUE | TRUE |
+| B26217 | Population 16 years and over with earnings | Group Quarters Type (5 Types) by Sex With Earnings in the Past 12 Months | TRUE | TRUE |
+| B27015 | Civilian population living in households | Health Insurance Coverage Status and Type by Household Income in the Past 12 Months | TRUE | TRUE |
+| B27016 | Civilian noninstitutionalized population for whom poverty status is determined | Health Insurance Coverage Status and Type by Ratio of Income to Poverty Level in the Past 12 Months by Age | TRUE | FALSE |
+| B27017 | Civilian noninstitutionalized population for whom poverty status is determined | Private Health Insurance by Ratio of Income to Poverty Level in the Past 12 Months by Age | TRUE | FALSE |
+| B27018 | Civilian noninstitutionalized population for whom poverty status is determined | Public Health Insurance by Ratio of Income to Poverty Level in the Past 12 Months by Age | TRUE | FALSE |
+| B99191 | Population 15 years and over | Allocation of Individuals’ Income in the Past 12 Months for the Population 15 Years and Over - Percent of Income Allocated | TRUE | TRUE |
+| B99201 | Population 16 years and over | Allocation of Earnings in the Past 12 Months for the Population 16 Years and Over - Percent of Earnings Allocated | TRUE | TRUE |
+| C17002 | Population for whom poverty status is determined | Ratio of Income to Poverty Level in the Past 12 Months | TRUE | TRUE |
+| C17024 | Population for whom poverty status is determined | Age by Ratio of Income to Poverty Level in the Past 12 Months | TRUE | FALSE |
+| C18131 | Civilian noninstitutionalized population for whom poverty status is determined | Ratio of Income to Poverty Level in the Past 12 Months by Disability Status | TRUE | TRUE |
+| C27016 | Civilian noninstitutionalized population for whom poverty status is determined | Health Insurance Coverage Status by Ratio of Income to Poverty Level in the Past 12 Months by Age | TRUE | TRUE |
+| C27017 | Civilian noninstitutionalized population for whom poverty status is determined | Private Health Insurance by Ratio of Income to Poverty Level in the Past 12 Months by Age | TRUE | TRUE |
+| C27018 | Civilian noninstitutionalized population for whom poverty status is determined | Public Health Insurance by Ratio of Income to Poverty Level in the Past 12 Months by Age | TRUE | TRUE |
 
 We get a large number of tables, just like when we searched for [tables
 of median incomes](#Finding-a-Median-Income-Table). Once again, if we
@@ -436,6 +448,7 @@ Here is the full table of each bracket from the Census and the
 proportion of its members that go into each bracket from the CRA.
 
 ``` r
+
 COUNTS_BY_INCOME_BRACKET |>
     dplyr::select(
         "Area",
@@ -453,189 +466,189 @@ COUNTS_BY_INCOME_BRACKET |>
     knitr::kable()
 ```
 
-| Area    | Sex    | Full-time | Index | Lower Bound Census | Upper Bound Census | Bracket  | Lower Bound CRA | Upper Bound CRA | Overlap | Proportion |
-|:--------|:-------|:----------|------:|-------------------:|-------------------:|:---------|----------------:|----------------:|--------:|-----------:|
-| Kenosha | Male   | TRUE      |     6 |                  1 |               2499 | Low      |             0.0 |         22545.5 |  2498.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |     7 |               2500 |               4999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |     8 |               5000 |               7499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |     9 |               7500 |               9999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    10 |              10000 |              12499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    11 |              12500 |              14999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    12 |              15000 |              17499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    13 |              17500 |              19999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    14 |              20000 |              22499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    15 |              22500 |              24999 | Low      |             0.0 |         22545.5 |    45.5 |  0.0182073 |
-| Kenosha | Male   | TRUE      |    15 |              22500 |              24999 | Moderate |         22545.5 |         36072.8 |  2453.5 |  0.9817927 |
-| Kenosha | Male   | TRUE      |    16 |              25000 |              29999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    17 |              30000 |              34999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    18 |              35000 |              39999 | Moderate |         22545.5 |         36072.8 |  1072.8 |  0.2146029 |
-| Kenosha | Male   | TRUE      |    18 |              35000 |              39999 | Middle   |         36072.8 |         54109.2 |  3926.2 |  0.7853971 |
-| Kenosha | Male   | TRUE      |    19 |              40000 |              44999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    20 |              45000 |              49999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    21 |              50000 |              54999 | Middle   |         36072.8 |         54109.2 |  4109.2 |  0.8220044 |
-| Kenosha | Male   | TRUE      |    21 |              50000 |              54999 | Upper    |         54109.2 |             Inf |   889.8 |  0.1779956 |
-| Kenosha | Male   | TRUE      |    22 |              55000 |              64999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    23 |              65000 |              74999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    24 |              75000 |              99999 | Upper    |         54109.2 |             Inf | 24999.0 |  1.0000000 |
-| Kenosha | Male   | TRUE      |    25 |             100000 |                Inf | Upper    |         54109.2 |             Inf |     Inf |  1.0000000 |
-| Kenosha | Male   | FALSE     |    29 |                  1 |               2499 | Low      |             0.0 |         22545.5 |  2498.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    30 |               2500 |               4999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    31 |               5000 |               7499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    32 |               7500 |               9999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    33 |              10000 |              12499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    34 |              12500 |              14999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    35 |              15000 |              17499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    36 |              17500 |              19999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    37 |              20000 |              22499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    38 |              22500 |              24999 | Low      |             0.0 |         22545.5 |    45.5 |  0.0182073 |
-| Kenosha | Male   | FALSE     |    38 |              22500 |              24999 | Moderate |         22545.5 |         36072.8 |  2453.5 |  0.9817927 |
-| Kenosha | Male   | FALSE     |    39 |              25000 |              29999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    40 |              30000 |              34999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    41 |              35000 |              39999 | Moderate |         22545.5 |         36072.8 |  1072.8 |  0.2146029 |
-| Kenosha | Male   | FALSE     |    41 |              35000 |              39999 | Middle   |         36072.8 |         54109.2 |  3926.2 |  0.7853971 |
-| Kenosha | Male   | FALSE     |    42 |              40000 |              44999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    43 |              45000 |              49999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    44 |              50000 |              54999 | Middle   |         36072.8 |         54109.2 |  4109.2 |  0.8220044 |
-| Kenosha | Male   | FALSE     |    44 |              50000 |              54999 | Upper    |         54109.2 |             Inf |   889.8 |  0.1779956 |
-| Kenosha | Male   | FALSE     |    45 |              55000 |              64999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    46 |              65000 |              74999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    47 |              75000 |              99999 | Upper    |         54109.2 |             Inf | 24999.0 |  1.0000000 |
-| Kenosha | Male   | FALSE     |    48 |             100000 |                Inf | Upper    |         54109.2 |             Inf |     Inf |  1.0000000 |
-| Kenosha | Female | TRUE      |    53 |                  1 |               2499 | Low      |             0.0 |         22545.5 |  2498.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    54 |               2500 |               4999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    55 |               5000 |               7499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    56 |               7500 |               9999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    57 |              10000 |              12499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    58 |              12500 |              14999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    59 |              15000 |              17499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    60 |              17500 |              19999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    61 |              20000 |              22499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    62 |              22500 |              24999 | Low      |             0.0 |         22545.5 |    45.5 |  0.0182073 |
-| Kenosha | Female | TRUE      |    62 |              22500 |              24999 | Moderate |         22545.5 |         36072.8 |  2453.5 |  0.9817927 |
-| Kenosha | Female | TRUE      |    63 |              25000 |              29999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    64 |              30000 |              34999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    65 |              35000 |              39999 | Moderate |         22545.5 |         36072.8 |  1072.8 |  0.2146029 |
-| Kenosha | Female | TRUE      |    65 |              35000 |              39999 | Middle   |         36072.8 |         54109.2 |  3926.2 |  0.7853971 |
-| Kenosha | Female | TRUE      |    66 |              40000 |              44999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    67 |              45000 |              49999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    68 |              50000 |              54999 | Middle   |         36072.8 |         54109.2 |  4109.2 |  0.8220044 |
-| Kenosha | Female | TRUE      |    68 |              50000 |              54999 | Upper    |         54109.2 |             Inf |   889.8 |  0.1779956 |
-| Kenosha | Female | TRUE      |    69 |              55000 |              64999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    70 |              65000 |              74999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    71 |              75000 |              99999 | Upper    |         54109.2 |             Inf | 24999.0 |  1.0000000 |
-| Kenosha | Female | TRUE      |    72 |             100000 |                Inf | Upper    |         54109.2 |             Inf |     Inf |  1.0000000 |
-| Kenosha | Female | FALSE     |    76 |                  1 |               2499 | Low      |             0.0 |         22545.5 |  2498.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    77 |               2500 |               4999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    78 |               5000 |               7499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    79 |               7500 |               9999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    80 |              10000 |              12499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    81 |              12500 |              14999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    82 |              15000 |              17499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    83 |              17500 |              19999 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    84 |              20000 |              22499 | Low      |             0.0 |         22545.5 |  2499.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    85 |              22500 |              24999 | Low      |             0.0 |         22545.5 |    45.5 |  0.0182073 |
-| Kenosha | Female | FALSE     |    85 |              22500 |              24999 | Moderate |         22545.5 |         36072.8 |  2453.5 |  0.9817927 |
-| Kenosha | Female | FALSE     |    86 |              25000 |              29999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    87 |              30000 |              34999 | Moderate |         22545.5 |         36072.8 |  4999.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    88 |              35000 |              39999 | Moderate |         22545.5 |         36072.8 |  1072.8 |  0.2146029 |
-| Kenosha | Female | FALSE     |    88 |              35000 |              39999 | Middle   |         36072.8 |         54109.2 |  3926.2 |  0.7853971 |
-| Kenosha | Female | FALSE     |    89 |              40000 |              44999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    90 |              45000 |              49999 | Middle   |         36072.8 |         54109.2 |  4999.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    91 |              50000 |              54999 | Middle   |         36072.8 |         54109.2 |  4109.2 |  0.8220044 |
-| Kenosha | Female | FALSE     |    91 |              50000 |              54999 | Upper    |         54109.2 |             Inf |   889.8 |  0.1779956 |
-| Kenosha | Female | FALSE     |    92 |              55000 |              64999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    93 |              65000 |              74999 | Upper    |         54109.2 |             Inf |  9999.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    94 |              75000 |              99999 | Upper    |         54109.2 |             Inf | 24999.0 |  1.0000000 |
-| Kenosha | Female | FALSE     |    95 |             100000 |                Inf | Upper    |         54109.2 |             Inf |     Inf |  1.0000000 |
-| Racine  | Male   | TRUE      |     6 |                  1 |               2499 | Low      |             0.0 |         21566.5 |  2498.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |     7 |               2500 |               4999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |     8 |               5000 |               7499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |     9 |               7500 |               9999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    10 |              10000 |              12499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    11 |              12500 |              14999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    12 |              15000 |              17499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    13 |              17500 |              19999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    14 |              20000 |              22499 | Low      |             0.0 |         21566.5 |  1566.5 |  0.6268507 |
-| Racine  | Male   | TRUE      |    14 |              20000 |              22499 | Moderate |         21566.5 |         34506.4 |   932.5 |  0.3731493 |
-| Racine  | Male   | TRUE      |    15 |              22500 |              24999 | Moderate |         21566.5 |         34506.4 |  2499.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    16 |              25000 |              29999 | Moderate |         21566.5 |         34506.4 |  4999.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    17 |              30000 |              34999 | Moderate |         21566.5 |         34506.4 |  4506.4 |  0.9014603 |
-| Racine  | Male   | TRUE      |    17 |              30000 |              34999 | Middle   |         34506.4 |         51759.6 |   492.6 |  0.0985397 |
-| Racine  | Male   | TRUE      |    18 |              35000 |              39999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    19 |              40000 |              44999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    20 |              45000 |              49999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    21 |              50000 |              54999 | Middle   |         34506.4 |         51759.6 |  1759.6 |  0.3519904 |
-| Racine  | Male   | TRUE      |    21 |              50000 |              54999 | Upper    |         51759.6 |             Inf |  3239.4 |  0.6480096 |
-| Racine  | Male   | TRUE      |    22 |              55000 |              64999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    23 |              65000 |              74999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    24 |              75000 |              99999 | Upper    |         51759.6 |             Inf | 24999.0 |  1.0000000 |
-| Racine  | Male   | TRUE      |    25 |             100000 |                Inf | Upper    |         51759.6 |             Inf |     Inf |  1.0000000 |
-| Racine  | Male   | FALSE     |    29 |                  1 |               2499 | Low      |             0.0 |         21566.5 |  2498.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    30 |               2500 |               4999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    31 |               5000 |               7499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    32 |               7500 |               9999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    33 |              10000 |              12499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    34 |              12500 |              14999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    35 |              15000 |              17499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    36 |              17500 |              19999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    37 |              20000 |              22499 | Low      |             0.0 |         21566.5 |  1566.5 |  0.6268507 |
-| Racine  | Male   | FALSE     |    37 |              20000 |              22499 | Moderate |         21566.5 |         34506.4 |   932.5 |  0.3731493 |
-| Racine  | Male   | FALSE     |    38 |              22500 |              24999 | Moderate |         21566.5 |         34506.4 |  2499.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    39 |              25000 |              29999 | Moderate |         21566.5 |         34506.4 |  4999.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    40 |              30000 |              34999 | Moderate |         21566.5 |         34506.4 |  4506.4 |  0.9014603 |
-| Racine  | Male   | FALSE     |    40 |              30000 |              34999 | Middle   |         34506.4 |         51759.6 |   492.6 |  0.0985397 |
-| Racine  | Male   | FALSE     |    41 |              35000 |              39999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    42 |              40000 |              44999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    43 |              45000 |              49999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    44 |              50000 |              54999 | Middle   |         34506.4 |         51759.6 |  1759.6 |  0.3519904 |
-| Racine  | Male   | FALSE     |    44 |              50000 |              54999 | Upper    |         51759.6 |             Inf |  3239.4 |  0.6480096 |
-| Racine  | Male   | FALSE     |    45 |              55000 |              64999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    46 |              65000 |              74999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    47 |              75000 |              99999 | Upper    |         51759.6 |             Inf | 24999.0 |  1.0000000 |
-| Racine  | Male   | FALSE     |    48 |             100000 |                Inf | Upper    |         51759.6 |             Inf |     Inf |  1.0000000 |
-| Racine  | Female | TRUE      |    53 |                  1 |               2499 | Low      |             0.0 |         21566.5 |  2498.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    54 |               2500 |               4999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    55 |               5000 |               7499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    56 |               7500 |               9999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    57 |              10000 |              12499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    58 |              12500 |              14999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    59 |              15000 |              17499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    60 |              17500 |              19999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    61 |              20000 |              22499 | Low      |             0.0 |         21566.5 |  1566.5 |  0.6268507 |
-| Racine  | Female | TRUE      |    61 |              20000 |              22499 | Moderate |         21566.5 |         34506.4 |   932.5 |  0.3731493 |
-| Racine  | Female | TRUE      |    62 |              22500 |              24999 | Moderate |         21566.5 |         34506.4 |  2499.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    63 |              25000 |              29999 | Moderate |         21566.5 |         34506.4 |  4999.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    64 |              30000 |              34999 | Moderate |         21566.5 |         34506.4 |  4506.4 |  0.9014603 |
-| Racine  | Female | TRUE      |    64 |              30000 |              34999 | Middle   |         34506.4 |         51759.6 |   492.6 |  0.0985397 |
-| Racine  | Female | TRUE      |    65 |              35000 |              39999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    66 |              40000 |              44999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    67 |              45000 |              49999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    68 |              50000 |              54999 | Middle   |         34506.4 |         51759.6 |  1759.6 |  0.3519904 |
-| Racine  | Female | TRUE      |    68 |              50000 |              54999 | Upper    |         51759.6 |             Inf |  3239.4 |  0.6480096 |
-| Racine  | Female | TRUE      |    69 |              55000 |              64999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    70 |              65000 |              74999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    71 |              75000 |              99999 | Upper    |         51759.6 |             Inf | 24999.0 |  1.0000000 |
-| Racine  | Female | TRUE      |    72 |             100000 |                Inf | Upper    |         51759.6 |             Inf |     Inf |  1.0000000 |
-| Racine  | Female | FALSE     |    76 |                  1 |               2499 | Low      |             0.0 |         21566.5 |  2498.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    77 |               2500 |               4999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    78 |               5000 |               7499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    79 |               7500 |               9999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    80 |              10000 |              12499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    81 |              12500 |              14999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    82 |              15000 |              17499 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    83 |              17500 |              19999 | Low      |             0.0 |         21566.5 |  2499.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    84 |              20000 |              22499 | Low      |             0.0 |         21566.5 |  1566.5 |  0.6268507 |
-| Racine  | Female | FALSE     |    84 |              20000 |              22499 | Moderate |         21566.5 |         34506.4 |   932.5 |  0.3731493 |
-| Racine  | Female | FALSE     |    85 |              22500 |              24999 | Moderate |         21566.5 |         34506.4 |  2499.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    86 |              25000 |              29999 | Moderate |         21566.5 |         34506.4 |  4999.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    87 |              30000 |              34999 | Moderate |         21566.5 |         34506.4 |  4506.4 |  0.9014603 |
-| Racine  | Female | FALSE     |    87 |              30000 |              34999 | Middle   |         34506.4 |         51759.6 |   492.6 |  0.0985397 |
-| Racine  | Female | FALSE     |    88 |              35000 |              39999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    89 |              40000 |              44999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    90 |              45000 |              49999 | Middle   |         34506.4 |         51759.6 |  4999.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    91 |              50000 |              54999 | Middle   |         34506.4 |         51759.6 |  1759.6 |  0.3519904 |
-| Racine  | Female | FALSE     |    91 |              50000 |              54999 | Upper    |         51759.6 |             Inf |  3239.4 |  0.6480096 |
-| Racine  | Female | FALSE     |    92 |              55000 |              64999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    93 |              65000 |              74999 | Upper    |         51759.6 |             Inf |  9999.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    94 |              75000 |              99999 | Upper    |         51759.6 |             Inf | 24999.0 |  1.0000000 |
-| Racine  | Female | FALSE     |    95 |             100000 |                Inf | Upper    |         51759.6 |             Inf |     Inf |  1.0000000 |
+| Area | Sex | Full-time | Index | Lower Bound Census | Upper Bound Census | Bracket | Lower Bound CRA | Upper Bound CRA | Overlap | Proportion |
+|:---|:---|:---|---:|---:|---:|:---|---:|---:|---:|---:|
+| Kenosha | Male | TRUE | 6 | 1 | 2499 | Low | 0.0 | 22545.5 | 2498.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 7 | 2500 | 4999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 8 | 5000 | 7499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 9 | 7500 | 9999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 10 | 10000 | 12499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 11 | 12500 | 14999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 12 | 15000 | 17499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 13 | 17500 | 19999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 14 | 20000 | 22499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 15 | 22500 | 24999 | Low | 0.0 | 22545.5 | 45.5 | 0.0182073 |
+| Kenosha | Male | TRUE | 15 | 22500 | 24999 | Moderate | 22545.5 | 36072.8 | 2453.5 | 0.9817927 |
+| Kenosha | Male | TRUE | 16 | 25000 | 29999 | Moderate | 22545.5 | 36072.8 | 4999.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 17 | 30000 | 34999 | Moderate | 22545.5 | 36072.8 | 4999.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 18 | 35000 | 39999 | Moderate | 22545.5 | 36072.8 | 1072.8 | 0.2146029 |
+| Kenosha | Male | TRUE | 18 | 35000 | 39999 | Middle | 36072.8 | 54109.2 | 3926.2 | 0.7853971 |
+| Kenosha | Male | TRUE | 19 | 40000 | 44999 | Middle | 36072.8 | 54109.2 | 4999.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 20 | 45000 | 49999 | Middle | 36072.8 | 54109.2 | 4999.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 21 | 50000 | 54999 | Middle | 36072.8 | 54109.2 | 4109.2 | 0.8220044 |
+| Kenosha | Male | TRUE | 21 | 50000 | 54999 | Upper | 54109.2 | Inf | 889.8 | 0.1779956 |
+| Kenosha | Male | TRUE | 22 | 55000 | 64999 | Upper | 54109.2 | Inf | 9999.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 23 | 65000 | 74999 | Upper | 54109.2 | Inf | 9999.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 24 | 75000 | 99999 | Upper | 54109.2 | Inf | 24999.0 | 1.0000000 |
+| Kenosha | Male | TRUE | 25 | 100000 | Inf | Upper | 54109.2 | Inf | Inf | 1.0000000 |
+| Kenosha | Male | FALSE | 29 | 1 | 2499 | Low | 0.0 | 22545.5 | 2498.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 30 | 2500 | 4999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 31 | 5000 | 7499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 32 | 7500 | 9999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 33 | 10000 | 12499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 34 | 12500 | 14999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 35 | 15000 | 17499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 36 | 17500 | 19999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 37 | 20000 | 22499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 38 | 22500 | 24999 | Low | 0.0 | 22545.5 | 45.5 | 0.0182073 |
+| Kenosha | Male | FALSE | 38 | 22500 | 24999 | Moderate | 22545.5 | 36072.8 | 2453.5 | 0.9817927 |
+| Kenosha | Male | FALSE | 39 | 25000 | 29999 | Moderate | 22545.5 | 36072.8 | 4999.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 40 | 30000 | 34999 | Moderate | 22545.5 | 36072.8 | 4999.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 41 | 35000 | 39999 | Moderate | 22545.5 | 36072.8 | 1072.8 | 0.2146029 |
+| Kenosha | Male | FALSE | 41 | 35000 | 39999 | Middle | 36072.8 | 54109.2 | 3926.2 | 0.7853971 |
+| Kenosha | Male | FALSE | 42 | 40000 | 44999 | Middle | 36072.8 | 54109.2 | 4999.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 43 | 45000 | 49999 | Middle | 36072.8 | 54109.2 | 4999.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 44 | 50000 | 54999 | Middle | 36072.8 | 54109.2 | 4109.2 | 0.8220044 |
+| Kenosha | Male | FALSE | 44 | 50000 | 54999 | Upper | 54109.2 | Inf | 889.8 | 0.1779956 |
+| Kenosha | Male | FALSE | 45 | 55000 | 64999 | Upper | 54109.2 | Inf | 9999.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 46 | 65000 | 74999 | Upper | 54109.2 | Inf | 9999.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 47 | 75000 | 99999 | Upper | 54109.2 | Inf | 24999.0 | 1.0000000 |
+| Kenosha | Male | FALSE | 48 | 100000 | Inf | Upper | 54109.2 | Inf | Inf | 1.0000000 |
+| Kenosha | Female | TRUE | 53 | 1 | 2499 | Low | 0.0 | 22545.5 | 2498.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 54 | 2500 | 4999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 55 | 5000 | 7499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 56 | 7500 | 9999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 57 | 10000 | 12499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 58 | 12500 | 14999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 59 | 15000 | 17499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 60 | 17500 | 19999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 61 | 20000 | 22499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 62 | 22500 | 24999 | Low | 0.0 | 22545.5 | 45.5 | 0.0182073 |
+| Kenosha | Female | TRUE | 62 | 22500 | 24999 | Moderate | 22545.5 | 36072.8 | 2453.5 | 0.9817927 |
+| Kenosha | Female | TRUE | 63 | 25000 | 29999 | Moderate | 22545.5 | 36072.8 | 4999.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 64 | 30000 | 34999 | Moderate | 22545.5 | 36072.8 | 4999.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 65 | 35000 | 39999 | Moderate | 22545.5 | 36072.8 | 1072.8 | 0.2146029 |
+| Kenosha | Female | TRUE | 65 | 35000 | 39999 | Middle | 36072.8 | 54109.2 | 3926.2 | 0.7853971 |
+| Kenosha | Female | TRUE | 66 | 40000 | 44999 | Middle | 36072.8 | 54109.2 | 4999.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 67 | 45000 | 49999 | Middle | 36072.8 | 54109.2 | 4999.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 68 | 50000 | 54999 | Middle | 36072.8 | 54109.2 | 4109.2 | 0.8220044 |
+| Kenosha | Female | TRUE | 68 | 50000 | 54999 | Upper | 54109.2 | Inf | 889.8 | 0.1779956 |
+| Kenosha | Female | TRUE | 69 | 55000 | 64999 | Upper | 54109.2 | Inf | 9999.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 70 | 65000 | 74999 | Upper | 54109.2 | Inf | 9999.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 71 | 75000 | 99999 | Upper | 54109.2 | Inf | 24999.0 | 1.0000000 |
+| Kenosha | Female | TRUE | 72 | 100000 | Inf | Upper | 54109.2 | Inf | Inf | 1.0000000 |
+| Kenosha | Female | FALSE | 76 | 1 | 2499 | Low | 0.0 | 22545.5 | 2498.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 77 | 2500 | 4999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 78 | 5000 | 7499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 79 | 7500 | 9999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 80 | 10000 | 12499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 81 | 12500 | 14999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 82 | 15000 | 17499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 83 | 17500 | 19999 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 84 | 20000 | 22499 | Low | 0.0 | 22545.5 | 2499.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 85 | 22500 | 24999 | Low | 0.0 | 22545.5 | 45.5 | 0.0182073 |
+| Kenosha | Female | FALSE | 85 | 22500 | 24999 | Moderate | 22545.5 | 36072.8 | 2453.5 | 0.9817927 |
+| Kenosha | Female | FALSE | 86 | 25000 | 29999 | Moderate | 22545.5 | 36072.8 | 4999.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 87 | 30000 | 34999 | Moderate | 22545.5 | 36072.8 | 4999.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 88 | 35000 | 39999 | Moderate | 22545.5 | 36072.8 | 1072.8 | 0.2146029 |
+| Kenosha | Female | FALSE | 88 | 35000 | 39999 | Middle | 36072.8 | 54109.2 | 3926.2 | 0.7853971 |
+| Kenosha | Female | FALSE | 89 | 40000 | 44999 | Middle | 36072.8 | 54109.2 | 4999.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 90 | 45000 | 49999 | Middle | 36072.8 | 54109.2 | 4999.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 91 | 50000 | 54999 | Middle | 36072.8 | 54109.2 | 4109.2 | 0.8220044 |
+| Kenosha | Female | FALSE | 91 | 50000 | 54999 | Upper | 54109.2 | Inf | 889.8 | 0.1779956 |
+| Kenosha | Female | FALSE | 92 | 55000 | 64999 | Upper | 54109.2 | Inf | 9999.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 93 | 65000 | 74999 | Upper | 54109.2 | Inf | 9999.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 94 | 75000 | 99999 | Upper | 54109.2 | Inf | 24999.0 | 1.0000000 |
+| Kenosha | Female | FALSE | 95 | 100000 | Inf | Upper | 54109.2 | Inf | Inf | 1.0000000 |
+| Racine | Male | TRUE | 6 | 1 | 2499 | Low | 0.0 | 21566.5 | 2498.0 | 1.0000000 |
+| Racine | Male | TRUE | 7 | 2500 | 4999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | TRUE | 8 | 5000 | 7499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | TRUE | 9 | 7500 | 9999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | TRUE | 10 | 10000 | 12499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | TRUE | 11 | 12500 | 14999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | TRUE | 12 | 15000 | 17499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | TRUE | 13 | 17500 | 19999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | TRUE | 14 | 20000 | 22499 | Low | 0.0 | 21566.5 | 1566.5 | 0.6268507 |
+| Racine | Male | TRUE | 14 | 20000 | 22499 | Moderate | 21566.5 | 34506.4 | 932.5 | 0.3731493 |
+| Racine | Male | TRUE | 15 | 22500 | 24999 | Moderate | 21566.5 | 34506.4 | 2499.0 | 1.0000000 |
+| Racine | Male | TRUE | 16 | 25000 | 29999 | Moderate | 21566.5 | 34506.4 | 4999.0 | 1.0000000 |
+| Racine | Male | TRUE | 17 | 30000 | 34999 | Moderate | 21566.5 | 34506.4 | 4506.4 | 0.9014603 |
+| Racine | Male | TRUE | 17 | 30000 | 34999 | Middle | 34506.4 | 51759.6 | 492.6 | 0.0985397 |
+| Racine | Male | TRUE | 18 | 35000 | 39999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Male | TRUE | 19 | 40000 | 44999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Male | TRUE | 20 | 45000 | 49999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Male | TRUE | 21 | 50000 | 54999 | Middle | 34506.4 | 51759.6 | 1759.6 | 0.3519904 |
+| Racine | Male | TRUE | 21 | 50000 | 54999 | Upper | 51759.6 | Inf | 3239.4 | 0.6480096 |
+| Racine | Male | TRUE | 22 | 55000 | 64999 | Upper | 51759.6 | Inf | 9999.0 | 1.0000000 |
+| Racine | Male | TRUE | 23 | 65000 | 74999 | Upper | 51759.6 | Inf | 9999.0 | 1.0000000 |
+| Racine | Male | TRUE | 24 | 75000 | 99999 | Upper | 51759.6 | Inf | 24999.0 | 1.0000000 |
+| Racine | Male | TRUE | 25 | 100000 | Inf | Upper | 51759.6 | Inf | Inf | 1.0000000 |
+| Racine | Male | FALSE | 29 | 1 | 2499 | Low | 0.0 | 21566.5 | 2498.0 | 1.0000000 |
+| Racine | Male | FALSE | 30 | 2500 | 4999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | FALSE | 31 | 5000 | 7499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | FALSE | 32 | 7500 | 9999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | FALSE | 33 | 10000 | 12499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | FALSE | 34 | 12500 | 14999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | FALSE | 35 | 15000 | 17499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | FALSE | 36 | 17500 | 19999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Male | FALSE | 37 | 20000 | 22499 | Low | 0.0 | 21566.5 | 1566.5 | 0.6268507 |
+| Racine | Male | FALSE | 37 | 20000 | 22499 | Moderate | 21566.5 | 34506.4 | 932.5 | 0.3731493 |
+| Racine | Male | FALSE | 38 | 22500 | 24999 | Moderate | 21566.5 | 34506.4 | 2499.0 | 1.0000000 |
+| Racine | Male | FALSE | 39 | 25000 | 29999 | Moderate | 21566.5 | 34506.4 | 4999.0 | 1.0000000 |
+| Racine | Male | FALSE | 40 | 30000 | 34999 | Moderate | 21566.5 | 34506.4 | 4506.4 | 0.9014603 |
+| Racine | Male | FALSE | 40 | 30000 | 34999 | Middle | 34506.4 | 51759.6 | 492.6 | 0.0985397 |
+| Racine | Male | FALSE | 41 | 35000 | 39999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Male | FALSE | 42 | 40000 | 44999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Male | FALSE | 43 | 45000 | 49999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Male | FALSE | 44 | 50000 | 54999 | Middle | 34506.4 | 51759.6 | 1759.6 | 0.3519904 |
+| Racine | Male | FALSE | 44 | 50000 | 54999 | Upper | 51759.6 | Inf | 3239.4 | 0.6480096 |
+| Racine | Male | FALSE | 45 | 55000 | 64999 | Upper | 51759.6 | Inf | 9999.0 | 1.0000000 |
+| Racine | Male | FALSE | 46 | 65000 | 74999 | Upper | 51759.6 | Inf | 9999.0 | 1.0000000 |
+| Racine | Male | FALSE | 47 | 75000 | 99999 | Upper | 51759.6 | Inf | 24999.0 | 1.0000000 |
+| Racine | Male | FALSE | 48 | 100000 | Inf | Upper | 51759.6 | Inf | Inf | 1.0000000 |
+| Racine | Female | TRUE | 53 | 1 | 2499 | Low | 0.0 | 21566.5 | 2498.0 | 1.0000000 |
+| Racine | Female | TRUE | 54 | 2500 | 4999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | TRUE | 55 | 5000 | 7499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | TRUE | 56 | 7500 | 9999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | TRUE | 57 | 10000 | 12499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | TRUE | 58 | 12500 | 14999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | TRUE | 59 | 15000 | 17499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | TRUE | 60 | 17500 | 19999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | TRUE | 61 | 20000 | 22499 | Low | 0.0 | 21566.5 | 1566.5 | 0.6268507 |
+| Racine | Female | TRUE | 61 | 20000 | 22499 | Moderate | 21566.5 | 34506.4 | 932.5 | 0.3731493 |
+| Racine | Female | TRUE | 62 | 22500 | 24999 | Moderate | 21566.5 | 34506.4 | 2499.0 | 1.0000000 |
+| Racine | Female | TRUE | 63 | 25000 | 29999 | Moderate | 21566.5 | 34506.4 | 4999.0 | 1.0000000 |
+| Racine | Female | TRUE | 64 | 30000 | 34999 | Moderate | 21566.5 | 34506.4 | 4506.4 | 0.9014603 |
+| Racine | Female | TRUE | 64 | 30000 | 34999 | Middle | 34506.4 | 51759.6 | 492.6 | 0.0985397 |
+| Racine | Female | TRUE | 65 | 35000 | 39999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Female | TRUE | 66 | 40000 | 44999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Female | TRUE | 67 | 45000 | 49999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Female | TRUE | 68 | 50000 | 54999 | Middle | 34506.4 | 51759.6 | 1759.6 | 0.3519904 |
+| Racine | Female | TRUE | 68 | 50000 | 54999 | Upper | 51759.6 | Inf | 3239.4 | 0.6480096 |
+| Racine | Female | TRUE | 69 | 55000 | 64999 | Upper | 51759.6 | Inf | 9999.0 | 1.0000000 |
+| Racine | Female | TRUE | 70 | 65000 | 74999 | Upper | 51759.6 | Inf | 9999.0 | 1.0000000 |
+| Racine | Female | TRUE | 71 | 75000 | 99999 | Upper | 51759.6 | Inf | 24999.0 | 1.0000000 |
+| Racine | Female | TRUE | 72 | 100000 | Inf | Upper | 51759.6 | Inf | Inf | 1.0000000 |
+| Racine | Female | FALSE | 76 | 1 | 2499 | Low | 0.0 | 21566.5 | 2498.0 | 1.0000000 |
+| Racine | Female | FALSE | 77 | 2500 | 4999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | FALSE | 78 | 5000 | 7499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | FALSE | 79 | 7500 | 9999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | FALSE | 80 | 10000 | 12499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | FALSE | 81 | 12500 | 14999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | FALSE | 82 | 15000 | 17499 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | FALSE | 83 | 17500 | 19999 | Low | 0.0 | 21566.5 | 2499.0 | 1.0000000 |
+| Racine | Female | FALSE | 84 | 20000 | 22499 | Low | 0.0 | 21566.5 | 1566.5 | 0.6268507 |
+| Racine | Female | FALSE | 84 | 20000 | 22499 | Moderate | 21566.5 | 34506.4 | 932.5 | 0.3731493 |
+| Racine | Female | FALSE | 85 | 22500 | 24999 | Moderate | 21566.5 | 34506.4 | 2499.0 | 1.0000000 |
+| Racine | Female | FALSE | 86 | 25000 | 29999 | Moderate | 21566.5 | 34506.4 | 4999.0 | 1.0000000 |
+| Racine | Female | FALSE | 87 | 30000 | 34999 | Moderate | 21566.5 | 34506.4 | 4506.4 | 0.9014603 |
+| Racine | Female | FALSE | 87 | 30000 | 34999 | Middle | 34506.4 | 51759.6 | 492.6 | 0.0985397 |
+| Racine | Female | FALSE | 88 | 35000 | 39999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Female | FALSE | 89 | 40000 | 44999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Female | FALSE | 90 | 45000 | 49999 | Middle | 34506.4 | 51759.6 | 4999.0 | 1.0000000 |
+| Racine | Female | FALSE | 91 | 50000 | 54999 | Middle | 34506.4 | 51759.6 | 1759.6 | 0.3519904 |
+| Racine | Female | FALSE | 91 | 50000 | 54999 | Upper | 51759.6 | Inf | 3239.4 | 0.6480096 |
+| Racine | Female | FALSE | 92 | 55000 | 64999 | Upper | 51759.6 | Inf | 9999.0 | 1.0000000 |
+| Racine | Female | FALSE | 93 | 65000 | 74999 | Upper | 51759.6 | Inf | 9999.0 | 1.0000000 |
+| Racine | Female | FALSE | 94 | 75000 | 99999 | Upper | 51759.6 | Inf | 24999.0 | 1.0000000 |
+| Racine | Female | FALSE | 95 | 100000 | Inf | Upper | 51759.6 | Inf | Inf | 1.0000000 |

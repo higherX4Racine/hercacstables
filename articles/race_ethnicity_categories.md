@@ -81,22 +81,22 @@ the table describes.
 
 There are also 14 tables that have the word “RACE” in their description.
 
-| Group  | Description                                                                                     | rows |
-|:-------|:------------------------------------------------------------------------------------------------|-----:|
-| B02001 | Race                                                                                            |   20 |
-| B02003 | Detailed Race                                                                                   |   71 |
-| B02008 | White Alone or in Combination With One or More Other Races                                      |    2 |
-| B02009 | Black or African American Alone or in Combination With One or More Other Races                  |    2 |
-| B02010 | American Indian and Alaska Native Alone or in Combination With One or More Other Races          |    2 |
-| B02011 | Asian Alone or in Combination With One or More Other Races                                      |    2 |
-| B02012 | Native Hawaiian and Other Pacific Islander Alone or in Combination With One or More Other Races |    2 |
-| B02013 | Some Other Race Alone or in Combination With One or More Other Races                            |    2 |
-| B03002 | Hispanic or Latino Origin by Race                                                               |   42 |
-| B25006 | Race of Householder                                                                             |   20 |
-| B98013 | Total Population Coverage Rate by Weighting Race and Hispanic or Latino Groups                  |   14 |
-| B99021 | Allocation of Race                                                                              |    6 |
-| C02003 | Detailed Race                                                                                   |   42 |
-| C03002 | Hispanic or Latino Origin by Race                                                               |   12 |
+| Group | Description | rows |
+|:---|:---|---:|
+| B02001 | Race | 20 |
+| B02003 | Detailed Race | 71 |
+| B02008 | White Alone or in Combination With One or More Other Races | 2 |
+| B02009 | Black or African American Alone or in Combination With One or More Other Races | 2 |
+| B02010 | American Indian and Alaska Native Alone or in Combination With One or More Other Races | 2 |
+| B02011 | Asian Alone or in Combination With One or More Other Races | 2 |
+| B02012 | Native Hawaiian and Other Pacific Islander Alone or in Combination With One or More Other Races | 2 |
+| B02013 | Some Other Race Alone or in Combination With One or More Other Races | 2 |
+| B03002 | Hispanic or Latino Origin by Race | 42 |
+| B25006 | Race of Householder | 20 |
+| B98013 | Total Population Coverage Rate by Weighting Race and Hispanic or Latino Groups | 14 |
+| B99021 | Allocation of Race | 6 |
+| C02003 | Detailed Race | 42 |
+| C03002 | Hispanic or Latino Origin by Race | 12 |
 
 They seem to fall into four categories. There are two tables with 10
 rows each, `B02001` and `B25006`. These are probably convenience tables
@@ -130,6 +130,7 @@ come from, a subtable or a convenience table. We can lay that all out in
 a way that “maps” from the Census variable to the real-world meaning.
 
 ``` r
+
 convenience_check_variables <- tibble::tribble(
     ~ Table,  ~ Suffix,   ~ Index, ~ Population, ~ Race,
     "B01001", "A",              1, "People",     "White",
@@ -172,6 +173,7 @@ usually a good idea to isolate them and run them as few times as
 possible.
 
 ``` r
+
 LATEST_YEAR <- hercacstables::most_recent_vintage("acs", "acs5")
 
 convenience_check_values_raw <- hercacstables::fetch_data(
@@ -191,6 +193,7 @@ the convenience tables do, in fact, match up with the values from the
 subtables.
 
 ``` r
+
 convenience_check_values <- convenience_check_values_raw |>
     dplyr::inner_join(
         convenience_check_variables,
@@ -224,10 +227,10 @@ convenience_check_values |>
 
 | Population | Race  |    Subtable | Convenience | Identical |
 |:-----------|:------|------------:|------------:|:----------|
-| People     | White | 210,875,446 | 210,875,446 | Yes       |
-| People     | Black |  41,070,890 |  41,070,890 | Yes       |
-| Households | White |  87,717,076 |  87,717,076 | Yes       |
-| Households | Black |  15,556,942 |  15,556,942 | Yes       |
+| People     | White | 204,142,876 | 204,142,876 | Yes       |
+| People     | Black |  40,919,547 |  40,919,547 | Yes       |
+| Households | White |  86,237,463 |  86,237,463 | Yes       |
+| Households | Black |  15,641,707 |  15,641,707 | Yes       |
 
 We don’t have to include any of the confusing “Group,” “Index,” or
 “Variable” columns in our final result.
@@ -265,6 +268,7 @@ larger, than the population reported in the exclusive tables. We can use
 ##### Census variables for inclusive and exclusive counts
 
 ``` r
+
 incl_excl_pop_variables <- hercacstables::RACE_ETHNICITY_SUBTABLES |>
     dplyr::filter(
         nchar(.data$`Inclusive Group`) > 0
@@ -289,24 +293,25 @@ incl_excl_pop_variables <- hercacstables::RACE_ETHNICITY_SUBTABLES |>
 knitr::kable(incl_excl_pop_variables)
 ```
 
-| Census Race                                      | Type of count | Group   | Variable     |
-|:-------------------------------------------------|:--------------|:--------|:-------------|
-| WHITE ALONE                                      | Inclusive     | B02008  | B02008_001E  |
-| WHITE ALONE                                      | Exclusive     | B01001A | B01001A_001E |
-| BLACK OR AFRICAN AMERICAN ALONE                  | Inclusive     | B02009  | B02009_001E  |
-| BLACK OR AFRICAN AMERICAN ALONE                  | Exclusive     | B01001B | B01001B_001E |
-| AMERICAN INDIAN AND ALASKA NATIVE ALONE          | Inclusive     | B02010  | B02010_001E  |
-| AMERICAN INDIAN AND ALASKA NATIVE ALONE          | Exclusive     | B01001C | B01001C_001E |
-| ASIAN ALONE                                      | Inclusive     | B02011  | B02011_001E  |
-| ASIAN ALONE                                      | Exclusive     | B01001D | B01001D_001E |
-| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | Inclusive     | B02012  | B02012_001E  |
-| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | Exclusive     | B01001E | B01001E_001E |
-| SOME OTHER RACE ALONE                            | Inclusive     | B02013  | B02013_001E  |
-| SOME OTHER RACE ALONE                            | Exclusive     | B01001F | B01001F_001E |
+| Census Race | Type of count | Group | Variable |
+|:---|:---|:---|:---|
+| WHITE ALONE | Inclusive | B02008 | B02008_001E |
+| WHITE ALONE | Exclusive | B01001A | B01001A_001E |
+| BLACK OR AFRICAN AMERICAN ALONE | Inclusive | B02009 | B02009_001E |
+| BLACK OR AFRICAN AMERICAN ALONE | Exclusive | B01001B | B01001B_001E |
+| AMERICAN INDIAN AND ALASKA NATIVE ALONE | Inclusive | B02010 | B02010_001E |
+| AMERICAN INDIAN AND ALASKA NATIVE ALONE | Exclusive | B01001C | B01001C_001E |
+| ASIAN ALONE | Inclusive | B02011 | B02011_001E |
+| ASIAN ALONE | Exclusive | B01001D | B01001D_001E |
+| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | Inclusive | B02012 | B02012_001E |
+| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | Exclusive | B01001E | B01001E_001E |
+| SOME OTHER RACE ALONE | Inclusive | B02013 | B02013_001E |
+| SOME OTHER RACE ALONE | Exclusive | B01001F | B01001F_001E |
 
 ##### Raw inclusive and exclusive counts
 
 ``` r
+
 incl_excl_pop_values_raw <- hercacstables::fetch_data(
     variables = incl_excl_pop_variables$Variable,
     year = 2022,
@@ -320,6 +325,7 @@ incl_excl_pop_values_raw <- hercacstables::fetch_data(
 ##### Comparing inclusive and exclusive counts
 
 ``` r
+
 incl_excl_pop_values <- incl_excl_pop_values_raw |>
     dplyr::inner_join(
         incl_excl_pop_variables,
@@ -357,14 +363,14 @@ incl_excl_pop_values |>
     )
 ```
 
-| Census Race                                      |   Inclusive |   Exclusive | Difference | Percent Multiracial |
-|:-------------------------------------------------|------------:|------------:|-----------:|--------------------:|
-| WHITE ALONE                                      | 244,954,342 | 218,123,424 | 26,830,918 |                 11% |
-| BLACK OR AFRICAN AMERICAN ALONE                  |  47,498,346 |  41,288,572 |  6,209,774 |                 13% |
-| SOME OTHER RACE ALONE                            |  38,354,036 |  20,018,544 | 18,335,492 |                 48% |
-| ASIAN ALONE                                      |  23,330,887 |  19,112,979 |  4,217,908 |                 18% |
-| AMERICAN INDIAN AND ALASKA NATIVE ALONE          |   6,749,000 |   2,786,431 |  3,962,569 |                 59% |
-| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE |   1,513,124 |     624,863 |    888,261 |                 59% |
+| Census Race | Inclusive | Exclusive | Difference | Percent Multiracial |
+|:---|---:|---:|---:|---:|
+| WHITE ALONE | 244,954,342 | 218,123,424 | 26,830,918 | 11% |
+| BLACK OR AFRICAN AMERICAN ALONE | 47,498,346 | 41,288,572 | 6,209,774 | 13% |
+| SOME OTHER RACE ALONE | 38,354,036 | 20,018,544 | 18,335,492 | 48% |
+| ASIAN ALONE | 23,330,887 | 19,112,979 | 4,217,908 | 18% |
+| AMERICAN INDIAN AND ALASKA NATIVE ALONE | 6,749,000 | 2,786,431 | 3,962,569 | 59% |
+| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | 1,513,124 | 624,863 | 888,261 | 59% |
 
 #### Hispanic ethnicity and broad racial identity
 
@@ -400,6 +406,7 @@ their percentages of Hispanic ethnicity.
 First, we will define our glossary table.
 
 ``` r
+
 hispanic_and_broad_race_variables <- hercacstables::RACE_ETHNICITY_SUBTABLES |>
     dplyr::filter(
         nchar(.data$`non-Hispanic`) > 0
@@ -427,28 +434,29 @@ hispanic_and_broad_race_variables <- hercacstables::RACE_ETHNICITY_SUBTABLES |>
 knitr::kable(hispanic_and_broad_race_variables)
 ```
 
-| Census Race                                      | Ethnicity    | Group  | Index | Variable    |
-|:-------------------------------------------------|:-------------|:-------|------:|:------------|
-| TOTAL                                            | non-Hispanic | B03002 |     2 | B03002_002E |
-| TOTAL                                            | Hispanic     | B03002 |    12 | B03002_012E |
-| WHITE ALONE                                      | non-Hispanic | B03002 |     3 | B03002_003E |
-| WHITE ALONE                                      | Hispanic     | B03002 |    13 | B03002_013E |
-| BLACK OR AFRICAN AMERICAN ALONE                  | non-Hispanic | B03002 |     4 | B03002_004E |
-| BLACK OR AFRICAN AMERICAN ALONE                  | Hispanic     | B03002 |    14 | B03002_014E |
-| AMERICAN INDIAN AND ALASKA NATIVE ALONE          | non-Hispanic | B03002 |     5 | B03002_005E |
-| AMERICAN INDIAN AND ALASKA NATIVE ALONE          | Hispanic     | B03002 |    15 | B03002_015E |
-| ASIAN ALONE                                      | non-Hispanic | B03002 |     6 | B03002_006E |
-| ASIAN ALONE                                      | Hispanic     | B03002 |    16 | B03002_016E |
-| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | non-Hispanic | B03002 |     7 | B03002_007E |
-| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | Hispanic     | B03002 |    17 | B03002_017E |
-| SOME OTHER RACE ALONE                            | non-Hispanic | B03002 |     8 | B03002_008E |
-| SOME OTHER RACE ALONE                            | Hispanic     | B03002 |    18 | B03002_018E |
-| TWO OR MORE RACES                                | non-Hispanic | B03002 |     9 | B03002_009E |
-| TWO OR MORE RACES                                | Hispanic     | B03002 |    19 | B03002_019E |
+| Census Race | Ethnicity | Group | Index | Variable |
+|:---|:---|:---|---:|:---|
+| TOTAL | non-Hispanic | B03002 | 2 | B03002_002E |
+| TOTAL | Hispanic | B03002 | 12 | B03002_012E |
+| WHITE ALONE | non-Hispanic | B03002 | 3 | B03002_003E |
+| WHITE ALONE | Hispanic | B03002 | 13 | B03002_013E |
+| BLACK OR AFRICAN AMERICAN ALONE | non-Hispanic | B03002 | 4 | B03002_004E |
+| BLACK OR AFRICAN AMERICAN ALONE | Hispanic | B03002 | 14 | B03002_014E |
+| AMERICAN INDIAN AND ALASKA NATIVE ALONE | non-Hispanic | B03002 | 5 | B03002_005E |
+| AMERICAN INDIAN AND ALASKA NATIVE ALONE | Hispanic | B03002 | 15 | B03002_015E |
+| ASIAN ALONE | non-Hispanic | B03002 | 6 | B03002_006E |
+| ASIAN ALONE | Hispanic | B03002 | 16 | B03002_016E |
+| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | non-Hispanic | B03002 | 7 | B03002_007E |
+| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | Hispanic | B03002 | 17 | B03002_017E |
+| SOME OTHER RACE ALONE | non-Hispanic | B03002 | 8 | B03002_008E |
+| SOME OTHER RACE ALONE | Hispanic | B03002 | 18 | B03002_018E |
+| TWO OR MORE RACES | non-Hispanic | B03002 | 9 | B03002_009E |
+| TWO OR MORE RACES | Hispanic | B03002 | 19 | B03002_019E |
 
-Next, we pull 18 years of ACS data.
+Next, we pull 19 years of ACS data.
 
 ``` r
+
 hispanic_and_broad_race_raw <- c(2005:2019, 2021:LATEST_YEAR) |>
     purrr::map(
         ~ hercacstables::fetch_data(
@@ -465,6 +473,7 @@ hispanic_and_broad_race_raw <- c(2005:2019, 2021:LATEST_YEAR) |>
 Then, we put the data into a nice, tidy format.
 
 ``` r
+
 hispanic_and_broad_race <- hispanic_and_broad_race_raw |>
     purrr::list_rbind() |>
     dplyr::inner_join(
@@ -503,30 +512,32 @@ hispanic_and_broad_race |>
     )
 ```
 
-| Census Race                                      | Year | non-Hispanic |   Hispanic |       Total | Percent Hispanic |
-|:-------------------------------------------------|-----:|-------------:|-----------:|------------:|-----------------:|
-| ASIAN ALONE                                      | 2005 |   12,312,949 |    158,866 |  12,471,815 |               1% |
-| SOME OTHER RACE ALONE                            | 2006 |      768,782 | 18,238,347 |  19,007,129 |              96% |
-| AMERICAN INDIAN AND ALASKA NATIVE ALONE          | 2007 |    2,019,204 |    346,143 |   2,365,347 |              15% |
-| SOME OTHER RACE ALONE                            | 2008 |      701,823 | 14,290,365 |  14,992,188 |              95% |
-| ASIAN ALONE                                      | 2009 |   13,627,633 |    146,978 |  13,774,611 |               1% |
-| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | 2010 |      474,799 |     33,117 |     507,916 |               7% |
-| SOME OTHER RACE ALONE                            | 2011 |      565,213 | 14,202,943 |  14,768,156 |              96% |
-| SOME OTHER RACE ALONE                            | 2012 |      614,725 | 13,947,953 |  14,562,678 |              96% |
-| SOME OTHER RACE ALONE                            | 2013 |      641,423 | 14,169,602 |  14,811,025 |              96% |
-| AMERICAN INDIAN AND ALASKA NATIVE ALONE          | 2014 |    2,103,422 |    498,292 |   2,601,714 |              19% |
-| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | 2015 |      502,876 |     52,070 |     554,946 |               9% |
-| TOTAL                                            | 2016 |  265,728,796 | 57,398,719 | 323,127,515 |              18% |
-| ASIAN ALONE                                      | 2017 |   17,999,846 |    215,482 |  18,215,328 |               1% |
-| ASIAN ALONE                                      | 2018 |   18,193,513 |    221,685 |  18,415,198 |               1% |
-| SOME OTHER RACE ALONE                            | 2019 |      839,270 | 15,513,283 |  16,352,553 |              95% |
-| TWO OR MORE RACES                                | 2021 |   14,298,433 | 27,588,006 |  41,886,439 |              66% |
-| SOME OTHER RACE ALONE                            | 2022 |    1,912,680 | 22,531,802 |  24,444,482 |              92% |
-| ASIAN ALONE                                      | 2023 |   19,769,752 |    282,571 |  20,052,323 |               1% |
+| Census Race | Year | non-Hispanic | Hispanic | Total | Percent Hispanic |
+|:---|---:|---:|---:|---:|---:|
+| ASIAN ALONE | 2005 | 12,312,949 | 158,866 | 12,471,815 | 1% |
+| SOME OTHER RACE ALONE | 2006 | 768,782 | 18,238,347 | 19,007,129 | 96% |
+| AMERICAN INDIAN AND ALASKA NATIVE ALONE | 2007 | 2,019,204 | 346,143 | 2,365,347 | 15% |
+| SOME OTHER RACE ALONE | 2008 | 701,823 | 14,290,365 | 14,992,188 | 95% |
+| ASIAN ALONE | 2009 | 13,627,633 | 146,978 | 13,774,611 | 1% |
+| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | 2010 | 474,799 | 33,117 | 507,916 | 7% |
+| SOME OTHER RACE ALONE | 2011 | 565,213 | 14,202,943 | 14,768,156 | 96% |
+| SOME OTHER RACE ALONE | 2012 | 614,725 | 13,947,953 | 14,562,678 | 96% |
+| SOME OTHER RACE ALONE | 2013 | 641,423 | 14,169,602 | 14,811,025 | 96% |
+| AMERICAN INDIAN AND ALASKA NATIVE ALONE | 2014 | 2,103,422 | 498,292 | 2,601,714 | 19% |
+| NATIVE HAWAIIAN AND OTHER PACIFIC ISLANDER ALONE | 2015 | 502,876 | 52,070 | 554,946 | 9% |
+| TOTAL | 2016 | 265,728,796 | 57,398,719 | 323,127,515 | 18% |
+| ASIAN ALONE | 2017 | 17,999,846 | 215,482 | 18,215,328 | 1% |
+| ASIAN ALONE | 2018 | 18,193,513 | 221,685 | 18,415,198 | 1% |
+| SOME OTHER RACE ALONE | 2019 | 839,270 | 15,513,283 | 16,352,553 | 95% |
+| TWO OR MORE RACES | 2021 | 14,298,433 | 27,588,006 | 41,886,439 | 66% |
+| SOME OTHER RACE ALONE | 2022 | 1,912,680 | 22,531,802 | 24,444,482 | 92% |
+| ASIAN ALONE | 2023 | 19,769,752 | 282,571 | 20,052,323 | 1% |
+| WHITE ALONE | 2024 | 191,382,624 | 11,967,339 | 203,349,963 | 6% |
 
 Finally, we plot it
 
 ``` r
+
 hispanic_and_broad_race |>
     dplyr::mutate(
         `Census Race` = stringr::str_to_title(.data$`Census Race`)
@@ -581,75 +592,75 @@ skip those.
 
 ### Subtables of race and ethnicity
 
-| Group  | Description                                                                                                                                                    |
-|:-------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| B01001 | Sex by Age (Hispanic or Latino)                                                                                                                                |
-| B01002 | Median Age by Sex (Hispanic or Latino)                                                                                                                         |
-| B05003 | Sex by Age by Nativity and Citizenship Status (Hispanic or Latino)                                                                                             |
-| B06004 | Place of Birth (Hispanic or Latino) in the United States                                                                                                       |
-| B07004 | Geographical Mobility in the Past Year (Hispanic or Latino) for Current Residence in the United States                                                         |
-| B07404 | Geographical Mobility in the Past Year (Hispanic or Latino) for Residence 1 Year Ago in the United States                                                      |
-| B08105 | Means of Transportation to Work (Hispanic or Latino)                                                                                                           |
-| B08505 | Means of Transportation to Work for Workplace Geography (Hispanic or Latino)                                                                                   |
-| B10051 | Grandparents Living With Own Grandchildren Under 18 Years by Responsibility for Own Grandchildren and Age of Grandparent (Hispanic or Latino)                  |
-| B11001 | Household Type (Including Living Alone) (Hispanic or Latino)                                                                                                   |
-| B11002 | Household Type by Relatives and Nonrelatives for Population in Households (Hispanic or Latino)                                                                 |
-| B12002 | Sex by Marital Status for the Population 15 Years and Over (Hispanic or Latino)                                                                                |
-| B12007 | Median Age at First Marriage (Hispanic or Latino)                                                                                                              |
-| B13002 | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status (Hispanic or Latino)                                                              |
-| B14007 | School Enrollment by Detailed Level of School for the Population 3 Years and Over (Hispanic or Latino)                                                         |
-| B15002 | Sex by Educational Attainment for the Population 25 Years and Over (Hispanic or Latino)                                                                        |
-| B16005 | Nativity by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over (Hispanic or Latino)                                       |
-| B17001 | Poverty Status in the Past 12 Months by Sex by Age (Hispanic or Latino)                                                                                        |
+| Group | Description |
+|:---|:---|
+| B01001 | Sex by Age (Hispanic or Latino) |
+| B01002 | Median Age by Sex (Hispanic or Latino) |
+| B05003 | Sex by Age by Nativity and Citizenship Status (Hispanic or Latino) |
+| B06004 | Place of Birth (Hispanic or Latino) in the United States |
+| B07004 | Geographical Mobility in the Past Year (Hispanic or Latino) for Current Residence in the United States |
+| B07404 | Geographical Mobility in the Past Year (Hispanic or Latino) for Residence 1 Year Ago in the United States |
+| B08105 | Means of Transportation to Work (Hispanic or Latino) |
+| B08505 | Means of Transportation to Work for Workplace Geography (Hispanic or Latino) |
+| B10051 | Grandparents Living With Own Grandchildren Under 18 Years by Responsibility for Own Grandchildren and Age of Grandparent (Hispanic or Latino) |
+| B11001 | Household Type (Including Living Alone) (Hispanic or Latino) |
+| B11002 | Household Type by Relatives and Nonrelatives for Population in Households (Hispanic or Latino) |
+| B12002 | Sex by Marital Status for the Population 15 Years and Over (Hispanic or Latino) |
+| B12007 | Median Age at First Marriage (Hispanic or Latino) |
+| B13002 | Women 15 to 50 Years Who Had a Birth in the Past 12 Months by Marital Status (Hispanic or Latino) |
+| B14007 | School Enrollment by Detailed Level of School for the Population 3 Years and Over (Hispanic or Latino) |
+| B15002 | Sex by Educational Attainment for the Population 25 Years and Over (Hispanic or Latino) |
+| B16005 | Nativity by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over (Hispanic or Latino) |
+| B17001 | Poverty Status in the Past 12 Months by Sex by Age (Hispanic or Latino) |
 | B17010 | Poverty Status in the Past 12 Months of Families by Family Type by Presence of Related Children Under 18 Years by Age of Related Children (Hispanic or Latino) |
-| B17020 | Poverty Status in the Past 12 Months by Age (Hispanic or Latino)                                                                                               |
-| B18101 | Age by Disability Status (Hispanic or Latino)                                                                                                                  |
-| B19001 | Household Income in the Past 12 Months (Hispanic or Latino Householder)                                                                                        |
-| B19013 | Median Household Income in the Past 12 Months (Hispanic or Latino Householder)                                                                                 |
-| B19025 | Aggregate Household Income in the Past 12 Months (Hispanic or Latino Householder)                                                                              |
-| B19037 | Age of Householder by Household Income in the Past 12 Months (Hispanic or Latino Householder)                                                                  |
-| B19101 | Family Income in the Past 12 Months (Hispanic or Latino Householder)                                                                                           |
-| B19113 | Median Family Income in the Past 12 Months (Hispanic or Latino Householder)                                                                                    |
-| B19202 | Median Nonfamily Household Income in the Past 12 Months (Hispanic or Latino Householder)                                                                       |
-| B19301 | Per Capita Income in the Past 12 Months (Hispanic or Latino)                                                                                                   |
-| B19313 | Aggregate Income in the Past 12 Months for the Population 15 Years and Over (Hispanic or Latino)                                                               |
-| B20005 | Sex by Work Experience in the Past 12 Months by Earnings in the Past 12 Months for the Population 16 Years and Over (Hispanic or Latino)                       |
-| B20017 | Median Earnings in the Past 12 Months by Sex by Work Experience in the Past 12 Months for the Population 16 Years and Over With Earnings (Hispanic or Latino)  |
-| B21001 | Sex by Age by Veteran Status for the Civilian Population 18 Years and Over (Hispanic or Latino)                                                                |
-| B22005 | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino)                                                                  |
-| B23002 | Sex by Age by Employment Status for the Population 16 Years and Over (Hispanic or Latino)                                                                      |
-| B24010 | Sex by Occupation for the Civilian Employed Population 16 Years and Over (Hispanic or Latino)                                                                  |
-| B25003 | Tenure (Hispanic or Latino Householder)                                                                                                                        |
-| B25008 | Total Population in Occupied Housing Units by Tenure (Hispanic or Latino Householder)                                                                          |
-| B25010 | Average Household Size of Occupied Housing Units by Tenure (Hispanic or Latino Householder)                                                                    |
-| B25014 | Occupants per Room (Hispanic or Latino Householder)                                                                                                            |
-| B25032 | Units in Structure (Hispanic or Latino Householder)                                                                                                            |
-| B25077 | Median Value (Dollars, Hispanic or Latino Householder)                                                                                                         |
-| B25140 | Housing Costs as a Percentage of Household Income in the Past 12 Months (Hispanic or Latino Householder)                                                       |
-| B26103 | Group Quarters Type (3 Types) (Hispanic or Latino)                                                                                                             |
-| B26203 | Group Quarters Type (5 Types) (Hispanic or Latino)                                                                                                             |
-| B27001 | Health Insurance Coverage Status by Age (Hispanic or Latino)                                                                                                   |
-| B28009 | Presence of a Computer and Type of Internet Subscription in Household (Hispanic or Latino)                                                                     |
-| C01001 | Sex by Age (Hispanic or Latino)                                                                                                                                |
-| C14007 | School Enrollment by Detailed Level of School for the Population 3 Years and Over (Hispanic or Latino)                                                         |
-| C15002 | Sex by Educational Attainment for the Population 25 Years and Over (Hispanic or Latino)                                                                        |
-| C15010 | Field of Bachelor’s Degree for First Major for the Population 25 Years and Over (Hispanic or Latino)                                                           |
-| C17001 | Poverty Status in the Past 12 Months by Sex by Age (Hispanic or Latino)                                                                                        |
-| C17010 | Poverty Status in the Past 12 Months of Families by Family Type by Presence of Related Children Under 18 Years (Hispanic or Latino)                            |
-| C21001 | Sex by Age by Veteran Status for the Civilian Population 18 Years and Over (Hispanic or Latino)                                                                |
-| C23002 | Sex by Age by Employment Status for the Population 16 Years and Over (Hispanic or Latino)                                                                      |
-| C24010 | Sex by Occupation for the Civilian Employed Population 16 Years and Over (Hispanic or Latino)                                                                  |
-| C27001 | Health Insurance Coverage Status by Age (Hispanic or Latino)                                                                                                   |
+| B17020 | Poverty Status in the Past 12 Months by Age (Hispanic or Latino) |
+| B18101 | Age by Disability Status (Hispanic or Latino) |
+| B19001 | Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19013 | Median Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19025 | Aggregate Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19037 | Age of Householder by Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19101 | Family Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19113 | Median Family Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19202 | Median Nonfamily Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B19301 | Per Capita Income in the Past 12 Months (Hispanic or Latino) |
+| B19313 | Aggregate Income in the Past 12 Months for the Population 15 Years and Over (Hispanic or Latino) |
+| B20005 | Sex by Work Experience in the Past 12 Months by Earnings in the Past 12 Months for the Population 16 Years and Over (Hispanic or Latino) |
+| B20017 | Median Earnings in the Past 12 Months by Sex by Work Experience in the Past 12 Months for the Population 16 Years and Over With Earnings (Hispanic or Latino) |
+| B21001 | Sex by Age by Veteran Status for the Civilian Population 18 Years and Over (Hispanic or Latino) |
+| B22005 | Receipt of Food Stamps/SNAP in the Past 12 Months by Race of Householder (Hispanic or Latino) |
+| B23002 | Sex by Age by Employment Status for the Population 16 Years and Over (Hispanic or Latino) |
+| B24010 | Sex by Occupation for the Civilian Employed Population 16 Years and Over (Hispanic or Latino) |
+| B25003 | Tenure (Hispanic or Latino Householder) |
+| B25008 | Total Population in Occupied Housing Units by Tenure (Hispanic or Latino Householder) |
+| B25010 | Average Household Size of Occupied Housing Units by Tenure (Hispanic or Latino Householder) |
+| B25014 | Occupants per Room (Hispanic or Latino Householder) |
+| B25032 | Units in Structure (Hispanic or Latino Householder) |
+| B25077 | Median Value (Dollars, Hispanic or Latino Householder) |
+| B25140 | Housing Costs as a Percentage of Household Income in the Past 12 Months (Hispanic or Latino Householder) |
+| B26103 | Group Quarters Type (3 Types) (Hispanic or Latino) |
+| B26203 | Group Quarters Type (5 Types) (Hispanic or Latino) |
+| B27001 | Health Insurance Coverage Status by Age (Hispanic or Latino) |
+| B28009 | Presence of a Computer and Type of Internet Subscription in Household (Hispanic or Latino) |
+| C01001 | Sex by Age (Hispanic or Latino) |
+| C14007 | School Enrollment by Detailed Level of School for the Population 3 Years and Over (Hispanic or Latino) |
+| C15002 | Sex by Educational Attainment for the Population 25 Years and Over (Hispanic or Latino) |
+| C15010 | Field of Bachelor’s Degree for First Major for the Population 25 Years and Over (Hispanic or Latino) |
+| C17001 | Poverty Status in the Past 12 Months by Sex by Age (Hispanic or Latino) |
+| C17010 | Poverty Status in the Past 12 Months of Families by Family Type by Presence of Related Children Under 18 Years (Hispanic or Latino) |
+| C21001 | Sex by Age by Veteran Status for the Civilian Population 18 Years and Over (Hispanic or Latino) |
+| C23002 | Sex by Age by Employment Status for the Population 16 Years and Over (Hispanic or Latino) |
+| C24010 | Sex by Occupation for the Civilian Employed Population 16 Years and Over (Hispanic or Latino) |
+| C27001 | Health Insurance Coverage Status by Age (Hispanic or Latino) |
 
 ### OMB Minimum Reporting Categories
 
-| Minimum Race/Ethnicity Reporting Category | Definition                                                                                                                                                                                                                                                                                            |
-|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| American Indian or Alaska Native          | Individuals with origins in any of the original peoples of North, Central, and South America, including, for example, Navajo Nation, Blackfeet Tribe of the Blackfeet Indian Reservation of Montana, Native Village of Barrow Inupiat Traditional Government, Nome Eskimo Community, Aztec, and Maya. |
-| Asian                                     | Individuals with origins in any of the original peoples of Central or East Asia, Southeast Asia, or South Asia, including, for example, Chinese, Asian Indian, Filipino, Vietnamese, Korean, and Japanese.                                                                                            |
-| Black or African American                 | Individuals with origins in any of the Black racial groups of Africa, including, for example, African American, Jamaican, Haitian, Nigerian, Ethiopian, and Somali.                                                                                                                                   |
-| Hispanic or Latino                        | Includes individuals of Mexican, Puerto Rican, Salvadoran, Cuban, Dominican, Guatemalan, and other Central or South American or Spanish culture or origin.                                                                                                                                            |
-| Middle Eastern or North African           | Individuals with origins in any of the original peoples of the Middle East or North Africa, including, for example, Lebanese, Iranian, Egyptian, Syrian, Iraqi, and Israeli.                                                                                                                          |
-| Multiracial and/or Multiethnic            | Those who identify with multiple race/ethnicity minimum reporting categories.                                                                                                                                                                                                                         |
-| Native Hawaiian or Pacific Islander       | Individuals with origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands, including, for example, Native Hawaiian, Samoan, Chamorro, Tongan, Fijian, and Marshallese.                                                                                                 |
-| White                                     | Individuals with origins in any of the original peoples of Europe, including, for example, English, German, Irish, Italian, Polish, and Scottish.                                                                                                                                                     |
+| Minimum Race/Ethnicity Reporting Category | Definition |
+|----|----|
+| American Indian or Alaska Native | Individuals with origins in any of the original peoples of North, Central, and South America, including, for example, Navajo Nation, Blackfeet Tribe of the Blackfeet Indian Reservation of Montana, Native Village of Barrow Inupiat Traditional Government, Nome Eskimo Community, Aztec, and Maya. |
+| Asian | Individuals with origins in any of the original peoples of Central or East Asia, Southeast Asia, or South Asia, including, for example, Chinese, Asian Indian, Filipino, Vietnamese, Korean, and Japanese. |
+| Black or African American | Individuals with origins in any of the Black racial groups of Africa, including, for example, African American, Jamaican, Haitian, Nigerian, Ethiopian, and Somali. |
+| Hispanic or Latino | Includes individuals of Mexican, Puerto Rican, Salvadoran, Cuban, Dominican, Guatemalan, and other Central or South American or Spanish culture or origin. |
+| Middle Eastern or North African | Individuals with origins in any of the original peoples of the Middle East or North Africa, including, for example, Lebanese, Iranian, Egyptian, Syrian, Iraqi, and Israeli. |
+| Multiracial and/or Multiethnic | Those who identify with multiple race/ethnicity minimum reporting categories. |
+| Native Hawaiian or Pacific Islander | Individuals with origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands, including, for example, Native Hawaiian, Samoan, Chamorro, Tongan, Fijian, and Marshallese. |
+| White | Individuals with origins in any of the original peoples of Europe, including, for example, English, German, Irish, Italian, Polish, and Scottish. |

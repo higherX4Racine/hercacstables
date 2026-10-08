@@ -54,6 +54,9 @@ codes that you need to pull data from the Census API.
 
 ### Families
 
+- [`GLOSSARY_OF_CHILD_AGE_AND_FAMILY_STRUCTURE`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_CHILD_AGE_AND_FAMILY_STRUCTURE.md)
+  : Census variables for how many children of different ages live in
+  families
 - [`GLOSSARY_OF_CHILDREN_IN_POVERTY`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_CHILDREN_IN_POVERTY.md)
   : Categorize ACS variables about children living in poverty and
   parents' birth origins
@@ -61,6 +64,12 @@ codes that you need to pull data from the Census API.
   : Categorize ACS variables about children per family
 - [`GLOSSARY_OF_FAMILIES_WITH_CHILDREN`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_FAMILIES_WITH_CHILDREN.md)
   : Categorize ACS variables counting families by number of children
+- [`GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_FAMILY_STRUCTURE_AND_POVERTY.md)
+  : Poverty status related to number and type of parents/guardians and
+  children
+- [`GLOSSARY_OF_POVERTY_FAMILY_AND_CHILDREN`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_POVERTY_FAMILY_AND_CHILDREN.md)
+  : Number of children by poverty status related type of
+  parents/guardians.
 
 ### Education
 
@@ -68,22 +77,42 @@ codes that you need to pull data from the Census API.
   : Census labels for different levels of educational achievement
 - [`GLOSSARY_OF_EDUCATIONAL_ATTAINMENT`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_EDUCATIONAL_ATTAINMENT.md)
   : Census variables for different levels of educational achievement
+- [`GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_EDUCATION_AND_EMPLOYMENT.md)
+  : Crossed counts of educational attainment and employment status
 
 ### Sustainable Income
 
+- [`GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_AGGREGATE_HOUSEHOLD_INCOME.md)
+  : Aggregate income values for households, broken down by race, age,
+  and source
 - [`GLOSSARY_OF_EMPLOYMENT_STATUS`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_EMPLOYMENT_STATUS.md)
   : Factor values associated with specific rows within
   employment-related ACS tables
+- [`GLOSSARY_OF_LABOR_FORCE_PARTICIPATION`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_LABOR_FORCE_PARTICIPATION.md)
+  : ACS data on sex, age, and labor force status
 - [`GLOSSARY_OF_STANDARD_OF_LIVING`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_STANDARD_OF_LIVING.md)
   : Categorize ACS variables about income : poverty level ratios by
   family sustainability
-- [`GLOSSARY_OF_LABOR_FORCE_PARTICIPATION`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_LABOR_FORCE_PARTICIPATION.md)
-  : ACS data on sex, age, and labor force status
+- [`GLOSSARY_OF_WORK_STATUS`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_WORK_STATUS.md)
+  : ACS data on age and full- or part-time employment
+
+### Home Ownership
+
+- [`GLOSSARY_OF_TENURE_BY_AGE`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_TENURE_BY_AGE.md)
+  : Households by age of householder and owner or renter status
+- [`GLOSSARY_OF_TENURE_DURATIONS`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_TENURE_DURATIONS.md)
+  : People in households by the length of their current residence
+- [`GLOSSARY_OF_TENURE_DURATIONS_BY_AGE`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_TENURE_DURATIONS_BY_AGE.md)
+  : Tenure by age of householder and the length of their current
+  residence
 
 ## Utilities
 
 Functions that a typical user won’t need to bother with, but might be
 useful for someone working to extend the capabilities of the package.
+
+- [`extract_range()`](https://higherx4racine.github.io/hercacstables/reference/extract_range.md)
+  : Extract two numbers from a range in census variables
 
 ### Constructing API calls
 

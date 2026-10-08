@@ -12,7 +12,7 @@ GLOSSARY_OF_SEX_BY_INCOME
 
 ## Format
 
-### GLOSSARY_OF_SEX_BY_INCEM
+### GLOSSARY_OF_SEX_BY_INCOME
 
 A data frame with 43 rows and 5 columns.
 

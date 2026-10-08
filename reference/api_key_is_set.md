@@ -17,5 +17,5 @@ TRUE if the key exists, FALSE otherwise
 
 ``` r
 api_key_is_set()
-#> [1] FALSE
+#> [1] TRUE
 ```

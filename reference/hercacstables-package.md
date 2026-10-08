@@ -16,6 +16,10 @@ Useful links:
 
 **Maintainer**: Ben Taft <ben.taft@career2cradle.org>
 
+Authors:
+
+- Ben Taft <ben.taft@career2cradle.org>
+
 Other contributors:
 
 - Higher Expectations for Racine County \[copyright holder, funder\]

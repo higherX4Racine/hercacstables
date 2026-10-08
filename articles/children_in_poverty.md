@@ -41,11 +41,13 @@ income](https://selfsufficiencystandard.org/wisconsin/). The
 | B17026_013E |                5.00 |                 999.00 | Family-sustaining  |
 
 Income ratios from ACS table B17026, classified into standards of living
+{.table}
 
 We use that table and the Census API look up how many families in each
 tract are in each Census income bracket.
 
 ``` r
+
 RAW_STANDARD_OF_LIVING <- hercacstables::GLOSSARY_OF_STANDARD_OF_LIVING |>
     dplyr::pull(
         "Variable"
@@ -84,20 +86,20 @@ for this that reports how many families have no kids, kids under 6, kids
 `GLOSSARY_OF_FAMILIES_WITH_CHILDREN`, that describes the relationship
 between the ACS variables and the presence/absence of children.
 
-| Variable    | Adults                                | Children under 6 | Children 6-17 |
-|:------------|:--------------------------------------|:-----------------|:--------------|
-| B11003_004E | Married Couple                        | TRUE             | FALSE         |
-| B11003_005E | Married Couple                        | TRUE             | TRUE          |
-| B11003_006E | Married Couple                        | FALSE            | TRUE          |
-| B11003_007E | Married Couple                        | FALSE            | FALSE         |
-| B11003_011E | Male householder, no spouse present   | TRUE             | FALSE         |
-| B11003_012E | Male householder, no spouse present   | TRUE             | TRUE          |
-| B11003_013E | Male householder, no spouse present   | FALSE            | TRUE          |
-| B11003_014E | Male householder, no spouse present   | FALSE            | FALSE         |
-| B11003_017E | Female householder, no spouse present | TRUE             | FALSE         |
-| B11003_018E | Female householder, no spouse present | TRUE             | TRUE          |
-| B11003_019E | Female householder, no spouse present | FALSE            | TRUE          |
-| B11003_020E | Female householder, no spouse present | FALSE            | FALSE         |
+| Variable | Adults | Children under 6 | Children 6-17 |
+|:---|:---|:---|:---|
+| B11003_004E | Married Couple | TRUE | FALSE |
+| B11003_005E | Married Couple | TRUE | TRUE |
+| B11003_006E | Married Couple | FALSE | TRUE |
+| B11003_007E | Married Couple | FALSE | FALSE |
+| B11003_011E | Male householder, no spouse present | TRUE | FALSE |
+| B11003_012E | Male householder, no spouse present | TRUE | TRUE |
+| B11003_013E | Male householder, no spouse present | FALSE | TRUE |
+| B11003_014E | Male householder, no spouse present | FALSE | FALSE |
+| B11003_017E | Female householder, no spouse present | TRUE | FALSE |
+| B11003_018E | Female householder, no spouse present | TRUE | TRUE |
+| B11003_019E | Female householder, no spouse present | FALSE | TRUE |
+| B11003_020E | Female householder, no spouse present | FALSE | FALSE |
 
 We can use this table to query the API to get the number of families
 with children in each of the census tracts that we are interested in.
@@ -108,6 +110,7 @@ asking for many different pieces of census information about the same
 place.
 
 ``` r
+
 RAW_FAMILIES_WITH_CHILDREN <- hercacstables::GLOSSARY_OF_FAMILIES_WITH_CHILDREN |>
     dplyr::pull(
         "Variable"
@@ -149,27 +152,28 @@ distinguishes three income tiers: less than the Federal poverty level,
 package’s table `GLOSSARY_OF_CHILDREN_IN_POVERTY` describes how the
 variables in that table map to parental place of birth and kid poverty.
 
-| Variable    | Least Poverty Ratio | Greatest Poverty Ratio | Standard of Living | Native-Born Parents | Foreign-Born Parents |
-|:------------|--------------------:|-----------------------:|:-------------------|--------------------:|---------------------:|
-| B05010_004E |                -999 |                   1.00 | Unsustainable      |                   2 |                    0 |
-| B05010_005E |                -999 |                   1.00 | Unsustainable      |                   0 |                    2 |
-| B05010_006E |                -999 |                   1.00 | Unsustainable      |                   1 |                    1 |
-| B05010_008E |                -999 |                   1.00 | Unsustainable      |                   1 |                    0 |
-| B05010_009E |                -999 |                   1.00 | Unsustainable      |                   0 |                    1 |
-| B05010_012E |                   1 |                   1.99 | Unsustainable      |                   2 |                    0 |
-| B05010_013E |                   1 |                   1.99 | Unsustainable      |                   0 |                    2 |
-| B05010_014E |                   1 |                   1.99 | Unsustainable      |                   1 |                    1 |
-| B05010_016E |                   1 |                   1.99 | Unsustainable      |                   1 |                    0 |
-| B05010_017E |                   1 |                   1.99 | Unsustainable      |                   0 |                    1 |
-| B05010_020E |                   2 |                 999.00 | Mixed              |                   2 |                    0 |
-| B05010_021E |                   2 |                 999.00 | Mixed              |                   0 |                    2 |
-| B05010_022E |                   2 |                 999.00 | Mixed              |                   1 |                    1 |
-| B05010_024E |                   2 |                 999.00 | Mixed              |                   1 |                    0 |
-| B05010_025E |                   2 |                 999.00 | Mixed              |                   0 |                    1 |
+| Variable | Least Poverty Ratio | Greatest Poverty Ratio | Standard of Living | Native-Born Parents | Foreign-Born Parents |
+|:---|---:|---:|:---|---:|---:|
+| B05010_004E | -999 | 1.00 | Unsustainable | 2 | 0 |
+| B05010_005E | -999 | 1.00 | Unsustainable | 0 | 2 |
+| B05010_006E | -999 | 1.00 | Unsustainable | 1 | 1 |
+| B05010_008E | -999 | 1.00 | Unsustainable | 1 | 0 |
+| B05010_009E | -999 | 1.00 | Unsustainable | 0 | 1 |
+| B05010_012E | 1 | 1.99 | Unsustainable | 2 | 0 |
+| B05010_013E | 1 | 1.99 | Unsustainable | 0 | 2 |
+| B05010_014E | 1 | 1.99 | Unsustainable | 1 | 1 |
+| B05010_016E | 1 | 1.99 | Unsustainable | 1 | 0 |
+| B05010_017E | 1 | 1.99 | Unsustainable | 0 | 1 |
+| B05010_020E | 2 | 999.00 | Mixed | 2 | 0 |
+| B05010_021E | 2 | 999.00 | Mixed | 0 | 2 |
+| B05010_022E | 2 | 999.00 | Mixed | 1 | 1 |
+| B05010_024E | 2 | 999.00 | Mixed | 1 | 0 |
+| B05010_025E | 2 | 999.00 | Mixed | 0 | 1 |
 
 Here’s the query to get those data:
 
 ``` r
+
 RAW_CHILDREN_IN_POVERTY <- hercacstables::GLOSSARY_OF_CHILDREN_IN_POVERTY |>
     dplyr::pull(
         "Variable"
@@ -206,6 +210,7 @@ percentages of families with children and with sustainable standards of
 living.
 
 ``` r
+
 CHILDREN_BY_TRACT <- CHILDREN_IN_POVERTY |>
     dplyr::inner_join(
         FAMILIES_WITH_CHILDREN,
@@ -227,10 +232,10 @@ CHILDREN_BY_TRACT <- CHILDREN_IN_POVERTY |>
 
 This is what that table looks like:
 
-| tract  | Children | Mixed | Observed Unsustainable | Families | Percent with Children | Percent Family-sustaining |
-|:-------|---------:|------:|-----------------------:|---------:|----------------------:|--------------------------:|
-| 010400 |     1163 |  1037 |                    126 |     1181 |                   39% |                       81% |
-| 010500 |      723 |   401 |                    322 |      970 |                   48% |                       35% |
+| tract | Children | Mixed | Observed Unsustainable | Families | Percent with Children | Percent Family-sustaining |
+|:---|---:|---:|---:|---:|---:|---:|
+| 010400 | 1163 | 1037 | 126 | 1181 | 39% | 81% |
+| 010500 | 723 | 401 | 322 | 970 | 48% | 35% |
 
 You can see that, in this case, we did not actually need to pull the
 number of families with children. If we were doing an even nerdier dive,
@@ -242,6 +247,7 @@ children by the percentage of families that have an sustainable standard
 of living.
 
 ``` r
+
 SUSTAINABLE_KIDS <- CHILDREN_BY_TRACT |>
     dplyr::mutate(
         `Expected Unsustainable` = .data$Children * (1 - .data$`Percent Family-sustaining`),
@@ -267,7 +273,7 @@ SUSTAINABLE_KIDS |>
     knitr::kable()
 ```
 
-| tract  | Children | Percent Family-sustaining | Expected Sustainable | Expected Unsustainable | Mixed | Observed Unsustainable | Extra Unsustainable | Sustainable Kids | Percent kids in Sustainable |
-|:-------|---------:|--------------------------:|---------------------:|-----------------------:|------:|-----------------------:|--------------------:|-----------------:|----------------------------:|
-| 010400 |     1163 |                 0.8103302 |             942.4141 |               220.5859 |  1037 |                    126 |            94.58594 |         942.4141 |                   0.8103302 |
-| 010500 |      723 |                 0.3474227 |             251.1866 |               471.8134 |   401 |                    322 |           149.81340 |         251.1866 |                   0.3474227 |
+| tract | Children | Percent Family-sustaining | Expected Sustainable | Expected Unsustainable | Mixed | Observed Unsustainable | Extra Unsustainable | Sustainable Kids | Percent kids in Sustainable |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 010400 | 1163 | 0.8103302 | 942.4141 | 220.5859 | 1037 | 126 | 94.58594 | 942.4141 | 0.8103302 |
+| 010500 | 723 | 0.3474227 | 251.1866 | 471.8134 | 401 | 322 | 149.81340 | 251.1866 | 0.3474227 |

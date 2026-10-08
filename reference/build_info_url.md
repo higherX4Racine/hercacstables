@@ -32,5 +32,5 @@ A string that contains a URL.
 
 ``` r
 hercacstables:::build_info_url("groups", 2021L, 5L)
-#> [1] "https://api.census.gov/data/2021/acs/acs5/groups.json"
+#> [1] "https://api.census.gov/data/2021/acs/acs5/groups.json?key=9e838c6945f1010bc581e83957ffc2f70c9507c6"
 ```

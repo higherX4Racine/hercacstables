@@ -18,13 +18,11 @@ build_in_geographies(...)
 
 ## Value
 
-A string of ampersand-separated `in=geo:code` pairs
+A vector of "geo:code" pairs
 
 ## Examples
 
 ``` r
 hercacstables:::build_in_geographies(state=55, county = 101, barf=NULL)
-#> $`in`
-#> [1] "state:55 county:101"
-#> 
+#> [1] "state:55"   "county:101"
 ```

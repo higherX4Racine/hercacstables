@@ -25,6 +25,7 @@ built-in table
 [`hercacstables::GLOSSARY_OF_AGE_AND_SEX`](https://higherx4racine.github.io/hercacstables/reference/GLOSSARY_OF_AGE_AND_SEX.md).
 
 ``` r
+
 school_children_glossary <- hercacstables::GLOSSARY_OF_AGE_AND_SEX |>
     dplyr::filter(
         .data$`Lower Age` >= 5,
@@ -49,6 +50,7 @@ From this table we can see that we will need to include six variables in
 our API query.
 
 ``` r
+
 SCHOOL_CHILDREN_VARIABLES <- hercacstables::build_api_variable(
     "B01001",
     school_children_glossary$Index
@@ -76,6 +78,7 @@ geographic area served by a school district. There are actually three
 different kinds of school district geographic levels.
 
 ``` r
+
 school_district_geographies <- hercacstables::METADATA_FOR_ACS_GEOGRAPHIES |>
     dplyr::filter(stringr::str_detect(.data$`Geographic Level`, "school"))
 
@@ -83,11 +86,11 @@ school_district_geographies |>
     knitr::kable()
 ```
 
-| Geographic Level             | Containing Geographies | Wildcard Option | ACS1       | ACS5       |
-|:-----------------------------|:-----------------------|:----------------|:-----------|:-----------|
-| school district (elementary) | {state}                | {state}         | 2023-01-01 | 2023-01-01 |
-| school district (secondary)  | {state}                | {state}         | 2023-01-01 | 2023-01-01 |
-| school district (unified)    | {state}                | {state}         | 2023-01-01 | 2023-01-01 |
+| Geographic Level | Containing Geographies | Wildcard Option | ACS1 | ACS5 |
+|:---|:---|:---|:---|:---|
+| school district (elementary) | {state} | {state} | 2023-01-01 | 2023-01-01 |
+| school district (secondary) | {state} | {state} | 2023-01-01 | 2023-01-01 |
+| school district (unified) | {state} | {state} | 2023-01-01 | 2023-01-01 |
 
 It looks like the specific geographic level that we should ask about is
 “school districts (unified)”.
@@ -105,6 +108,7 @@ geography.
 Ohio’s FIPS code is 39.
 
 ``` r
+
 UNIFIED_SCHOOL_DISTRICT <- school_district_geographies$`Geographic Level`[3]
 print(UNIFIED_SCHOOL_DISTRICT)
 #> [1] "school district (unified)"
@@ -134,6 +138,7 @@ them. For our example, we will use every year of data available. That is
 2005 to 2022, except for 2020, which does not have 1-year ACS data.
 
 ``` r
+
 YEARS_FOR_ACS <- c(2005:2019, 2021:2023)
 ```
 
@@ -150,6 +155,7 @@ pull data from the Census API. We need the number of children that live
 in each school district in Ohio in the most recent year available.
 
 ``` r
+
 fetch_district_children <- function(.state_fips, .year, .district_geoids = "*") {
     hercacstables::fetch_data(
         variables = c("NAME", SCHOOL_CHILDREN_VARIABLES), # district names, too
@@ -169,21 +175,22 @@ latest_school_districts_raw |>
     knitr::kable()
 ```
 
-| NAME                                               | state | school district (unified) | Group  | Index | Measure | Value | Year |
-|:---------------------------------------------------|:------|:--------------------------|:-------|------:|:--------|------:|-----:|
-| Toledo City School District, Ohio                  | 39    | 04490                     | B01001 |     6 | E       |  3872 | 2023 |
-| Columbus City School District, Ohio                | 39    | 04380                     | B01001 |    29 | E       | 14856 | 2023 |
-| West Clermont Local School District, Ohio          | 39    | 04635                     | B01001 |    28 | E       |  2916 | 2023 |
-| Fairfield City School District, Ohio               | 39    | 04610                     | B01001 |     6 | E       |  1314 | 2023 |
-| Toledo City School District, Ohio                  | 39    | 04490                     | B01001 |    29 | E       |  6601 | 2023 |
-| Parma City School District, Ohio                   | 39    | 04463                     | B01001 |     4 | E       |  2072 | 2023 |
-| Lakota Local School District (Butler County), Ohio | 39    | 04611                     | B01001 |     5 | E       |  3350 | 2023 |
-| West Clermont Local School District, Ohio          | 39    | 04635                     | B01001 |     4 | E       |  2016 | 2023 |
+| NAME | state | school district (unified) | Group | Index | Measure | Value | Year |
+|:---|:---|:---|:---|---:|:---|---:|---:|
+| Toledo City School District, Ohio | 39 | 04490 | B01001 | 6 | E | 3872 | 2023 |
+| Columbus City School District, Ohio | 39 | 04380 | B01001 | 29 | E | 14856 | 2023 |
+| West Clermont Local School District, Ohio | 39 | 04635 | B01001 | 28 | E | 2916 | 2023 |
+| Fairfield City School District, Ohio | 39 | 04610 | B01001 | 6 | E | 1314 | 2023 |
+| Toledo City School District, Ohio | 39 | 04490 | B01001 | 29 | E | 6601 | 2023 |
+| Parma City School District, Ohio | 39 | 04463 | B01001 | 4 | E | 2072 | 2023 |
+| Lakota Local School District (Butler County), Ohio | 39 | 04611 | B01001 | 5 | E | 3350 | 2023 |
+| West Clermont Local School District, Ohio | 39 | 04635 | B01001 | 4 | E | 2016 | 2023 |
 
 The next step is to sum up the populations for each district and then
 sort them from biggest to smallest.
 
 ``` r
+
 wrangle_latest_kids <- function(.raw_children){
     .raw_children |>
         dplyr::count(
@@ -203,21 +210,22 @@ latest_school_districts |>
     knitr::kable(align = "lrr")
 ```
 
-| NAME                                      | school district (unified) | Children |
-|:------------------------------------------|--------------------------:|---------:|
-| Columbus City School District, Ohio       |                     04380 |   79,141 |
-| Cleveland Municipal School District, Ohio |                     04378 |   53,773 |
-| Cincinnati City School District, Ohio     |                     04375 |   48,798 |
-| Toledo City School District, Ohio         |                     04490 |   31,622 |
-| Akron City School District, Ohio          |                     04348 |   31,297 |
-| South-Western City School District, Ohio  |                     04480 |   24,636 |
-| Olentangy Local School District, Ohio     |                     04676 |   22,083 |
-| Dayton City School District, Ohio         |                     04384 |   21,972 |
+| NAME | school district (unified) | Children |
+|:---|---:|---:|
+| Columbus City School District, Ohio | 04380 | 79,141 |
+| Cleveland Municipal School District, Ohio | 04378 | 53,773 |
+| Cincinnati City School District, Ohio | 04375 | 48,798 |
+| Toledo City School District, Ohio | 04490 | 31,622 |
+| Akron City School District, Ohio | 04348 | 31,297 |
+| South-Western City School District, Ohio | 04480 | 24,636 |
+| Olentangy Local School District, Ohio | 04676 | 22,083 |
+| Dayton City School District, Ohio | 04384 | 21,972 |
 
 The last step is to pull the GEOIDs for each of the four biggest
 districts.
 
 ``` r
+
 top_district_geoids <- function(.districts, n){
     .districts[[UNIFIED_SCHOOL_DISTRICT]][1:n]
 }
@@ -237,6 +245,7 @@ First, we fetch the data. Notice that we can reuse the fetching function
 that we defined above!
 
 ``` r
+
 fetch_district_histories <- function(.state_fips, .district_geoids = "*") {
     YEARS_FOR_ACS |>
         purrr::map(
@@ -255,6 +264,7 @@ Next, we sum up the number of children and create human-readable names
 for each district.
 
 ``` r
+
 wrangle_histories <- function(.raw_district_histories, .latest_districts){
     .raw_district_histories |>
     dplyr::count(
@@ -288,6 +298,7 @@ big_district_histories <- wrangle_histories(big_district_histories_raw,
 Finally, we can plot the results.
 
 ``` r
+
 plot_district_histories <- function(.district_histories){
     .district_histories |>
         ggplot2::ggplot(
@@ -342,6 +353,7 @@ Let’s look at changes in population for the five largest school
 districts in Delaware.
 
 ``` r
+
 STATE_FIPS <- 10
 
 latest_de_districts <- STATE_FIPS |>

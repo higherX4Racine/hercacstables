@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Income Brackets for the Community Reinvestment Act • hercacstables</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Income Brackets for the Community Reinvestment Act">
 </head>
@@ -146,11 +146,11 @@ number of folks in our assessment area in each bracket.</p>
 <div class="section level3">
 <h3 id="median-income-of-assessment-areas">Median income of assessment areas<a class="anchor" aria-label="anchor" href="#median-income-of-assessment-areas"></a>
 </h3>
-<p>We’ll use table <a href="https:://api.census.gov/data/acs/2024/B19326.html"><code>B19326</code></a>,
-which reports median income by place of birth. A full explanation of how
-I chose this table appears in an appendix at the <a href="#Finding-a-Median-Income-Table">end of this article</a>. We don’t
-actually need any of the details of place of birth, just the area’s
-overall median income. That will be reported by the table’s first row,
+<p>We’ll use table <a href="https:://api.census.gov/data/acs/acs1/2024/groups/B19326.html"><code>B19326</code></a>,
+which reports median income by sex and employment experience. A full
+explanation of how I chose this table appears in an appendix at the <a href="#Finding-a-Median-Income-Table">end of this article</a>. We don’t
+actually need any of the table’s details, just the area’s overall median
+income. That will be reported by the table’s first row,
 <code>B19326_001E</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">MEDIAN_INCOMES</span> <span class="op">&lt;-</span> <span class="st">"B19326_001E"</span> <span class="op">|&gt;</span></span>
@@ -254,12 +254,12 @@ by joining and multiplying.</p>
 <h3 id="counting-bracket-populations">Counting bracket populations<a class="anchor" aria-label="anchor" href="#counting-bracket-populations"></a>
 </h3>
 <p>The third step is to count how many people fall into each income
-bracket. To do this, we will use census table <a href="https://api.census.gov/data/2024/acs/acs1/B19325.html" class="external-link"><code>B20005</code></a>
+bracket. To do this, we will use census table <a href="https://api.census.gov/data/2024/acs/acs1/groups/B19325.html" class="external-link"><code>B19325</code></a>
 <code>hercacstables</code> provides
-<code>GLOSSARY_OF_SEX_BY_EARNINGS</code>, which describes how each row
-of this table corresponds to a specific combination of sex, employment
+<code>GLOSSARY_OF_SEX_BY_INCOME</code>, which describes how each row of
+this table corresponds to a specific combination of sex, employment
 status, and income bracket. We must assign each bracket in
-<code>B20005</code> to one or more of our local income brackets, with
+<code>B19325</code> to one or more of our local income brackets, with
 the amount weighted by how much they overlap.</p>
 <p>To do that, we’ll create a helper function that computes how much, if
 at all, two ranges overlap. We’ll use <code><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">purrr::map2_dbl</a></code> to
@@ -3486,7 +3486,7 @@ proportion of its members that go into each bracket from the CRA.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

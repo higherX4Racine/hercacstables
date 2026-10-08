@@ -789,7 +789,7 @@ and year.</p>
 <span>        <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>        <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>            caption <span class="op">=</span> <span class="st">"Households that Have Recently Moved"</span>,</span>
-<span>            align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"l"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="va">nyears</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ll"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="va">nyears</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                           collapse <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span>        <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -803,6 +803,9 @@ for each combination of householder age and tenure.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_tenure_duration</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">BigTenure</span>, <span class="va">Label</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">BigTenure</span> <span class="op">|&gt;</span></span>
+<span>        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>            `Upper Age` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">`Upper Age`</span>, <span class="st">"and Younger"</span><span class="op">)</span></span>
+<span>        <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>        <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
 <span>            <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">Year</span>,</span>
 <span>                         y <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">`Recent Move Rate`</span>,</span>
@@ -905,112 +908,112 @@ functional programming paradigm.</p>
 </colgroup>
 <thead><tr class="header">
 <th align="left">District</th>
-<th align="right">Tenure</th>
+<th align="left">Tenure</th>
 <th align="right">2016</th>
 <th align="right">2018</th>
 <th align="right">2022</th>
-<th align="left">2024</th>
+<th align="right">2024</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Anoka-Hennepin</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 69,363</td>
 <td align="right">9% of 70,857</td>
 <td align="right">10% of 76,541</td>
-<td align="left">7% of 76,830</td>
+<td align="right">7% of 76,830</td>
 </tr>
 <tr class="even">
 <td align="left">Anoka-Hennepin</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">36% of 17,190</td>
 <td align="right">30% of 16,606</td>
 <td align="right">34% of 15,629</td>
-<td align="left">36% of 17,225</td>
+<td align="right">36% of 17,225</td>
 </tr>
 <tr class="odd">
 <td align="left">Minneapolis</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 80,243</td>
 <td align="right">13% of 83,540</td>
 <td align="right">13% of 92,192</td>
-<td align="left">8% of 90,363</td>
+<td align="right">8% of 90,363</td>
 </tr>
 <tr class="even">
 <td align="left">Minneapolis</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">42% of 91,663</td>
 <td align="right">39% of 91,580</td>
 <td align="right">47% of 101,502</td>
-<td align="left">41% of 104,117</td>
+<td align="right">41% of 104,117</td>
 </tr>
 <tr class="odd">
 <td align="left">Osseo</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">9% of 39,795</td>
 <td align="right">9% of 44,118</td>
 <td align="right">9% of 41,661</td>
-<td align="left">8% of 43,183</td>
+<td align="right">8% of 43,183</td>
 </tr>
 <tr class="even">
 <td align="left">Osseo</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">42% of 13,561</td>
 <td align="right">42% of 12,007</td>
 <td align="right">40% of 15,579</td>
-<td align="left">46% of 14,910</td>
+<td align="right">46% of 14,910</td>
 </tr>
 <tr class="odd">
 <td align="left">Rochester</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">12% of 37,135</td>
 <td align="right">10% of 35,818</td>
 <td align="right">9% of 38,641</td>
-<td align="left">5% of 38,788</td>
+<td align="right">5% of 38,788</td>
 </tr>
 <tr class="even">
 <td align="left">Rochester</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">42% of 14,569</td>
 <td align="right">44% of 18,011</td>
 <td align="right">48% of 19,266</td>
-<td align="left">50% of 18,616</td>
+<td align="right">50% of 18,616</td>
 </tr>
 <tr class="odd">
 <td align="left">Rosemount-Apple Valley-Eagan</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">11% of 45,075</td>
 <td align="right">11% of 45,476</td>
 <td align="right">10% of 45,995</td>
-<td align="left">5% of 49,801</td>
+<td align="right">5% of 49,801</td>
 </tr>
 <tr class="even">
 <td align="left">Rosemount-Apple Valley-Eagan</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">45% of 11,908</td>
 <td align="right">35% of 11,728</td>
 <td align="right">45% of 16,418</td>
-<td align="left">33% of 13,988</td>
+<td align="right">33% of 13,988</td>
 </tr>
 <tr class="odd">
 <td align="left">St. Paul</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 56,236</td>
 <td align="right">10% of 57,137</td>
 <td align="right">11% of 68,098</td>
-<td align="left">8% of 63,986</td>
+<td align="right">8% of 63,986</td>
 </tr>
 <tr class="even">
 <td align="left">St. Paul</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">41% of 56,567</td>
 <td align="right">36% of 58,721</td>
 <td align="right">41% of 58,556</td>
-<td align="left">38% of 64,586</td>
+<td align="right">38% of 64,586</td>
 </tr>
 </tbody>
 </table>
-<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-1.png" class="r-plt" alt="" width="933.12"></p>
 </div>
 <div class="section level3">
 <h3 id="city">City<a class="anchor" aria-label="anchor" href="#city"></a>
@@ -1027,112 +1030,112 @@ functional programming paradigm.</p>
 </colgroup>
 <thead><tr class="header">
 <th align="left">City</th>
-<th align="right">Tenure</th>
+<th align="left">Tenure</th>
 <th align="right">2016</th>
 <th align="right">2018</th>
 <th align="right">2022</th>
-<th align="left">2024</th>
+<th align="right">2024</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Bloomington</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">8% of 23,876</td>
 <td align="right">8% of 23,470</td>
 <td align="right">6% of 26,263</td>
-<td align="left">6% of 24,842</td>
+<td align="right">6% of 24,842</td>
 </tr>
 <tr class="even">
 <td align="left">Bloomington</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">39% of 12,990</td>
 <td align="right">36% of 12,541</td>
 <td align="right">39% of 12,941</td>
-<td align="left">35% of 14,044</td>
+<td align="right">35% of 14,044</td>
 </tr>
 <tr class="odd">
 <td align="left">Brooklyn Park</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">8% of 19,175</td>
 <td align="right">10% of 19,258</td>
 <td align="right">6% of 22,243</td>
-<td align="left">7% of 21,290</td>
+<td align="right">7% of 21,290</td>
 </tr>
 <tr class="even">
 <td align="left">Brooklyn Park</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">45% of 8,536</td>
 <td align="right">33% of 8,572</td>
 <td align="right">35% of 8,566</td>
-<td align="left">51% of 8,368</td>
+<td align="right">51% of 8,368</td>
 </tr>
 <tr class="odd">
 <td align="left">Duluth</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">11% of 21,225</td>
 <td align="right">12% of 22,075</td>
 <td align="right">11% of 22,650</td>
-<td align="left">8% of 22,584</td>
+<td align="right">8% of 22,584</td>
 </tr>
 <tr class="even">
 <td align="left">Duluth</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">48% of 13,912</td>
 <td align="right">47% of 14,123</td>
 <td align="right">40% of 15,954</td>
-<td align="left">48% of 16,792</td>
+<td align="right">48% of 16,792</td>
 </tr>
 <tr class="odd">
 <td align="left">Minneapolis</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 80,243</td>
 <td align="right">13% of 83,653</td>
 <td align="right">13% of 92,192</td>
-<td align="left">8% of 90,363</td>
+<td align="right">8% of 90,363</td>
 </tr>
 <tr class="even">
 <td align="left">Minneapolis</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">42% of 91,663</td>
 <td align="right">39% of 91,580</td>
 <td align="right">47% of 101,502</td>
-<td align="left">41% of 104,117</td>
+<td align="right">41% of 104,117</td>
 </tr>
 <tr class="odd">
 <td align="left">Rochester</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">13% of 32,325</td>
 <td align="right">11% of 31,471</td>
 <td align="right">10% of 33,837</td>
-<td align="left">5% of 33,955</td>
+<td align="right">5% of 33,955</td>
 </tr>
 <tr class="even">
 <td align="left">Rochester</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">42% of 14,153</td>
 <td align="right">44% of 17,890</td>
 <td align="right">47% of 18,943</td>
-<td align="left">50% of 17,927</td>
+<td align="right">50% of 17,927</td>
 </tr>
 <tr class="odd">
 <td align="left">St. Paul</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 56,236</td>
 <td align="right">10% of 57,137</td>
 <td align="right">11% of 68,098</td>
-<td align="left">8% of 63,986</td>
+<td align="right">8% of 63,986</td>
 </tr>
 <tr class="even">
 <td align="left">St. Paul</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">41% of 56,567</td>
 <td align="right">36% of 58,721</td>
 <td align="right">41% of 58,556</td>
-<td align="left">38% of 64,586</td>
+<td align="right">38% of 64,586</td>
 </tr>
 </tbody>
 </table>
-<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-2.png" class="r-plt" alt="" width="700"></p>
+<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-2.png" class="r-plt" alt="" width="933.12"></p>
 </div>
 </div>
 <div class="section level2">
@@ -1153,48 +1156,48 @@ functional programming paradigm.</p>
 </colgroup>
 <thead><tr class="header">
 <th align="left">District</th>
-<th align="right">Tenure</th>
+<th align="left">Tenure</th>
 <th align="right">2016</th>
 <th align="right">2018</th>
 <th align="right">2022</th>
-<th align="left">2024</th>
+<th align="right">2024</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Manchester</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">12% of 19,201</td>
 <td align="right">10% of 19,162</td>
 <td align="right">8% of 24,906</td>
-<td align="left">9% of 22,836</td>
+<td align="right">9% of 22,836</td>
 </tr>
 <tr class="even">
 <td align="left">Manchester</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">44% of 26,940</td>
 <td align="right">42% of 25,124</td>
 <td align="right">21% of 23,162</td>
-<td align="left">32% of 25,327</td>
+<td align="right">32% of 25,327</td>
 </tr>
 <tr class="odd">
 <td align="left">Nashua</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">9% of 18,383</td>
 <td align="right">8% of 21,468</td>
 <td align="right">9% of 20,791</td>
-<td align="left">11% of 21,820</td>
+<td align="right">11% of 21,820</td>
 </tr>
 <tr class="even">
 <td align="left">Nashua</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">37% of 17,280</td>
 <td align="right">39% of 17,052</td>
 <td align="right">18% of 17,226</td>
-<td align="left">25% of 19,219</td>
+<td align="right">25% of 19,219</td>
 </tr>
 </tbody>
 </table>
-<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-3.png" class="r-plt" alt="" width="700"></p>
+<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-3.png" class="r-plt" alt="" width="933.12"></p>
 </div>
 <div class="section level3">
 <h3 id="city-1">City<a class="anchor" aria-label="anchor" href="#city-1"></a>
@@ -1211,48 +1214,48 @@ functional programming paradigm.</p>
 </colgroup>
 <thead><tr class="header">
 <th align="left">City</th>
-<th align="right">Tenure</th>
+<th align="left">Tenure</th>
 <th align="right">2016</th>
 <th align="right">2018</th>
 <th align="right">2022</th>
-<th align="left">2024</th>
+<th align="right">2024</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Manchester</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">12% of 19,201</td>
 <td align="right">10% of 19,162</td>
 <td align="right">8% of 24,906</td>
-<td align="left">9% of 22,836</td>
+<td align="right">9% of 22,836</td>
 </tr>
 <tr class="even">
 <td align="left">Manchester</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">44% of 26,940</td>
 <td align="right">42% of 25,124</td>
 <td align="right">21% of 23,162</td>
-<td align="left">32% of 25,327</td>
+<td align="right">32% of 25,327</td>
 </tr>
 <tr class="odd">
 <td align="left">Nashua</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">9% of 18,383</td>
 <td align="right">8% of 21,468</td>
 <td align="right">9% of 20,791</td>
-<td align="left">11% of 21,820</td>
+<td align="right">11% of 21,820</td>
 </tr>
 <tr class="even">
 <td align="left">Nashua</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">37% of 17,280</td>
 <td align="right">39% of 17,052</td>
 <td align="right">18% of 17,226</td>
-<td align="left">25% of 19,219</td>
+<td align="right">25% of 19,219</td>
 </tr>
 </tbody>
 </table>
-<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-4.png" class="r-plt" alt="" width="700"></p>
+<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-4.png" class="r-plt" alt="" width="933.12"></p>
 </div>
 </div>
 <div class="section level2">
@@ -1273,112 +1276,112 @@ functional programming paradigm.</p>
 </colgroup>
 <thead><tr class="header">
 <th align="left">District</th>
-<th align="right">Tenure</th>
+<th align="left">Tenure</th>
 <th align="right">2016</th>
 <th align="right">2018</th>
 <th align="right">2022</th>
-<th align="left">2024</th>
+<th align="right">2024</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Akron</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">6% of 39,021</td>
 <td align="right">7% of 39,693</td>
 <td align="right">11% of 41,007</td>
-<td align="left">8% of 43,899</td>
+<td align="right">8% of 43,899</td>
 </tr>
 <tr class="even">
 <td align="left">Akron</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">27% of 40,062</td>
 <td align="right">34% of 40,952</td>
 <td align="right">26% of 38,393</td>
-<td align="left">29% of 38,205</td>
+<td align="right">29% of 38,205</td>
 </tr>
 <tr class="odd">
 <td align="left">Cincinnati</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">11% of 60,544</td>
 <td align="right">11% of 61,582</td>
 <td align="right">10% of 67,418</td>
-<td align="left">11% of 69,763</td>
+<td align="right">11% of 69,763</td>
 </tr>
 <tr class="even">
 <td align="left">Cincinnati</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">43% of 90,420</td>
 <td align="right">41% of 91,871</td>
 <td align="right">36% of 90,984</td>
-<td align="left">36% of 92,377</td>
+<td align="right">36% of 92,377</td>
 </tr>
 <tr class="odd">
 <td align="left">Cleveland</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">7% of 71,531</td>
 <td align="right">7% of 69,890</td>
 <td align="right">8% of 68,962</td>
-<td align="left">7% of 79,024</td>
+<td align="right">7% of 79,024</td>
 </tr>
 <tr class="even">
 <td align="left">Cleveland</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">36% of 97,840</td>
 <td align="right">34% of 104,038</td>
 <td align="right">31% of 100,452</td>
-<td align="left">31% of 92,722</td>
+<td align="right">31% of 92,722</td>
 </tr>
 <tr class="odd">
 <td align="left">Columbus</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 90,023</td>
 <td align="right">10% of 96,807</td>
 <td align="right">11% of 100,752</td>
-<td align="left">9% of 111,950</td>
+<td align="right">9% of 111,950</td>
 </tr>
 <tr class="even">
 <td align="left">Columbus</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">42% of 138,650</td>
 <td align="right">42% of 140,155</td>
 <td align="right">40% of 149,607</td>
-<td align="left">42% of 146,373</td>
+<td align="right">42% of 146,373</td>
 </tr>
 <tr class="odd">
 <td align="left">South-Western</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">12% of 31,087</td>
 <td align="right">9% of 33,895</td>
 <td align="right">11% of 32,700</td>
-<td align="left">11% of 34,485</td>
+<td align="right">11% of 34,485</td>
 </tr>
 <tr class="even">
 <td align="left">South-Western</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">36% of 22,979</td>
 <td align="right">36% of 21,258</td>
 <td align="right">37% of 22,119</td>
-<td align="left">39% of 23,925</td>
+<td align="right">39% of 23,925</td>
 </tr>
 <tr class="odd">
 <td align="left">Toledo</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">7% of 44,164</td>
 <td align="right">11% of 45,449</td>
 <td align="right">10% of 54,738</td>
-<td align="left">9% of 50,069</td>
+<td align="right">9% of 50,069</td>
 </tr>
 <tr class="even">
 <td align="left">Toledo</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">43% of 48,595</td>
 <td align="right">43% of 47,517</td>
 <td align="right">30% of 43,233</td>
-<td align="left">37% of 44,224</td>
+<td align="right">37% of 44,224</td>
 </tr>
 </tbody>
 </table>
-<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-5.png" class="r-plt" alt="" width="700"></p>
+<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-5.png" class="r-plt" alt="" width="933.12"></p>
 </div>
 <div class="section level3">
 <h3 id="city-2">City<a class="anchor" aria-label="anchor" href="#city-2"></a>
@@ -1395,112 +1398,112 @@ functional programming paradigm.</p>
 </colgroup>
 <thead><tr class="header">
 <th align="left">City</th>
-<th align="right">Tenure</th>
+<th align="left">Tenure</th>
 <th align="right">2016</th>
 <th align="right">2018</th>
 <th align="right">2022</th>
-<th align="left">2024</th>
+<th align="right">2024</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Akron</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">6% of 41,271</td>
 <td align="right">7% of 42,719</td>
 <td align="right">11% of 43,716</td>
-<td align="left">9% of 46,831</td>
+<td align="right">9% of 46,831</td>
 </tr>
 <tr class="even">
 <td align="left">Akron</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">27% of 41,800</td>
 <td align="right">34% of 43,254</td>
 <td align="right">27% of 41,679</td>
-<td align="left">28% of 39,984</td>
+<td align="right">28% of 39,984</td>
 </tr>
 <tr class="odd">
 <td align="left">Cincinnati</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">11% of 51,482</td>
 <td align="right">11% of 52,732</td>
 <td align="right">11% of 58,387</td>
-<td align="left">11% of 58,544</td>
+<td align="right">11% of 58,544</td>
 </tr>
 <tr class="even">
 <td align="left">Cincinnati</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">44% of 84,083</td>
 <td align="right">42% of 86,035</td>
 <td align="right">36% of 87,362</td>
-<td align="left">36% of 87,420</td>
+<td align="right">36% of 87,420</td>
 </tr>
 <tr class="odd">
 <td align="left">Cleveland</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">7% of 70,414</td>
 <td align="right">7% of 69,133</td>
 <td align="right">8% of 68,158</td>
-<td align="left">7% of 79,062</td>
+<td align="right">7% of 79,062</td>
 </tr>
 <tr class="even">
 <td align="left">Cleveland</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">36% of 97,892</td>
 <td align="right">35% of 103,892</td>
 <td align="right">31% of 101,269</td>
-<td align="left">31% of 92,388</td>
+<td align="right">31% of 92,388</td>
 </tr>
 <tr class="odd">
 <td align="left">Columbus</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">11% of 153,511</td>
 <td align="right">11% of 164,967</td>
 <td align="right">10% of 170,155</td>
-<td align="left">9% of 181,936</td>
+<td align="right">9% of 181,936</td>
 </tr>
 <tr class="even">
 <td align="left">Columbus</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">41% of 195,602</td>
 <td align="right">42% of 201,067</td>
 <td align="right">40% of 221,886</td>
-<td align="left">41% of 214,714</td>
+<td align="right">41% of 214,714</td>
 </tr>
 <tr class="odd">
 <td align="left">Dayton</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">6% of 27,519</td>
 <td align="right">7% of 26,733</td>
 <td align="right">9% of 32,464</td>
-<td align="left">9% of 31,193</td>
+<td align="right">9% of 31,193</td>
 </tr>
 <tr class="even">
 <td align="left">Dayton</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">39% of 31,203</td>
 <td align="right">38% of 33,363</td>
 <td align="right">33% of 30,844</td>
-<td align="left">33% of 28,585</td>
+<td align="right">33% of 28,585</td>
 </tr>
 <tr class="odd">
 <td align="left">Toledo</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">7% of 56,880</td>
 <td align="right">10% of 58,391</td>
 <td align="right">9% of 68,044</td>
-<td align="left">9% of 63,028</td>
+<td align="right">9% of 63,028</td>
 </tr>
 <tr class="even">
 <td align="left">Toledo</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">43% of 61,242</td>
 <td align="right">42% of 58,458</td>
 <td align="right">29% of 53,217</td>
-<td align="left">35% of 55,671</td>
+<td align="right">35% of 55,671</td>
 </tr>
 </tbody>
 </table>
-<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-6.png" class="r-plt" alt="" width="700"></p>
+<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-6.png" class="r-plt" alt="" width="933.12"></p>
 </div>
 </div>
 <div class="section level2">
@@ -1521,112 +1524,112 @@ functional programming paradigm.</p>
 </colgroup>
 <thead><tr class="header">
 <th align="left">District</th>
-<th align="right">Tenure</th>
+<th align="left">Tenure</th>
 <th align="right">2016</th>
 <th align="right">2018</th>
 <th align="right">2022</th>
-<th align="left">2024</th>
+<th align="right">2024</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Appleton Area</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 25,206</td>
 <td align="right">8% of 26,409</td>
 <td align="right">11% of 28,046</td>
-<td align="left">9% of 27,046</td>
+<td align="right">9% of 27,046</td>
 </tr>
 <tr class="even">
 <td align="left">Appleton Area</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">31% of 14,474</td>
 <td align="right">35% of 14,496</td>
 <td align="right">34% of 15,800</td>
-<td align="left">38% of 15,785</td>
+<td align="right">38% of 15,785</td>
 </tr>
 <tr class="odd">
 <td align="left">Green Bay Area</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">8% of 34,758</td>
 <td align="right">8% of 35,150</td>
 <td align="right">7% of 35,029</td>
-<td align="left">10% of 36,929</td>
+<td align="right">10% of 36,929</td>
 </tr>
 <tr class="even">
 <td align="left">Green Bay Area</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">37% of 22,583</td>
 <td align="right">34% of 19,616</td>
 <td align="right">30% of 23,797</td>
-<td align="left">34% of 18,575</td>
+<td align="right">34% of 18,575</td>
 </tr>
 <tr class="odd">
 <td align="left">Kenosha</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">5% of 27,968</td>
 <td align="right">10% of 30,183</td>
 <td align="right">10% of 33,549</td>
-<td align="left">6% of 33,860</td>
+<td align="right">6% of 33,860</td>
 </tr>
 <tr class="even">
 <td align="left">Kenosha</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">43% of 20,712</td>
 <td align="right">32% of 18,202</td>
 <td align="right">34% of 20,208</td>
-<td align="left">25% of 20,179</td>
+<td align="right">25% of 20,179</td>
 </tr>
 <tr class="odd">
 <td align="left">Madison</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 49,773</td>
 <td align="right">10% of 50,034</td>
 <td align="right">12% of 61,873</td>
-<td align="left">7% of 59,619</td>
+<td align="right">7% of 59,619</td>
 </tr>
 <tr class="even">
 <td align="left">Madison</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">53% of 57,361</td>
 <td align="right">51% of 60,113</td>
 <td align="right">51% of 72,255</td>
-<td align="left">47% of 74,478</td>
+<td align="right">47% of 74,478</td>
 </tr>
 <tr class="odd">
 <td align="left">Milwaukee</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">8% of 93,184</td>
 <td align="right">10% of 96,609</td>
 <td align="right">10% of 95,982</td>
-<td align="left">9% of 102,128</td>
+<td align="right">9% of 102,128</td>
 </tr>
 <tr class="even">
 <td align="left">Milwaukee</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">40% of 135,099</td>
 <td align="right">38% of 134,432</td>
 <td align="right">34% of 137,872</td>
-<td align="left">34% of 133,112</td>
+<td align="right">34% of 133,112</td>
 </tr>
 <tr class="odd">
 <td align="left">Racine</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">8% of 33,763</td>
 <td align="right">7% of 33,293</td>
 <td align="right">10% of 39,291</td>
-<td align="left">6% of 41,249</td>
+<td align="right">6% of 41,249</td>
 </tr>
 <tr class="even">
 <td align="left">Racine</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">37% of 21,388</td>
 <td align="right">32% of 21,746</td>
 <td align="right">33% of 16,789</td>
-<td align="left">20% of 18,591</td>
+<td align="right">20% of 18,591</td>
 </tr>
 </tbody>
 </table>
-<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-7.png" class="r-plt" alt="" width="700"></p>
+<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-7.png" class="r-plt" alt="" width="933.12"></p>
 </div>
 <div class="section level3">
 <h3 id="city-3">City<a class="anchor" aria-label="anchor" href="#city-3"></a>
@@ -1643,112 +1646,112 @@ functional programming paradigm.</p>
 </colgroup>
 <thead><tr class="header">
 <th align="left">City</th>
-<th align="right">Tenure</th>
+<th align="left">Tenure</th>
 <th align="right">2016</th>
 <th align="right">2018</th>
 <th align="right">2022</th>
-<th align="left">2024</th>
+<th align="right">2024</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Appleton</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">11% of 18,632</td>
 <td align="right">8% of 19,717</td>
 <td align="right">11% of 21,624</td>
-<td align="left">7% of 20,110</td>
+<td align="right">7% of 20,110</td>
 </tr>
 <tr class="even">
 <td align="left">Appleton</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">33% of 10,220</td>
 <td align="right">35% of 10,147</td>
 <td align="right">33% of 11,480</td>
-<td align="left">32% of 9,514</td>
+<td align="right">32% of 9,514</td>
 </tr>
 <tr class="odd">
 <td align="left">Green Bay</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">8% of 23,996</td>
 <td align="right">9% of 24,373</td>
 <td align="right">8% of 24,710</td>
-<td align="left">11% of 25,736</td>
+<td align="right">11% of 25,736</td>
 </tr>
 <tr class="even">
 <td align="left">Green Bay</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">38% of 19,289</td>
 <td align="right">34% of 16,899</td>
 <td align="right">29% of 20,979</td>
-<td align="left">36% of 15,473</td>
+<td align="right">36% of 15,473</td>
 </tr>
 <tr class="odd">
 <td align="left">Kenosha</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">4% of 20,032</td>
 <td align="right">9% of 21,185</td>
 <td align="right">9% of 24,832</td>
-<td align="left">5% of 23,937</td>
+<td align="right">5% of 23,937</td>
 </tr>
 <tr class="even">
 <td align="left">Kenosha</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">44% of 18,499</td>
 <td align="right">29% of 15,950</td>
 <td align="right">31% of 16,268</td>
-<td align="left">25% of 17,345</td>
+<td align="right">25% of 17,345</td>
 </tr>
 <tr class="odd">
 <td align="left">Madison</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">10% of 52,869</td>
 <td align="right">11% of 51,248</td>
 <td align="right">13% of 59,349</td>
-<td align="left">6% of 58,600</td>
+<td align="right">6% of 58,600</td>
 </tr>
 <tr class="even">
 <td align="left">Madison</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">54% of 56,680</td>
 <td align="right">52% of 60,415</td>
 <td align="right">51% of 70,219</td>
-<td align="left">47% of 74,964</td>
+<td align="right">47% of 74,964</td>
 </tr>
 <tr class="odd">
 <td align="left">Milwaukee</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">8% of 93,184</td>
 <td align="right">10% of 96,609</td>
 <td align="right">10% of 95,982</td>
-<td align="left">9% of 102,128</td>
+<td align="right">9% of 102,128</td>
 </tr>
 <tr class="even">
 <td align="left">Milwaukee</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">40% of 135,099</td>
 <td align="right">38% of 134,432</td>
 <td align="right">34% of 137,872</td>
-<td align="left">34% of 133,112</td>
+<td align="right">34% of 133,112</td>
 </tr>
 <tr class="odd">
 <td align="left">Racine</td>
-<td align="right">Owner occupied</td>
+<td align="left">Owner occupied</td>
 <td align="right">9% of 14,864</td>
 <td align="right">8% of 14,999</td>
 <td align="right">12% of 19,872</td>
-<td align="left">5% of 20,080</td>
+<td align="right">5% of 20,080</td>
 </tr>
 <tr class="even">
 <td align="left">Racine</td>
-<td align="right">Renter occupied</td>
+<td align="left">Renter occupied</td>
 <td align="right">38% of 15,735</td>
 <td align="right">30% of 15,159</td>
 <td align="right">34% of 11,391</td>
-<td align="left">19% of 13,069</td>
+<td align="right">19% of 13,069</td>
 </tr>
 </tbody>
 </table>
-<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-8.png" class="r-plt" alt="" width="700"></p>
+<p><img src="documenting_tenure_and_age_files/figure-html/look-at-results-8.png" class="r-plt" alt="" width="933.12"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

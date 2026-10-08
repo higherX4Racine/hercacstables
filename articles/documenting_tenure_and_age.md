@@ -319,7 +319,7 @@ tabulate_tenure_durations <- function(BigTenure, Label) {
         ) |>
         knitr::kable(
             caption = "Households that Have Recently Moved",
-            align = paste0(c("l", rep("r", nyears)),
+            align = paste0(c("ll", rep("r", nyears)),
                            collapse = "")
         )
 }
@@ -335,6 +335,9 @@ combination of householder age and tenure.
 
 plot_tenure_duration <- function(BigTenure, Label) {
     BigTenure |>
+        dplyr::mutate(
+            `Upper Age` = paste(.data$`Upper Age`, "and Younger")
+        ) |>
         ggplot2::ggplot(
             ggplot2::aes(x = .data$Year,
                          y = .data$`Recent Move Rate`,
@@ -428,7 +431,7 @@ SUMMARIZED |>
 ### District
 
 | District | Tenure | 2016 | 2018 | 2022 | 2024 |
-|:---|---:|---:|---:|---:|:---|
+|:---|:---|---:|---:|---:|---:|
 | Anoka-Hennepin | Owner occupied | 10% of 69,363 | 9% of 70,857 | 10% of 76,541 | 7% of 76,830 |
 | Anoka-Hennepin | Renter occupied | 36% of 17,190 | 30% of 16,606 | 34% of 15,629 | 36% of 17,225 |
 | Minneapolis | Owner occupied | 10% of 80,243 | 13% of 83,540 | 13% of 92,192 | 8% of 90,363 |
@@ -449,7 +452,7 @@ Households that Have Recently Moved {.table style="width:100%;"}
 ### City
 
 | City | Tenure | 2016 | 2018 | 2022 | 2024 |
-|:---|---:|---:|---:|---:|:---|
+|:---|:---|---:|---:|---:|---:|
 | Bloomington | Owner occupied | 8% of 23,876 | 8% of 23,470 | 6% of 26,263 | 6% of 24,842 |
 | Bloomington | Renter occupied | 39% of 12,990 | 36% of 12,541 | 39% of 12,941 | 35% of 14,044 |
 | Brooklyn Park | Owner occupied | 8% of 19,175 | 10% of 19,258 | 6% of 22,243 | 7% of 21,290 |
@@ -472,7 +475,7 @@ Households that Have Recently Moved {.table style="width:100%;"}
 ### District
 
 | District | Tenure | 2016 | 2018 | 2022 | 2024 |
-|:---|---:|---:|---:|---:|:---|
+|:---|:---|---:|---:|---:|---:|
 | Manchester | Owner occupied | 12% of 19,201 | 10% of 19,162 | 8% of 24,906 | 9% of 22,836 |
 | Manchester | Renter occupied | 44% of 26,940 | 42% of 25,124 | 21% of 23,162 | 32% of 25,327 |
 | Nashua | Owner occupied | 9% of 18,383 | 8% of 21,468 | 9% of 20,791 | 11% of 21,820 |
@@ -485,7 +488,7 @@ Households that Have Recently Moved {.table}
 ### City
 
 | City | Tenure | 2016 | 2018 | 2022 | 2024 |
-|:---|---:|---:|---:|---:|:---|
+|:---|:---|---:|---:|---:|---:|
 | Manchester | Owner occupied | 12% of 19,201 | 10% of 19,162 | 8% of 24,906 | 9% of 22,836 |
 | Manchester | Renter occupied | 44% of 26,940 | 42% of 25,124 | 21% of 23,162 | 32% of 25,327 |
 | Nashua | Owner occupied | 9% of 18,383 | 8% of 21,468 | 9% of 20,791 | 11% of 21,820 |
@@ -500,7 +503,7 @@ Households that Have Recently Moved {.table}
 ### District
 
 | District | Tenure | 2016 | 2018 | 2022 | 2024 |
-|:---|---:|---:|---:|---:|:---|
+|:---|:---|---:|---:|---:|---:|
 | Akron | Owner occupied | 6% of 39,021 | 7% of 39,693 | 11% of 41,007 | 8% of 43,899 |
 | Akron | Renter occupied | 27% of 40,062 | 34% of 40,952 | 26% of 38,393 | 29% of 38,205 |
 | Cincinnati | Owner occupied | 11% of 60,544 | 11% of 61,582 | 10% of 67,418 | 11% of 69,763 |
@@ -521,7 +524,7 @@ Households that Have Recently Moved {.table style="width:100%;"}
 ### City
 
 | City | Tenure | 2016 | 2018 | 2022 | 2024 |
-|:---|---:|---:|---:|---:|:---|
+|:---|:---|---:|---:|---:|---:|
 | Akron | Owner occupied | 6% of 41,271 | 7% of 42,719 | 11% of 43,716 | 9% of 46,831 |
 | Akron | Renter occupied | 27% of 41,800 | 34% of 43,254 | 27% of 41,679 | 28% of 39,984 |
 | Cincinnati | Owner occupied | 11% of 51,482 | 11% of 52,732 | 11% of 58,387 | 11% of 58,544 |
@@ -544,7 +547,7 @@ Households that Have Recently Moved {.table}
 ### District
 
 | District | Tenure | 2016 | 2018 | 2022 | 2024 |
-|:---|---:|---:|---:|---:|:---|
+|:---|:---|---:|---:|---:|---:|
 | Appleton Area | Owner occupied | 10% of 25,206 | 8% of 26,409 | 11% of 28,046 | 9% of 27,046 |
 | Appleton Area | Renter occupied | 31% of 14,474 | 35% of 14,496 | 34% of 15,800 | 38% of 15,785 |
 | Green Bay Area | Owner occupied | 8% of 34,758 | 8% of 35,150 | 7% of 35,029 | 10% of 36,929 |
@@ -565,7 +568,7 @@ Households that Have Recently Moved {.table style="width:100%;"}
 ### City
 
 | City | Tenure | 2016 | 2018 | 2022 | 2024 |
-|:---|---:|---:|---:|---:|:---|
+|:---|:---|---:|---:|---:|---:|
 | Appleton | Owner occupied | 11% of 18,632 | 8% of 19,717 | 11% of 21,624 | 7% of 20,110 |
 | Appleton | Renter occupied | 33% of 10,220 | 35% of 10,147 | 33% of 11,480 | 32% of 9,514 |
 | Green Bay | Owner occupied | 8% of 23,996 | 9% of 24,373 | 8% of 24,710 | 11% of 25,736 |

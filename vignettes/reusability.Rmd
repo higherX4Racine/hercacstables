@@ -182,7 +182,7 @@ WOMEN_AND_BIRTHS |>
 
 ```
 
-## Reusability
+## Examples of Reusability
 
 The benefit of this approach is that we can reuse the fetching and wrangling
 functions.

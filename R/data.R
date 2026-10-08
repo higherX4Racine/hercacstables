@@ -422,11 +422,9 @@
 
 #' People in households by the length of their current residence
 #'
-#' A note of warning! Different years of the ACS have different values for
-#' "Shortest Duration" and "Longest Duration!" If this table
-#' seemed like a really useful source of data (it doesn't, I'll be looking at
-#' HUD for better precision and coverage), there should really be a different
-#' table for EACH ACS year.
+#' A note of warning! The data for this table come from the biennial
+#' [American Housing Survey](https://www.census.gov/programs-surveys/ahs),
+#' so you should only use data from even-numbered years.
 #'
 #' @format ## GLOSSARY_OF_TENURE_BY_AGE
 #' A data frame with 36 rows and 8 columns
@@ -444,11 +442,9 @@
 
 #' Tenure by age of householder and the length of their current residence
 #'
-#' A note of warning! Different years of the ACS have different values for
-#' "Shortest Duration" and "Longest Duration!" If this table
-#' seemed like a really useful source of data (it doesn't, I'll be looking at
-#' HUD for better precision and coverage), there should really be a different
-#' table for EACH ACS year.
+#' A note of warning! The data for this table come from the biennial
+#' [American Housing Survey](https://www.census.gov/programs-surveys/ahs),
+#' so you should only use data from even-numbered years.
 #'
 #' @format ## GLOSSARY_OF_TENURE_BY_AGE
 #' A data frame with 36 rows and 8 columns

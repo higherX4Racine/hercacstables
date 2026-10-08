@@ -25,10 +25,8 @@ https://api.census.gov/data/2024/acs/acs5/groups/B25026.html
 GLOSSARY_OF_TENURE_DURATIONS
 }
 \description{
-A note of warning! Different years of the ACS have different values for
-"Shortest Duration" and "Longest Duration!" If this table
-seemed like a really useful source of data (it doesn't, I'll be looking at
-HUD for better precision and coverage), there should really be a different
-table for EACH ACS year.
+A note of warning! The data for this table come from the biennial
+\href{https://www.census.gov/programs-surveys/ahs}{American Housing Survey},
+so you should only use data from even-numbered years.
 }
 \keyword{datasets}

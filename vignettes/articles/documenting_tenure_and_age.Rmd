@@ -2,61 +2,220 @@
 title: "Documenting Tenure, Age, and Years Living in Current Residence"
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   cache = TRUE
 )
+
 ```
 
-```{r setup}
-library(hercacstables)
+Some of the many things that
+[The American Housing Survey](https://www.census.gov/programs-surveys/ahs.html)
+reports about are
+the age of the householder,
+whether they rent or own their residence, and
+how many years they have lived there.
+
+This example considers how those factors interact.
+It was motivated by interest in how often families with children at Racine
+Unified School District have to move between schools.
+Racine's decision-makers are particularly interested in understanding how
+renting might impact student mobility.
+
+## Setup
+
+The data come from ACS table ["B25128"](https://api.census.gov/data/2024/acs/acs5/groups/B25128.html).
+
+```{r}
+#| label: show-glossary
+#| echo: false
+
+knitr::kable(hercacstables::GLOSSARY_OF_TENURE_DURATIONS_BY_AGE)
 ```
 
 ```{r}
-#| label: define-fetch-function
+#| label: define-number-of-big-units
+#| echo: false
 
-fetch_tenure_durations <- function(.product, .geo, .state) {
-    .years <- 2015:2024
-    if (.product == "acs1") {
+NUMBER_OF_BIG_UNITS <- 6
+```
+
+Here are the settings needed for pulling data for four different states.
+For each state, we will look at the `r NUMBER_OF_BIG_UNITS` largest ones in the
+state, focusing on one in particular from that subset.
+
+```{r}
+#| label: define-settings
+#| echo: false
+
+LOCATIONS <- tibble::tribble(
+    ~ FIPS, ~ State,         ~ Focus,
+       27L, "Minnesota",     "Minneapolis",
+       33L, "New Hampshire", "Nashua",
+       39L, "Ohio",          "Akron",
+       55L, "Wisconsin",     "Racine"
+)
+
+QUERIES <- tibble::tribble(
+    ~ Product, ~ Geography,                 ~ Label,
+    "acs1",    "school district (unified)", "District",
+    "acs1",    "place",                     "City"
+)
+
+SETTINGS <- dplyr::cross_join(LOCATIONS, QUERIES)
+
+knitr::kable(SETTINGS)
+```
+
+```{r}
+#| label: define-displacement-window
+#| echo: false
+
+DISPLACEMENT_WINDOW <- 2
+```
+
+If a household has moved in the last `r DISPLACEMENT_WINDOW` years then it
+counts as a recent move.
+
+Note that the AHS takes place on odd-numbered years.
+That means that ACS data based on the AHS from even-numbered years are not
+actually comparable with data from odd-numbered years.
+Accordingly, this example only pulls ACS data from even-numbered years.
+The current format of the AHS began in 2015, so this example only pulls data
+from 2016 and later.
+
+```{r}
+#| label: define-acs-years
+MOST_RECENT_ACS_YEAR <- hercacstables::most_recent_vintage("acs", "acs1")
+ACS_YEARS <- seq(2016, MOST_RECENT_ACS_YEAR, 2)
+```
+
+## Fetch data
+
+While the data always come from the same table, we will be querying the API
+many times -- twice for each combination of survey year, geography, and state.
+We could make fewer API calls per year if we downloaded data for EVERY state
+each time, rather than a separate call for each state.
+I have not profiled whether it is faster to do more small data pulls or fewer
+lange data pulls.
+
+There are two functions for fetching data.
+
+### Function to Fetch Housing Data
+
+Here is the function for pulling counts of households by
+the age of the householder,
+whether or not they rent, and
+how recently they moved in.
+
+```{r}
+#| label: define-fetch-function
+#| dependson:
+#| - define-acs-years
+
+fetch_tenure_durations <- function(Product, Geography, FIPS) {
+    .years <- ACS_YEARS
+    if (Product == "acs1") {
         .years <- .years[.years != 2020]
     }
     .years |>
         purrr::map(
             \(.year) hercacstables::fetch_data(
-                hercacstables::GLOSSARY_OF_TENURE_DURATIONS$Variable, 
+                hercacstables::GLOSSARY_OF_TENURE_DURATIONS_BY_AGE$Variable, 
                 year = .year,
                 survey_type = "acs",
-                table_or_survey_code = .product,
-                for_geo = .geo,
+                table_or_survey_code = Product,
+                for_geo = Geography,
                 for_items = "*",
-                state = .state
+                state = FIPS
             )
         ) |>
         purrr::list_rbind()
 }
 ```
 
+### Function to Fetch Populations and Names
+
+Here is the function for pulling the names and populations of geographic units
+in a state.
+We will use these data to identify the largest units in each state.
+Those are the units that we will use for comparison.
+
+```{r}
+#| label: define-fetch-names-and-sizes
+#| dependson:
+#| - define-acs-years
+
+fetch_names_and_sizes <- function(Product, Geography, FIPS) {
+    hercacstables::fetch_data(
+        c("NAME", "B01001_001E"),
+        year = MOST_RECENT_ACS_YEAR,
+        for_geo = Geography,
+        for_items = "*",
+        survey_type = "acs",
+        table_or_survey_code = Product,
+        state = FIPS
+    )
+}
+```
+
+### Fetch the Data
+
+This approach steps through each row of the SETTINGS table and fetches the
+appropriate housing duration and population data.
+
+```{r}
+#| label: fetch
+#| dependson:
+#| - define-fetch-function
+#| - define-fetch-names-and-sizes
+#| - define-settings
+
+RAW <- dplyr::mutate(
+    SETTINGS,
+    Durations = purrr::pmap(dplyr::pick("Product", "Geography", "FIPS"),
+                            fetch_tenure_durations),
+    Populations = purrr::pmap(dplyr::pick("Product", "Geography", "FIPS"),
+                              fetch_names_and_sizes)
+)
+
+```
+
+## Wrangle the Data
+
+As always, there is a little aggregation to do with the data once we have pulled
+what the ACS reports.
+There are some computations to do for both types of data that we fetched.
+
+### Define a Function to Wrangle Household Data
+
+We will lump together the different durations of residency into two categories:
+those who moved recently and
+those who have not.
+
 ```{r}
 #| label: define-wrangle-function
+#| dependson:
+#| - define-displacement-window
 
-wrangle_tenure_duration <- function(.raw_tenure, .displacement_window, .geo) {
-    .raw_tenure |>
+wrangle_tenure_duration <- function(Durations, Geography) {
+    Durations |>
         dplyr::inner_join(
-            hercacstables::GLOSSARY_OF_TENURE_DURATIONS,
+            hercacstables::GLOSSARY_OF_TENURE_DURATIONS_BY_AGE,
             by = c("Group", "Index")
         ) |>
         dplyr::summarize(
             Households = sum(.data$Value, na.rm = TRUE),
-            `Recent Movers` = sum(.data$Value *
-                                      (.data$`Longest Duration` < .displacement_window),
-                                  na.rm = TRUE
+            `Recent Movers` = sum(
+                .data$Value * (.data$`Longest Duration` < DISPLACEMENT_WINDOW),
+                na.rm = TRUE
             ),
-            `Displacement Rate` = .data$`Recent Movers` / .data$Households,
+            `Recent Move Rate` = .data$`Recent Movers` / .data$Households,
             .by = tidyselect::all_of(c(
                 "Year",
-                .geo,
+                Geography,
                 "Tenure",
                 "Upper Age"
             ))
@@ -65,177 +224,248 @@ wrangle_tenure_duration <- function(.raw_tenure, .displacement_window, .geo) {
 
 ```
 
-```{r}
-#| label: define-fetch-names-and-sizes
+### Define a Function to Find the Largest Geographic Units
 
-fetch_names_and_sizes <- function(.product, .geo, .state) {
-    hercacstables::fetch_data(
-        c("NAME", "B01001_001E"),
-        year = 2024,
-        for_geo = .geo,
-        for_items = "*",
-        survey_type = "acs",
-        table_or_survey_code = .product,
-        state = .state
-    )
-}
-```
+The full lists of geographic units from each state also need adjustments.
+First, we simplify the names by removing redundant features like the state's
+name and words like "school district."
+Next, we identify which row corresponds to the focal geographic unit.
+Finally, we pare down the number of columns to a useful minimum.
 
 ```{r}
 #| label: define-wrangle-names-and-sizes
+#| dependson:
+#| - define-number-of-big-units
 
-wrangle_names_and_sizes <- function(.raw_names_and_sizes, .geo, .label, .pattern) {
-    .raw_names_and_sizes |>
+wrangle_names_and_sizes <- function(Populations, Geography, Focus, Label) {
+    Populations |>
         dplyr::mutate(
-            "{.label}" := stringr::str_extract(.data$NAME, .pattern)
+            "{Label}" := .data$NAME |>
+                stringr::str_extract(
+                    "[^,]+"
+                ) |>
+                stringr::str_remove_all(
+                    stringr::regex("city|metropolitan|municipal|district|public|schools?",
+                                   ignore_case = TRUE)
+                ) |>
+                stringr::str_squish(),
+            Focal = stringr::str_detect(.data[[Label]], Focus)
         ) |>
         dplyr::select(
             tidyselect::all_of(c(
-                .label,
-                .geo,
+                Label,
+                Geography,
+                "Focal",
                 Population = "Value"
             ))
+        ) |>
+        dplyr::slice_max(
+            .data$Population,
+            n = NUMBER_OF_BIG_UNITS
         )
 }
 ```
 
-```{r}
-#| label: define-plot-function
+### Apply the Wrangling Functions
 
-plot_tenure_duration <- function(.tenure_data, .label) {
-    .tenure_data |>
-        ggplot2::ggplot(
-            ggplot2::aes(x = .data$Year,
-                         y = .data$`Displacement Rate`,
-                         color = .data[[.label]])
-        ) +
-        hercreports::ploture_layer_lines() +
-        hercreports::ploture_scale_integers(
-            .width = 5
-        ) +
-        hercreports::ploture_scale_percentages() +
-        hercreports::ploture_layout_facets(
-            .rows = "Upper Age",
-            .columns = "Tenure"
-        )
-}
-```
-
-```{r}
-#| label: define-settings
-
-SETTINGS <- tibble::tribble(
-    ~ Product, ~ Geography,                  ~ Label,    ~ Pattern,
-    "acs1",     "school district (unified)", "District", ".+(?= School)",
-    "acs5",     "place",                     "City",     ".+(?= city)"
-)
-```
-
-```{r}
-#| label: fetch
-
-RAW <- dplyr::mutate(
-    SETTINGS,
-    Households = purrr::map2(.data$Product, .data$Geography,
-                             \(.p, .g) fetch_tenure_durations(.p, .g, 55)),
-    Populations = purrr::map2(.data$Product, .data$Geography,
-                              \(.p, .g) fetch_names_and_sizes(.p, .g, 55))
-)
-
-```
+Once again, we apply the wrangling functions to each row of the raw data.
+Once the duration and population data are wrangled, we join them into the
+final data sets that we actually want to use.
 
 ```{r}
 #| label: wrangle
+#| dependson:
+#| - fetch
+#| - define-wrangle-function
+#| - define-wrangle-names-and-sizes
 
-WRANGLED <- RAW |> 
-    dplyr::mutate(
-        TenureDuration = purrr::map2(
-            .data$Households,
-            .data$Geography,
-            \(.h, .g) wrangle_tenure_duration(.h, 2L, .g)
-        ),
-        LargePlaces = list(.raw_names_and_sizes = .data$Populations,
-                           .geo = .data$Geography,
-                           .label = .data$Label,
-                           .pattern = .data$Pattern) |>
-            purrr::pmap(
-                wrangle_names_and_sizes
-            ) |>
-            purrr::map(
-                \(.x) dplyr::slice_max(.x, .data$Population, n = 10)
-            ),
-        BigTenure = purrr::pmap(
-            list(.lhs = .data$TenureDuration,
-                 .rhs = .data$LargePlaces,
-                 .g = .data$Geography),
-            \(.lhs, .rhs, .g) {
-                .lhs |>
-                    dplyr::inner_join(
-                        .rhs,
-                        by = .g
-                    ) |>
-                    dplyr::arrange(
-                        dplyr::across(tidyselect::all_of(.g))
-                    )
-            }
-        ),
-        Table = purrr::map2(
-            .data$BigTenure,
-            .data$Label,
-            \(.bt, .l) {
-                nyears <- dplyr::n_distinct(.bt$Year)
-                .bt |>
-                    dplyr::summarize(
-                        `Displacement Rate` = weighted.mean(
-                            .data$`Displacement Rate`,
-                            .data$Households
-                        ),
-                        Households = sum(.data$Households),
-                        .by = tidyselect::all_of(c("Year", .l))
-                    ) |>
-                    dplyr::mutate(
-                        dplyr::across("Displacement Rate",
-                                      scales::label_percent(accuracy = 1)),
-                        dplyr::across("Households",
-                                      scales::label_comma(accuracy = 1)),
-                        Text = sprintf("%s of %s",
-                                       .data$`Displacement Rate`,
-                                       .data$Households)
-                    ) |>
-                    dplyr::select(
-                        tidyselect::all_of(c("Year", .l, "Text"))
-                    ) |>
-                    tidyr::pivot_wider(
-                        names_from = "Year",
-                        values_from = "Text"
-                    ) |>
-                    knitr::kable(
-                        caption = "Households that Have Recently Moved",
-                        align = paste0(c("l", rep("r", nyears)),
-                                       collapse = "")
-                    )
-        }),
-        Plot = purrr::map2(.data$BigTenure,
-                           .data$Label,
-                           plot_tenure_duration)
+WRANGLED <- dplyr::mutate(
+    RAW,
+    TenureDuration = purrr::pmap(
+        dplyr::pick("Durations", "Geography"),
+        wrangle_tenure_duration
+    ),
+    LargePlaces = purrr::pmap(
+        dplyr::pick("Populations", "Geography", "Focus", "Label"),
+        wrangle_names_and_sizes
+    ),
+    BigTenure = purrr::pmap(
+        dplyr::pick("TenureDuration", "LargePlaces", "Geography"),
+        \(TenureDuration, LargePlaces, Geography) {
+            TenureDuration |>
+                dplyr::inner_join(
+                    LargePlaces,
+                    by = Geography
+                ) |>
+                dplyr::arrange(
+                    dplyr::across(tidyselect::all_of(Geography))
+                )
+        }
     )
+)
 ```
+
+## Summarize the Findings
+
+Finally, we make some pretty tables and plots to display the results of all of
+that wrangling.
+
+### Define the Tabulation Function
+
+This function makes a table where each cell shows both the percent recently
+moved and the number of households in each combination of place and year.
+
+```{r}
+#| label: define-tabulate-function
+
+tabulate_tenure_durations <- function(BigTenure, Label) {
+
+    nyears <- length(unique(BigTenure$Year))
+    
+    BigTenure |>
+        dplyr::summarize(
+            `Recent Move Rate` = weighted.mean(
+                .data$`Recent Move Rate`,
+                .data$Households
+            ),
+            Households = sum(.data$Households),
+            .by = tidyselect::all_of(c("Year", Label, "Tenure"))
+        ) |>
+        dplyr::mutate(
+            dplyr::across("Recent Move Rate",
+                          scales::label_percent(accuracy = 1)),
+            dplyr::across("Households",
+                          scales::label_comma(accuracy = 1)),
+            Text = sprintf("%s of %s",
+                           .data$`Recent Move Rate`,
+                           .data$Households)
+        ) |>
+        dplyr::select(
+            tidyselect::all_of(c("Year", Label, "Tenure", "Text"))
+        ) |>
+        tidyr::pivot_wider(
+            names_from = "Year",
+            names_sort = TRUE,
+            values_from = "Text",
+            values_fill = ""
+        ) |>
+        dplyr::arrange(
+            dplyr::across(tidyselect::all_of(c(Label, "Tenure")))
+        ) |>
+        knitr::kable(
+            caption = "Households that Have Recently Moved",
+            align = paste0(c("l", rep("r", nyears)),
+                           collapse = "")
+        )
+}
+```
+
+### Define the Plotting Function
+
+This function makes line plots that show change in percentage recently moved
+over time, with line colors by geographic unit and panels for each combination
+of householder age and tenure.
+
+```{r}
+#| label: define-plot-function
+#| dependson:
+#| - define-displacement-window
+
+plot_tenure_duration <- function(BigTenure, Label) {
+    BigTenure |>
+        ggplot2::ggplot(
+            ggplot2::aes(x = .data$Year,
+                         y = .data$`Recent Move Rate`,
+                         color = .data[[Label]],
+                         group = .data[[Label]],
+                         alpha = .data$Focal)
+        ) +
+        ggplot2::geom_line(
+            linewidth = 8.0 / 3.0,
+            lineend = "round",
+            linejoin = "round",
+            na.rm = TRUE
+        ) +
+        ggplot2::scale_x_continuous(
+            breaks = scales::breaks_width(2),
+            minor_breaks = scales::breaks_width(1L),
+            labels = scales::label_number(accuracy = 1,
+                                          big.mark = "")
+        ) +
+        ggplot2::scale_y_continuous(
+            name = paste("Moved in Last",
+                         DISPLACEMENT_WINDOW,
+                         "Years"),
+            limits = c(0, 1),
+            labels = scales::label_percent(accuracy = 1)
+        ) +
+        ggplot2::scale_alpha_manual(
+            values = c(
+                `TRUE` = 1,
+                `FALSE` = 0.25
+            ),
+            guide = ggplot2::guide_none()
+        ) +
+        ggplot2::facet_grid(
+            rows = ggplot2::vars(.data$`Upper Age`),
+            cols = ggplot2::vars(.data$Tenure)
+        ) +
+        ggplot2::theme_minimal()
+}
+```
+
+### Apply the Summary Functions
+
+Another demonstration of how succinct code can be when using the functional
+programming paradigm.
+
+```{r}
+#| label: summarize
+#| dependson:
+#| - wrangle
+#| - define-tabulate-function
+#| - define-plot-function
+
+SUMMARIZED <- dplyr::mutate(
+    WRANGLED,
+    Table = purrr::pmap(dplyr::pick("BigTenure", "Label"),
+                        tabulate_tenure_durations),
+    Plot = purrr::pmap(dplyr::pick("BigTenure", "Label"),
+                       plot_tenure_duration)
+)
+```
+
+## Results
+
+Here's what all of that prep creates:
 
 ```{r}
 #| label: look-at-results
 #| results: asis
+#| dependson:
+#| - summarize
 
-WRANGLED |>
-    dplyr::select(
-        "Label", "Table", "Plot"
+SUMMARIZED |>
+    tidyr::nest(
+        .by = c("FIPS", "State", "Focus"),
+        .key = "Results"
     ) |>
     purrr::pwalk(
-        \(Label, Table, Plot) {
-            cat("###", Label, "\n\n")
-            print(Table)
-            cat("\n\n")
-            print(Plot)
-            cat("\n\n")
+        \(FIPS, State, Focus, Results) {
+            cat(paste0("## ", Focus, ", ", State, "\n\n"))
+            Results |>
+                dplyr::select(
+                    "Label", "Table", "Plot"
+                ) |>
+                purrr::pwalk(
+                    \(Label, Table, Plot) {
+                        cat("###", Label, "\n\n")
+                        print(Table)
+                        cat("\n\n")
+                        print(Plot)
+                        cat("\n\n")
+                    }
+                )
         }
     )
 ```

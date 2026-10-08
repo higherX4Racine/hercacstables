@@ -39,6 +39,8 @@ jobs:
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀

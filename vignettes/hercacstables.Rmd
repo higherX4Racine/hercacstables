@@ -205,9 +205,9 @@ household_variables <- hercacstables::METADATA_FOR_ACS_VARIABLES |>
         .data$Group %in% HOUSEHOLD_GROUPS,
                   .data$Index == 1) |>
     dplyr::mutate(
-        Ethnicity = dplyr::case_match(.data$Group,
-                                      "B11001" ~ "All",
-                                      "B11001I" ~ "Hispanic or Latino")
+        Ethnicity = dplyr::recode_values(.data$Group,
+                                         "B11001" ~ "All",
+                                         "B11001I" ~ "Hispanic or Latino")
     ) |>
     dplyr::select("Group", "Index", "Variable", "Ethnicity")
 

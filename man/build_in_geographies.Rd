@@ -10,7 +10,7 @@ build_in_geographies(...)
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> key-value pairs like "state='03'"}
 }
 \value{
-A string of ampersand-separated \verb{in=geo:code} pairs
+A vector of "geo:code" pairs
 }
 \description{
 Create the part of a Census API query that describes containing geographies

@@ -18,8 +18,7 @@ Depends:
     R (>= 4.2.0)
 Imports: 
     dplyr,
-    httr,
-    jsonlite,
+    httr2,
     lubridate,
     purrr,
     readr,

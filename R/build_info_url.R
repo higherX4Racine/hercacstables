@@ -18,27 +18,24 @@ build_info_url <- function(.info_type, .year, .year_span) {
         c("geography", "groups", "variables")
     )
 
-    if (api_key_is_set()) {
-        query_parameters <- list(`key` = api_key_value())
-    } else {
-        query_parameters <- list()
-    }
-
-    url_components <- list(
-        scheme = CENSUS_API_SCHEME,
-        hostname = CENSUS_API_HOSTNAME,
-        path = c(
-            CENSUS_API_PATHROOT,
+    .request <- "" |>
+        httr2::url_modify(
+            scheme = CENSUS_API_SCHEME,
+            hostname = CENSUS_API_HOSTNAME,
+            path = CENSUS_API_PATHROOT
+        ) |>
+        httr2::request() |>
+        httr2::req_url_path_append(
             .year,
             "acs",
             paste0("acs", .year_span),
             paste0(.info_type, ".json")
-        ),
-        query = query_parameters
-    )
+        )
 
-    class(url_components) <- "url"
-    url_components |>
-        httr::build_url() |>
-        URLencode()
+    if (api_key_is_set()) {
+        .request <- httr2::req_url_query(.request,
+                                         key = api_key_value())
+    }
+
+    httr2::req_get_url(.request)
 }
